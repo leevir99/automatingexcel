@@ -1,0 +1,45 @@
+Sub ConvertName()
+    'declare variables
+    Dim fullName As String
+    Dim firstName As String
+    Dim lastName As String
+   
+    'get the value of cell D5
+    fullName = Range("D5").Value
+   
+    'check if the cell is not empty
+    If fullName <> "" Then
+        'split the full name into an array of words
+        Dim nameArray() As String
+        nameArray = Split(fullName, " ")
+       
+        'determine the last name and concatenate the first name
+        If UBound(nameArray) > 0 Then
+            'process the last name
+            Dim lastNameArray() As String
+            lastNameArray = Split(nameArray(0), "-")
+            lastName = UCase(Left(lastNameArray(0), 1)) & LCase(Mid(lastNameArray(0), 2))
+            If UBound(lastNameArray) > 0 Then
+                lastName = lastName & "-" & UCase(Left(lastNameArray(1), 1)) & LCase(Mid(lastNameArray(1), 2))
+            End If
+           
+            'process the first name
+            Dim firstNameArray() As String
+            firstNameArray = Split(nameArray(1), "-")
+            firstName = UCase(Left(firstNameArray(0), 1)) & LCase(Mid(firstNameArray(0), 2))
+            If UBound(firstNameArray) > 0 Then
+                firstName = firstName & "-" & UCase(Left(firstNameArray(1), 1)) & LCase(Mid(firstNameArray(1), 2))
+            End If
+        Else
+            'if there's only one name, assume it's the last name
+            lastName = UCase(Left(nameArray(0), 1)) & LCase(Mid(nameArray(0), 2))
+            firstName = ""
+        End If
+       
+        'set the value of cell D6 to the formatted name
+        Range("D6").Value = firstName & " " & lastName
+    Else
+        'show an error message if the cell is empty
+        MsgBox "Perkele."
+    End If
+End Sub
