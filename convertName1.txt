@@ -1,4 +1,4 @@
-Sub ConvertName()
+Sub convertName1()
     'declare variables
     Dim fullName As String
     Dim firstName As String
