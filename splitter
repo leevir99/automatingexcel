@@ -1,0 +1,44 @@
+Sub SplitCellValues()
+    Dim originalValues As Variant
+    Dim splitIndex As Integer
+    Dim firstName As String
+    Dim lastName As String
+    Dim errorCell As Range
+    
+    ' Check if B73 has a value
+    If Range("B73").Value <> "" Then
+        MsgBox "B73 is not empty. Please clear the cell before running this script.", vbCritical, "Error"
+        Exit Sub
+    End If
+    
+    ' Read the original values into an array
+    originalValues = Range("B70:B72").Value
+    
+    ' Loop through the array and split each value
+    For i = 1 To 3
+        originalValue = originalValues(i, 1)
+        
+        For j = 1 To Len(originalValue)
+            If IsNumeric(Mid(originalValue, j, 1)) Then
+                splitIndex = j
+                Exit For
+            End If
+        Next j
+        
+        firstName = Trim(Left(originalValue, splitIndex - 1))
+        lastName = Trim(Mid(originalValue, splitIndex))
+        
+        ' Write the split values back to the worksheet
+        Select Case i
+            Case 1
+                Range("B15").Value = firstName
+                Range("B16").Value = lastName
+            Case 2
+                Range("B18").Value = firstName
+                Range("B19").Value = lastName
+            Case 3
+                Range("B21").Value = firstName
+                Range("B22").Value = lastName
+        End Select
+    Next i
+End Sub
