@@ -1,0 +1,22 @@
+Sub SplitCellValue()
+    Dim originalValue As String
+    Dim splitIndex As Integer
+    Dim firstName As String
+    Dim lastName As String
+    
+    originalValue = Range("B70").Value
+    
+    For i = 1 To Len(originalValue)
+        If IsNumeric(Mid(originalValue, i, 1)) Then
+            splitIndex = i
+            Exit For
+        End If
+    Next i
+    
+    firstName = Trim(Left(originalValue, splitIndex - 1))
+    lastName = Trim(Mid(originalValue, splitIndex))
+    
+    Range("B71").Value = firstName
+    Range("B72").Value = lastName
+End Sub
+
