@@ -40,6 +40,6 @@ Sub ConvertName()
         Range("D6").Value = firstName & " " & lastName
     Else
         'show an error message if the cell is empty
-        MsgBox "Perkele."
+        MsgBox "Error! (Input cell might be empty)."
     End If
 End Sub
