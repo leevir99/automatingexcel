@@ -6,6 +6,7 @@ Sub SplitCellValues()
     Dim errorCell As Range
     Dim dataSheet As Worksheet
     Dim mainSheet As Worksheet
+    Dim userInput As Integer
     
     ' Set references to the Data and Main sheets
     Set dataSheet = Worksheets("Data")
@@ -13,9 +14,15 @@ Sub SplitCellValues()
     
     ' Check if A4 has a value in the Data sheet
     If dataSheet.Range("A4").Value <> "" Then
-        MsgBox "A4 in the Data sheet is not empty. Please clear the cell before running this script.", vbCritical, "Error"
-        Exit Sub
+        ' Ask the user whether to continue or exit
+        userInput = MsgBox("A4 in the Data sheet is not empty. Do you want to continue?", vbQuestion + vbYesNo, "Confirmation")
+        
+        ' If the user chooses No, exit the macro
+        If userInput = vbNo Then Exit Sub
     End If
+    
+    ' Paste clipboard contents into the Data sheet, starting at cell A1
+    dataSheet.Range("A1").PasteSpecial
     
     ' Read the original values into an array from A1:A3 in the Data sheet
     originalValues = dataSheet.Range("A1:A3").Value
