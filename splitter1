@@ -1,0 +1,44 @@
+Sub splitter1()
+    Dim clipboardData As New DataObject
+    Dim originalValue As String
+    Dim splitIndex As Integer
+    Dim firstName As String
+    Dim lastName As String
+    Dim errorCell As Range
+    Dim targetCellOffset As Integer
+    
+    ' Get text from clipboard
+    clipboardData.GetFromClipboard
+    originalValue = clipboardData.GetText
+    
+    ' Clear all target cells
+    Range("B44:B51").ClearContents
+    
+    ' Split the clipboard text
+    For i = 1 To 3
+        If originalValue = "" Then Exit For ' Exit loop if no more values
+        
+        For j = 1 To Len(originalValue)
+            If IsNumeric(Mid(originalValue, j, 1)) Then
+                splitIndex = j
+                Exit For
+            End If
+        Next j
+        
+        firstName = Trim(Left(originalValue, splitIndex - 1))
+        lastName = Trim(Mid(originalValue, splitIndex))
+        
+        ' Write the split values back to the worksheet
+        targetCellOffset = (i - 1) * 3
+        Range("B44").Offset(targetCellOffset, 0).Value = firstName
+        Range("B45").Offset(targetCellOffset, 0).Value = lastName
+        
+        ' Remove processed value from clipboard text
+        originalValue = Trim(Mid(originalValue, splitIndex))
+    Next i
+    
+    ' Check for extra value pairs
+    If originalValue <> "" Then
+        MsgBox "There are extra value pairs in the clipboard text. Please split manually.", vbExclamation, "Warning"
+    End If
+End Sub
