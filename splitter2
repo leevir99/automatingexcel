@@ -5,44 +5,48 @@ Sub SplitClipboardText()
     Dim firstName As String
     Dim lastName As String
     Dim errorCell As Range
+    Dim targetCellOffset As Integer
     
     ' Get text from clipboard
     clipboardData.GetFromClipboard
     originalValue = clipboardData.GetText
     
-    ' Split the clipboard text
-    For i = 1 To 3
-        If originalValue = "" Then Exit For ' Exit loop if no more values
-        
-        For j = 1 To Len(originalValue)
-            If IsNumeric(Mid(originalValue, j, 1)) Then
-                splitIndex = j
-                Exit For
-            End If
-        Next j
-        
-        firstName = Trim(Left(originalValue, splitIndex - 1))
-        lastName = Trim(Mid(originalValue, splitIndex))
-        
-        ' Write the split values back to the worksheet
-        Select Case i
-            Case 1
-                Range("B15").Value = firstName
-                Range("B16").Value = lastName
-            Case 2
-                Range("B18").Value = firstName
-                Range("B19").Value = lastName
-            Case 3
-                Range("B21").Value = firstName
-                Range("B22").Value = lastName
-        End Select
-        
-        ' Remove processed value from clipboard text
-        originalValue = Trim(Mid(originalValue, splitIndex))
-    Next i
+    ' Check if there are more than three value pairs
+    If InStr(originalValue, " ") <> 0 And InStr(InStr(originalValue, " ") + 1, originalValue, " ") <> 0 And InStr(InStr(InStr(originalValue, " ") + 1, originalValue, " ") + 1, originalValue, " ") <> 0 Then
+        MsgBox "There are more than three value pairs in the clipboard text. Please split manually.", vbExclamation, "Warning"
+        Exit Sub
+    End If
     
-    ' Check for a fourth value pair
+    ' Clear all target cells
+    Range("B44:B51").ClearContents
+    
+    ' Split the clipboard text
     If originalValue <> "" Then
-        MsgBox "There is a fourth value pair in the clipboard text. Please split manually.", vbExclamation, "Warning"
+        For i = 1 To 3
+            If originalValue = "" Then Exit For ' Exit loop if no more values
+            
+            For j = 1 To Len(originalValue)
+                If IsNumeric(Mid(originalValue, j, 1)) Then
+                    splitIndex = j
+                    Exit For
+                End If
+            Next j
+            
+            firstName = Trim(Left(originalValue, splitIndex - 1))
+            lastName = Trim(Mid(originalValue, splitIndex))
+            
+            ' Write the split values back to the worksheet
+            targetCellOffset = (i - 1) * 2
+            Range("B44").Offset(targetCellOffset, 0).Value = firstName
+            Range("B45").Offset(targetCellOffset, 0).Value = lastName
+            
+            ' Remove processed value from clipboard text
+            originalValue = Trim(Mid(originalValue, splitIndex))
+        Next i
+    End If
+    
+    ' Check for extra value pairs
+    If originalValue <> "" Then
+        MsgBox "There are extra value pairs in the clipboard text. Please split manually.", vbExclamation, "Warning"
     End If
 End Sub
