@@ -1,52 +1,53 @@
-Sub SplitClipboardText()
-    Dim clipboardData As New DataObject
-    Dim originalValue As String
+Sub SplitCellValues()
+    Dim originalValues As Variant
     Dim splitIndex As Integer
     Dim firstName As String
     Dim lastName As String
     Dim errorCell As Range
-    Dim targetCellOffset As Integer
+    Dim dataSheet As Worksheet
+    Dim mainSheet As Worksheet
     
-    ' Get text from clipboard
-    clipboardData.GetFromClipboard
-    originalValue = clipboardData.GetText
+    ' Set references to the Data and Main sheets
+    Set dataSheet = Worksheets("Data")
+    Set mainSheet = Worksheets("Main")
     
-    ' Check if there are more than three value pairs
-    If InStr(originalValue, " ") <> 0 And InStr(InStr(originalValue, " ") + 1, originalValue, " ") <> 0 And InStr(InStr(InStr(originalValue, " ") + 1, originalValue, " ") + 1, originalValue, " ") <> 0 Then
-        MsgBox "There are more than three value pairs in the clipboard text. Please split manually.", vbExclamation, "Warning"
+    ' Check if A4 has a value in the Data sheet
+    If dataSheet.Range("A4").Value <> "" Then
+        MsgBox "A4 in the Data sheet is not empty. Please clear the cell before running this script.", vbCritical, "Error"
         Exit Sub
     End If
     
-    ' Clear all target cells
-    Range("B44:B51").ClearContents
+    ' Read the original values into an array from A1:A3 in the Data sheet
+    originalValues = dataSheet.Range("A1:A3").Value
     
-    ' Split the clipboard text
-    If originalValue <> "" Then
-        For i = 1 To 3
-            If originalValue = "" Then Exit For ' Exit loop if no more values
-            
-            For j = 1 To Len(originalValue)
-                If IsNumeric(Mid(originalValue, j, 1)) Then
-                    splitIndex = j
-                    Exit For
-                End If
-            Next j
-            
-            firstName = Trim(Left(originalValue, splitIndex - 1))
-            lastName = Trim(Mid(originalValue, splitIndex))
-            
-            ' Write the split values back to the worksheet
-            targetCellOffset = (i - 1) * 2
-            Range("B44").Offset(targetCellOffset, 0).Value = firstName
-            Range("B45").Offset(targetCellOffset, 0).Value = lastName
-            
-            ' Remove processed value from clipboard text
-            originalValue = Trim(Mid(originalValue, splitIndex))
-        Next i
-    End If
+    ' Clear the target cells in the Main sheet
+    mainSheet.Range("B44:B51").ClearContents
     
-    ' Check for extra value pairs
-    If originalValue <> "" Then
-        MsgBox "There are extra value pairs in the clipboard text. Please split manually.", vbExclamation, "Warning"
-    End If
+    ' Loop through the array and split each value
+    For i = 1 To 3
+        originalValue = originalValues(i, 1)
+        
+        For j = 1 To Len(originalValue)
+            If IsNumeric(Mid(originalValue, j, 1)) Then
+                splitIndex = j
+                Exit For
+            End If
+        Next j
+        
+        firstName = Trim(Left(originalValue, splitIndex - 1))
+        lastName = Trim(Mid(originalValue, splitIndex))
+        
+        ' Write the split values back to the worksheet in the Main sheet
+        Select Case i
+            Case 1
+                mainSheet.Range("B44").Value = firstName
+                mainSheet.Range("B45").Value = lastName
+            Case 2
+                mainSheet.Range("B47").Value = firstName
+                mainSheet.Range("B48").Value = lastName
+            Case 3
+                mainSheet.Range("B50").Value = firstName
+                mainSheet.Range("B51").Value = lastName
+        End Select
+    Next i
 End Sub
