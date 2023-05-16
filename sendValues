@@ -1,0 +1,21 @@
+Sub SendValues()
+    Dim value1 As Variant
+    Dim value2 As Variant
+    
+    ' Read the values from D5 and D9
+    value1 = Range("D5").Value
+    value2 = Range("D9").Value
+    
+    ' Check if the values are not "#N/A" or empty
+    If Not IsError(value1) And Not IsError(value2) Then
+        If Not IsEmpty(value1) Then
+            ' Send value1 to B40
+            Range("B40").Value = value1
+        End If
+        
+        If Not IsEmpty(value2) Then
+            ' Send value2 to B41
+            Range("B41").Value = value2
+        End If
+    End If
+End Sub
