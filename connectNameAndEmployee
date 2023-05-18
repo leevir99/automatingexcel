@@ -1,0 +1,81 @@
+Sub YhdistäPankkiJaTyöntekijä()
+    Dim pankinNimi As String
+    Dim työntekijänNimi As String
+    Dim muunnettuPankinNimi As String
+    Dim yhdistettyArvo As String
+    
+    On Error Resume Next
+    
+    ' Pyydä käyttäjää syöttämään pankin nimi
+    pankinNimi = InputBox("Syötä pankin nimi:", "Pankin nimi")
+    
+    If pankinNimi = "" Then
+        MsgBox "Pankin nimen syöttö peruttu.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Pyydä käyttäjää syöttämään työntekijän nimi
+    työntekijänNimi = InputBox("Syötä pankin työntekijän nimi:", "Työntekijän nimi")
+    
+    If työntekijänNimi = "" Then
+        MsgBox "Työntekijän nimen syöttö peruttu.", vbExclamation
+        Exit Sub
+    End If
+    
+    On Error GoTo 0
+    
+    ' Muunna pankin nimi
+    Dim pankkiOsat() As String
+    pankkiOsat = Split(pankinNimi, " ")
+    
+    muunnettuPankinNimi = ""
+    
+    For i = 0 To UBound(pankkiOsat)
+        If UCase(pankkiOsat(i)) = "OSUUSPANKKI" Then
+            If i = 0 Then
+                muunnettuPankinNimi = "Osuuspankki"
+            Else
+                muunnettuPankinNimi = muunnettuPankinNimi & " Osuuspankki"
+            End If
+        Else
+            muunnettuPankinNimi = muunnettuPankinNimi & " " & UCase(Left(pankkiOsat(i), 1)) & Mid(LCase(pankkiOsat(i)), 2)
+        End If
+    Next i
+    
+    ' Poista johtavat välilyönnit tarvittaessa
+    muunnettuPankinNimi = Trim(muunnettuPankinNimi)
+    
+    ' Tarkista ja muuta väliviivan jälkeinen kirjain isoiksi
+    If InStr(muunnettuPankinNimi, "-") > 0 Then
+        Dim väliviivaIndeksi As Integer
+        väliviivaIndeksi = InStr(muunnettuPankinNimi, "-")
+        If väliviivaIndeksi < Len(muunnettuPankinNimi) Then
+            muunnettuPankinNimi = Left(muunnettuPankinNimi, väliviivaIndeksi) & UCase(Mid(muunnettuPankinNimi, väliviivaIndeksi + 1, 1)) & Mid(muunnettuPankinNimi, väliviivaIndeksi + 2)
+        End If
+    End If
+    
+    ' Yhdistä arvot
+    yhdistettyArvo = työntekijänNimi & ", " & muunnettuPankinNimi
+    
+    ' Kirjoita arvot soluihin
+    On Error Resume Next
+    Range("C6").Value = pankinNimi
+    Range("C7").Value = työntekijänNimi
+    Range("C8").Value = Replace(yhdistettyArvo, "Osuuspankki", "OP")
+    On Error GoTo 0
+    
+    If Err.Number <> 0 Then
+        MsgBox "Virhe kirjoitettaessa arvoja soluihin.", vbCritical
+    End If
+    
+    ' Kopioi yhdistetty arvo leikepöydälle
+    If yhdistettyArvo <> "" Then
+        Application.CutCopyMode = False ' Poista mahdollinen aiempi leikkaustila
+        Range("C8").Copy ' Kopioi solun sisältö leikepöydälle
+        MsgBox "Yhdistetty arvo kopioitu leikepöydälle.", vbInformation
+    End If
+    
+    ' Lisää muunnettu pankin nimi C9 soluun
+    Range("C9").Value = muunnettuPankinNimi
+End Sub
+
