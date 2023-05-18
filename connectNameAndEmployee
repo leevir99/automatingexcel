@@ -54,7 +54,7 @@ Sub YhdistäPankkiJaTyöntekijä()
         End If
     End If
     
-    ' Yhdistä arvot
+    ' Yhdistä nämä arvot
     yhdistettyArvo = työntekijänNimi & ", " & muunnettuPankinNimi
     
     ' Kirjoita arvot soluihin
