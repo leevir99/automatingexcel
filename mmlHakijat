@@ -1,4 +1,4 @@
-Sub mmlHakijat()
+Sub CollectInvolvedPeople()
     Dim person1Name As String
     Dim person1ID As String
     Dim person2Name As String
@@ -18,7 +18,7 @@ Sub mmlHakijat()
     
     ' Prompt the user if they want to proceed
     Dim proceed As Boolean
-    proceed = MsgBox("Haluatko lisätä osalliset kohteelle 1?", vbQuestion + vbYesNo) = vbYes
+    proceed = MsgBox("Haluatko jatkaa osallisten lisäystä?", vbQuestion + vbYesNo) = vbYes
     
     If Not proceed Then
         MsgBox "Osallisten lisäystä ei suoritettu."
@@ -30,9 +30,17 @@ Sub mmlHakijat()
     Dim person2Involved As Boolean
     Dim person3Involved As Boolean
     
-    person1Involved = MsgBox("Onko " & person1Name & " (" & person1ID & ") mukana?", vbYesNo + vbQuestion) = vbYes
-    person2Involved = MsgBox("Onko " & person2Name & " (" & person2ID & ") mukana?", vbYesNo + vbQuestion) = vbYes
-    person3Involved = MsgBox("Onko " & person3Name & " (" & person3ID & ") mukana?", vbYesNo + vbQuestion) = vbYes
+    If person1Name <> "" And person1ID <> "" Then
+        person1Involved = MsgBox("Onko " & person1Name & " (" & person1ID & ") mukana?", vbYesNo + vbQuestion) = vbYes
+    End If
+    
+    If person2Name <> "" And person2ID <> "" Then
+        person2Involved = MsgBox("Onko " & person2Name & " (" & person2ID & ") mukana?", vbYesNo + vbQuestion) = vbYes
+    End If
+    
+    If person3Name <> "" And person3ID <> "" Then
+        person3Involved = MsgBox("Onko " & person3Name & " (" & person3ID & ") mukana?", vbYesNo + vbQuestion) = vbYes
+    End If
     
     ' Build the involved names string
     If person1Involved Then
