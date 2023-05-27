@@ -40,4 +40,25 @@ for (let i = 1; i <= 2000; i++) {
   }
 }
 
+Sub FillWordForm()
+    Dim formField As FormField
+    Dim fieldName As String
+    
+    ' Set the bookmark name of the form field
+    fieldName = "Slot1" ' Replace "Slot1" with the actual bookmark name in your Word form
+    
+    ' Find the form field by its bookmark name
+    On Error Resume Next
+    Set formField = ActiveDocument.Bookmarks(fieldName).Range.FormFields(1)
+    On Error GoTo 0
+    
+    ' Fill the form field with the text "Hello"
+    If Not formField Is Nothing Then
+        formField.Result = "Hello"
+    Else
+        MsgBox "Form field not found."
+    End If
+End Sub
+
+
 
