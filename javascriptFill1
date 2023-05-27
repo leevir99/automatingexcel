@@ -1,0 +1,44 @@
+Sub RunJavaScriptInPDF()
+    On Error Resume Next
+    
+    ' Create PDF XChange Editor ActiveX control
+    Dim pdfEditor As Object
+    Set pdfEditor = CreateObject("PDFEditorCtl.PDFEditorCtrl.1")
+    
+    ' Check if the control was created successfully
+    If Err.Number <> 0 Then
+        MsgBox "Failed to create PDF Editor ActiveX control."
+        Exit Sub
+    End If
+    
+    ' Check if PDF XChange Editor is running and has an active document
+    If Not pdfEditor.IsAppRunning() Or Not pdfEditor.HasActiveDocument() Then
+        MsgBox "PDF XChange Editor is not running or does not have an active document."
+        Exit Sub
+    End If
+    
+    ' Get the active document
+    Dim pdfDoc As Object
+    Set pdfDoc = pdfEditor.GetActiveDocument()
+    
+    ' Check if the active document is a PDF
+    If Not pdfDoc.IsValid() Or pdfDoc.GetFormat() <> "PDF" Then
+        MsgBox "The active document is not a PDF."
+        Exit Sub
+    End If
+    
+    ' Execute JavaScript code in the active PDF
+    Dim javascriptCode As String
+    javascriptCode = "app.alert('Hello from JavaScript!');"
+    
+    pdfDoc.ExecuteNamedAction "JavaScript", "AddJavaScript"
+    pdfDoc.SetJavaScriptCode javascriptCode
+    
+    ' Clean up and release the resources
+    Set pdfDoc = Nothing
+    Set pdfEditor = Nothing
+    
+    MsgBox "JavaScript code executed successfully."
+    
+    On Error GoTo 0
+End Sub
