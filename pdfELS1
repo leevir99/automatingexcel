@@ -3,7 +3,12 @@ function DoHighlight() {
   var nTotal = 0;
 
   for (var p = 0; p < this.numPages; p++) {
-    var pageText = this.getPageText(p);
+    var words = this.getPageNumWords(p);
+    var pageText = '';
+
+    for (var w = 0; w < words; w++) {
+      pageText += this.getPageNthWord(p, w) + ' ';
+    }
 
     var matches;
     while ((matches = regex.exec(pageText)) !== null) {
@@ -14,7 +19,7 @@ function DoHighlight() {
       this.addAnnot({
         page: p,
         type: "Highlight",
-        quads: this.getPageQuads(p, startIndex, endIndex),
+        quads: this.getPageNthWordQuads(p, startIndex),
       });
       nTotal++;
     }
