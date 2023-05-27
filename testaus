@@ -39,19 +39,19 @@ for (let i = 1; i <= 2000; i++) {
     continue; // Skip to the next iteration if an error occurs
   }
 }
-Sub FillAllFormFields()
+Sub EnterSlotNames()
     Dim formField As FormField
     
     ' Loop through each form field in the document
     For Each formField In ActiveDocument.FormFields
-        ' Check if the form field is enabled
-        If formField.Enabled Then
-            ' Fill the form field with the text "Hello"
-            formField.Result = "Hello"
+        ' Check if the form field is enabled and has a name
+        If formField.Enabled And formField.Name <> "" Then
+            ' Fill the form field with its name
+            formField.Result = formField.Name
         End If
     Next formField
     
-    MsgBox "All form fields filled with 'Hello' successfully!"
+    MsgBox "Slot names entered successfully!"
 End Sub
 
 
