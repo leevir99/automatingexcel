@@ -19,16 +19,18 @@ for (let i = 1; i <= 2000; i++) {
 
 // Loop through radio buttons from 'Radio Button 1' to 'Radio Button 2000'
 for (let i = 1; i <= 2000; i++) {
+  let fieldName; // Declare the fieldName variable outside the try-catch block
+
   try {
     // Get the current radio button by its name
-    const fieldName = 'Radio Button ' + i;
+    fieldName = 'Radio Button ' + i;
     const field = this.getField(fieldName);
-    
+
     // Check if the field exists and is a radio button
     if (field && field.type === 'radiobutton') {
       // Select the radio button
       field.value = field.exportValues[0];
-      
+
       // Print the number of the radio button
       console.log('Radio button ' + i + ' checked.');
     }
