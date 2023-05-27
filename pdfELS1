@@ -1,0 +1,27 @@
+function DoHighlight() {
+  var regex = /Luototussude \d+(,\d+)? %%/g;
+  var nTotal = 0;
+
+  for (var p = 0; p < this.numPages; p++) {
+    var pageText = this.getPageText(p);
+
+    var matches;
+    while ((matches = regex.exec(pageText)) !== null) {
+      var matchText = matches[0];
+      var startIndex = matches.index;
+      var endIndex = startIndex + matchText.length;
+
+      this.addAnnot({
+        page: p,
+        type: "Highlight",
+        quads: this.getPageQuads(p, startIndex, endIndex),
+      });
+      nTotal++;
+    }
+  }
+
+  return nTotal;
+}
+
+var t = DoHighlight();
+console.println(t + " occurrences were highlighted");
