@@ -39,26 +39,21 @@ for (let i = 1; i <= 2000; i++) {
     continue; // Skip to the next iteration if an error occurs
   }
 }
-
-Sub FillWordForm()
+Sub FillAllFormFields()
     Dim formField As FormField
-    Dim fieldName As String
     
-    ' Set the bookmark name of the form field
-    fieldName = "Slot1" ' Replace "Slot1" with the actual bookmark name in your Word form
+    ' Loop through each form field in the document
+    For Each formField In ActiveDocument.FormFields
+        ' Check if the form field is enabled
+        If formField.Enabled Then
+            ' Fill the form field with the text "Hello"
+            formField.Result = "Hello"
+        End If
+    Next formField
     
-    ' Find the form field by its bookmark name
-    On Error Resume Next
-    Set formField = ActiveDocument.Bookmarks(fieldName).Range.FormFields(1)
-    On Error GoTo 0
-    
-    ' Fill the form field with the text "Hello"
-    If Not formField Is Nothing Then
-        formField.Result = "Hello"
-    Else
-        MsgBox "Form field not found."
-    End If
+    MsgBox "All form fields filled with 'Hello' successfully!"
 End Sub
+
 
 
 
