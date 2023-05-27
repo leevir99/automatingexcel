@@ -48,14 +48,10 @@ Function GetActivePDFPath() As String
     titleLength = GetWindowText(hwnd, windowTitle, MAX_TITLE_LENGTH)
     
     If titleLength > 0 Then
-        Dim startIdx As Long
-        Dim endIdx As Long
+        MsgBox windowTitle ' Display the window title
         
-        startIdx = InStr(windowTitle, "- ")
-        endIdx = InStr(windowTitle, " [")
-        
-        If startIdx > 0 And endIdx > startIdx Then
-            GetActivePDFPath = Mid(windowTitle, startIdx + 2, endIdx - startIdx - 2)
-        End If
+        ' Rest of the code to extract the file path
+        ' ...
     End If
 End Function
+
