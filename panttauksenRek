@@ -1,17 +1,9 @@
 Sub RunJavaScriptInPDFXChangeEditor()
-    Dim xlApp As Object ' Excel Application
-    Dim xlBook As Object ' Excel Workbook
-    Dim xlSheet As Object ' Excel Worksheet
+    Dim xlSheet As Worksheet ' Excel Worksheet
     Dim jsCode As String ' JavaScript code
 
-    ' Set the file path of your Excel workbook
-    Dim filePath As String
-    filePath = "C:\Path\To\Hankkeet makroilla2.xls"
-
-    ' Open the Excel workbook and access the worksheet with the code
-    Set xlApp = CreateObject("Excel.Application")
-    Set xlBook = xlApp.Workbooks.Open(filePath)
-    Set xlSheet = xlBook.Worksheets("Data")
+    ' Access the worksheet with the code
+    Set xlSheet = ThisWorkbook.Worksheets("Data")
 
     ' Get the JavaScript code from cells A44:A86
     jsCode = Join(Application.Transpose(xlSheet.Range("A44:A86").Value), vbNewLine)
