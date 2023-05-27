@@ -1,11 +1,24 @@
+Option Explicit
+
+Private Declare PtrSafe Function GetForegroundWindow Lib "user32" () As LongPtr
+Private Declare PtrSafe Function GetWindowText Lib "user32" Alias "GetWindowTextA" _
+    (ByVal hwnd As LongPtr, ByVal lpString As String, ByVal cch As LongPtr) As Long
+
+Private Const MAX_TITLE_LENGTH As Long = 256
+
 Sub RunJavaScriptInPDF()
     ' Specify the path to the PDF XChange Editor executable
     Dim editorPath As String
     editorPath = "C:\Program Files\Tracker Software\PDF Editor\PDFXEdit.exe"
     
-    ' Specify the path to the active PDF file
+    ' Get the file path of the active PDF in PDF XChange Editor
     Dim pdfPath As String
-    pdfPath = "C:\path\to\your\document.pdf"
+    pdfPath = GetActivePDFPath()
+    
+    If pdfPath = "" Then
+        MsgBox "No active PDF found in PDF XChange Editor."
+        Exit Sub
+    End If
     
     ' Specify the JavaScript code to be executed
     Dim javascriptCode As String
@@ -25,3 +38,24 @@ Sub RunJavaScriptInPDF()
     
     MsgBox "JavaScript code executed successfully."
 End Sub
+
+Function GetActivePDFPath() As String
+    Dim hwnd As LongPtr
+    Dim windowTitle As String * MAX_TITLE_LENGTH
+    Dim titleLength As Long
+    
+    hwnd = GetForegroundWindow()
+    titleLength = GetWindowText(hwnd, windowTitle, MAX_TITLE_LENGTH)
+    
+    If titleLength > 0 Then
+        Dim startIdx As Long
+        Dim endIdx As Long
+        
+        startIdx = InStr(windowTitle, "- ")
+        endIdx = InStr(windowTitle, " [")
+        
+        If startIdx > 0 And endIdx > startIdx Then
+            GetActivePDFPath = Mid(windowTitle, startIdx + 2, endIdx - startIdx - 2)
+        End If
+    End If
+End Function
