@@ -1,5 +1,5 @@
 function DoHighlight() {
-    var regex = /Luototussuhde \d+,\d+ %/g; // Regular expression pattern
+    var regex = /Luototussuhde \d{1,2},\d{1} %/g; // Regular expression pattern
     var nTotal = 0;
 
     for (var p = 0; p < this.numPages; p++) {
