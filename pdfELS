@@ -1,16 +1,19 @@
 function DoHighlight() {
-    var regex = /Luototussuhde \d{1,2},\d{1} %/g; // Regular expression pattern
     var nTotal = 0;
 
     for (var p = 0; p < this.numPages; p++) {
-        var cnt = this.getPageNumWords(p);
-        for (var w = 0; w < cnt; w++) {
-            var s = this.getPageNthWord(p, w);
-            if (regex.test(s)) {
+        var content = this.getPageContent(p);
+        var matches = content.match(/Luototussuhde \d+,\d+ %/g);
+        if (matches) {
+            for (var i = 0; i < matches.length; i++) {
+                var match = matches[i];
+                var startIndex = content.indexOf(match);
+                var endIndex = startIndex + match.length;
+
                 this.addAnnot({
                     page: p,
                     type: "Highlight",
-                    quads: this.getPageNthWordQuads(p, w),
+                    quads: this.getPageQuads(p, startIndex, endIndex),
                 });
                 nTotal++;
             }
