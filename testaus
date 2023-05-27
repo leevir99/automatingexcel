@@ -28,9 +28,13 @@ for (let i = 1; i <= 2000; i++) {
     if (field && field.type === 'radiobutton') {
       // Select the radio button
       field.value = field.exportValues[0];
+      
+      // Print the number of the radio button
+      console.log('Radio button ' + i + ' checked.');
     }
   } catch (error) {
     console.error('Error occurred for field ' + fieldName + ':', error);
     continue; // Skip to the next iteration if an error occurs
   }
 }
+
