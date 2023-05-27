@@ -3,22 +3,24 @@ function DoHighlight() {
   var nTotal = 0;
 
   for (var p = 0; p < this.numPages; p++) {
-    var content = this.getPageContent(p);
-    var contentStr = util.stringFromStream(content);
-    var matches;
-    
-    while ((matches = regex.exec(contentStr)) !== null) {
-      var matchText = matches[0];
-      var startIndex = matches.index;
-      var endIndex = startIndex + matchText.length - 1; // Adjust endIndex to exclude the last character (%)
-      
-      this.addAnnot({
-        page: p,
-        type: "Highlight",
-        quads: this.getPageNthWordQuads(p, startIndex),
-      });
-      
-      nTotal++;
+    var annots = this.getAnnots({ nPage: p });
+
+    for (var i = 0; i < annots.length; i++) {
+      var annot = annots[i];
+
+      if (annot.type === "Text") {
+        var annotText = annot.getContents();
+
+        if (regex.test(annotText)) {
+          this.addAnnot({
+            page: p,
+            type: "Highlight",
+            quads: annot.quads,
+          });
+
+          nTotal++;
+        }
+      }
     }
   }
 
