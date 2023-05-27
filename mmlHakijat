@@ -1,0 +1,81 @@
+Sub mmlHakijat()
+    Dim person1Name As String
+    Dim person1ID As String
+    Dim person2Name As String
+    Dim person2ID As String
+    Dim person3Name As String
+    Dim person3ID As String
+    Dim involvedNames As String
+    Dim involvedIDs As String
+    
+    ' Get the names and IDs from the specified cells
+    person1Name = Range("B75").Value
+    person1ID = Range("B76").Value
+    person2Name = Range("B78").Value
+    person2ID = Range("B79").Value
+    person3Name = Range("B81").Value
+    person3ID = Range("B82").Value
+    
+    ' Prompt the user if they want to proceed
+    Dim proceed As Boolean
+    proceed = MsgBox("Haluatko lisätä osalliset kohteelle 1?", vbQuestion + vbYesNo) = vbYes
+    
+    If Not proceed Then
+        MsgBox "Osallisten lisäystä ei suoritettu."
+        Exit Sub
+    End If
+    
+    ' Prompt the user to determine which people are involved
+    Dim person1Involved As Boolean
+    Dim person2Involved As Boolean
+    Dim person3Involved As Boolean
+    
+    person1Involved = MsgBox("Onko " & person1Name & " (" & person1ID & ") mukana?", vbYesNo + vbQuestion) = vbYes
+    person2Involved = MsgBox("Onko " & person2Name & " (" & person2ID & ") mukana?", vbYesNo + vbQuestion) = vbYes
+    person3Involved = MsgBox("Onko " & person3Name & " (" & person3ID & ") mukana?", vbYesNo + vbQuestion) = vbYes
+    
+    ' Build the involved names string
+    If person1Involved Then
+        involvedNames = person1Name
+    End If
+    If person2Involved Then
+        If involvedNames <> "" Then
+            involvedNames = involvedNames & ", " & person2Name
+        Else
+            involvedNames = person2Name
+        End If
+    End If
+    If person3Involved Then
+        If involvedNames <> "" Then
+            involvedNames = involvedNames & ", " & person3Name
+        Else
+            involvedNames = person3Name
+        End If
+    End If
+    
+    ' Build the involved IDs string
+    If person1Involved Then
+        involvedIDs = person1ID
+    End If
+    If person2Involved Then
+        If involvedIDs <> "" Then
+            involvedIDs = involvedIDs & ", " & person2ID
+        Else
+            involvedIDs = person2ID
+        End If
+    End If
+    If person3Involved Then
+        If involvedIDs <> "" Then
+            involvedIDs = involvedIDs & ", " & person3ID
+        Else
+            involvedIDs = person3ID
+        End If
+    End If
+    
+    ' Store the involved names and IDs in the specified cells
+    Range("B88").Value = involvedNames
+    Range("B89").Value = involvedIDs
+    
+    ' Display a message box to indicate completion
+    MsgBox "Osallisten lisäys suoritettu."
+End Sub
