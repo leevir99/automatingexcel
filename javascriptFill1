@@ -1,4 +1,6 @@
 @echo off
-set PDFX_PATH="C:\Program Files\Tracker Software\PDF Editor\PDFXEdit.exe"
-set JS_CODE="var message = 'Hello, World!'; app.activeDoc.javascript.ExecuteScript(message);"
-%PDFX_PATH% /A "%JS_CODE%"
+set PDF_PATH="C:\path\to\your\file.pdf"
+set JS_CODE="var message = 'Hello, World!'; app.alert(message);"
+pdftk %PDF_PATH% cat output temp.pdf
+pdftk temp.pdf update_info_utf8 -output %PDF_PATH%
+del temp.pdf
