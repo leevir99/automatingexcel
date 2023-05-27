@@ -1,23 +1,30 @@
 function DoHighlight(word) {
     var nTotal = 0;
-
     for (var p = 0; p < this.numPages; p++) {
-        var matches = this.getPageSearchText(p, word);
-        if (matches && matches.length > 0) {
-            for (var i = 0; i < matches.length; i++) {
-                var match = matches[i];
-                this.addAnnot({
-                    page: p,
-                    type: "Highlight",
-                    quads: match.quads,
-                });
-                nTotal++;
+        var cnt = this.getPageNumWords(p);
+        for (var w = 0; w < cnt; w++) {
+            var s = this.getPageNthWord(p, w);
+            if (String(s).indexOf(word) >= 0) {
+                // Find the bounding box of the line containing the word
+                var lineRect = this.getPageNthWordQuads(p, w)[0].rect;
+                var lineHeight = lineRect[3] - lineRect[1];
+                for (var i = 0; i < cnt; i++) {
+                    var rect = this.getPageNthWordQuads(p, i)[0].rect;
+                    if (Math.abs(rect[3] - rect[1] - lineHeight) < 1e-4) {
+                        // Highlight the entire line
+                        this.addAnnot({
+                            page: p,
+                            type: "Highlight",
+                            quads: this.getPageNthWordQuads(p, i),
+                        });
+                        nTotal++;
+                    }
+                }
             }
         }
     }
-
     return nTotal;
 }
 
-var t = DoHighlight("Luototussuhde \\d+\\,\\d+ \\%");
+var t = DoHighlight("text to be searched");
 console.println(t + " words were highlighted");
