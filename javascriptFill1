@@ -1,57 +1,22 @@
-Option Explicit
+$PDFXEditPath = "C:\Program Files\Tracker Software\PDF Editor\PDFXEdit.exe"
+$JavaScriptCode = "console.log('Hello, world!');"
 
-Private Declare PtrSafe Function GetForegroundWindow Lib "user32" () As LongPtr
-Private Declare PtrSafe Function GetWindowText Lib "user32" Alias "GetWindowTextA" _
-    (ByVal hwnd As LongPtr, ByVal lpString As String, ByVal cch As LongPtr) As Long
+$process = Get-Process | Where-Object { $_.MainWindowTitle -like "*PDF-XChange Editor*" }
 
-Private Const MAX_TITLE_LENGTH As Long = 256
+if ($process) {
+    $processId = $process.Id
+    $scriptBlock = {
+        param($processId, $JavaScriptCode)
+        $acroApp = New-Object -ComObject "PDFXEdit.PXVDocument"
+        $acroApp.AttachToPID($processId)
+        $doc = $acroApp.Doc
+        $doc.js.ExecuteScript($JavaScriptCode)
+        $doc.Close()
+        $acroApp.Close()
+    }
 
-Sub RunJavaScriptInPDF()
-    ' Specify the path to the PDF XChange Editor executable
-    Dim editorPath As String
-    editorPath = "C:\Program Files\Tracker Software\PDF Editor\PDFXEdit.exe"
-    
-    ' Get the file path of the active PDF in PDF XChange Editor
-    Dim pdfPath As String
-    pdfPath = GetActivePDFPath()
-    
-    If pdfPath = "" Then
-        MsgBox "No active PDF found in PDF XChange Editor."
-        Exit Sub
-    End If
-    
-    ' Specify the JavaScript code to be executed
-    Dim javascriptCode As String
-    javascriptCode = "app.alert('Hello from JavaScript!');"
-    
-    ' Assemble the command to execute JavaScript in the active PDF
-    Dim command As String
-    command = """" & editorPath & """" & " /A ""JS:" & javascriptCode & """ """ & pdfPath & """"
-    
-    ' Execute the command
-    Dim shell As Object
-    Set shell = CreateObject("WScript.Shell")
-    shell.Run command, 1, True
-    
-    ' Clean up
-    Set shell = Nothing
-    
-    MsgBox "JavaScript code executed successfully."
-End Sub
-
-Function GetActivePDFPath() As String
-    Dim hwnd As LongPtr
-    Dim windowTitle As String * MAX_TITLE_LENGTH
-    Dim titleLength As Long
-    
-    hwnd = GetForegroundWindow()
-    titleLength = GetWindowText(hwnd, windowTitle, MAX_TITLE_LENGTH)
-    
-    If titleLength > 0 Then
-        MsgBox windowTitle ' Display the window title
-        
-        ' Rest of the code to extract the file path
-        ' ...
-    End If
-End Function
-
+    Start-Process -FilePath PowerShell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command &{`$scriptBlock -processId $processId -JavaScriptCode `'$JavaScriptCode`'}" -WindowStyle Hidden
+}
+else {
+    Write-Host "PDF-XChange Editor is not running."
+}
