@@ -35,8 +35,9 @@ for (let i = 1; i <= 2000; i++) {
       console.log('Radio button ' + i + ' checked.');
     }
   } catch (error) {
-    console.error('Error occurred for field ' + fieldName + ':', error);
+    console.log('Error occurred for field ' + fieldName + ':', error);
     continue; // Skip to the next iteration if an error occurs
   }
 }
+
 
