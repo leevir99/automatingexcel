@@ -1,25 +1,28 @@
-function DoHighlight(word) {
+function DoHighlight() {
     var nTotal = 0;
+    var searchWord = "Enimmäisluototussuhde";
+    var searchString = searchWord + " ";
     
-    for (var p = 0; p < this.numPages; p++) {
-        var cnt = this.getPageNumWords(p);
+    var totalPages = this.numPages;
+    for (var i = 0; i < totalPages; i++) {
+        var page = this.getPageNthWord(i, 0);
+        var words = page.split(/\s+/);
         
-        for (var w = 0; w < cnt; w++) {
-            var s = this.getPageNthWord(p, w);
-            
-            if (typeof s === 'string' && s.startsWith(word) && s.endsWith("%")) {
+        for (var j = 0; j < words.length; j++) {
+            var word = words[j];
+            if (word.indexOf(searchString) === 0 && word.endsWith("%")) {
+                var quadPoints = this.getPageNthWordQuads(i, j);
                 this.addAnnot({
-                    page: p,
+                    page: i,
                     type: "Highlight",
-                    quads: this.getPageNthWordQuads(p, w),
-                });
+                    rect: quadPoints,
+                    });
                 nTotal++;
             }
         }
     }
     
-    return nTotal;
+    app.alert(nTotal + " words were highlighted");
 }
 
-var t = DoHighlight("Enimmäisluototussuhde");
-console.println(t + " words were highlighted");
+DoHighlight();
