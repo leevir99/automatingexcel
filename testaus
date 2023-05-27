@@ -1,0 +1,17 @@
+// Loop through text fields from 'Text Field 1' to 'Text Field 2000'
+for (let i = 1; i <= 2000; i++) {
+  try {
+    // Get the current text field by its name
+    const fieldName = 'Text Field ' + i;
+    const field = this.getField(fieldName);
+    
+    // Check if the field exists and is a text field
+    if (field && field.type === 'text') {
+      // Set the value of the text field
+      field.value = i.toString();
+    }
+  } catch (error) {
+    console.error('Error occurred for field ' + fieldName + ':', error);
+    continue; // Skip to the next iteration if an error occurs
+  }
+}
