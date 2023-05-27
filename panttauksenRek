@@ -8,19 +8,15 @@ Sub RunJavaScriptInPDFXChangeEditor()
     ' Get the JavaScript code from cells A44:A86
     jsCode = Join(Application.Transpose(xlSheet.Range("A44:A86").Value), vbNewLine)
 
-    ' Activate PDF-XChange Editor
-    Dim pdfEditor As Object ' PDF-XChange Editor Application
-    Set pdfEditor = CreateObject("PDFXEdit.Application")
+    ' Open PDF-XChange Editor
+    Dim pdfPath As String
+    pdfPath = "C:\Program Files\Tracker Software\PDF Editor\PDFXEdit.exe" ' Modify the path if necessary
+    Shell pdfPath
 
-    ' Open the JavaScript console in PDF-XChange Editor
-    pdfEditor.ExecuteCommand "JSConsole"
+    ' Wait for PDF-XChange Editor to open
+    Application.Wait Now + TimeValue("00:00:05")
 
-    ' Wait for the JavaScript console to open
-    Application.Wait Now + TimeValue("00:00:02")
+    ' Paste the JavaScript code manually
+    MsgBox "Please navigate to the JavaScript console in PDF-XChange Editor and paste the code."
 
-    ' Paste the JavaScript code into the console
-    pdfEditor.ExecuteCommand "JSConsole", "JS.ExecuteScript(""" & jsCode & """);"
-
-    ' Clean up
-    Set pdfEditor = Nothing
 End Sub
