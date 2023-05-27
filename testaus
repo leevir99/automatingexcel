@@ -39,24 +39,32 @@ for (let i = 1; i <= 2000; i++) {
     continue; // Skip to the next iteration if an error occurs
   }
 }
-Sub FillFirstSlotFromExcel()
+Sub FillSlotsFromExcel()
     Dim excelApp As Object ' Excel Application
     Dim excelWorkbook As Object ' Excel Workbook
     Dim excelWorksheet As Object ' Excel Worksheet
     Dim excelRange As Object ' Excel Range
-    Dim firstSlotValue As Variant
+    Dim slotValue1 As Variant ' First slot value
+    Dim slotValue2 As Variant ' Second slot value
+    Dim slotValue3 As Variant ' Third slot value
     
     ' Set the Excel workbook name
     Dim excelWorkbookName As String
-    excelWorkbookName = "Hankkeet makroilla 2.xls"
+    excelWorkbookName = "Hankket makroilla2.xls"
     
     ' Set the Excel worksheet name
     Dim excelWorksheetName As String
     excelWorksheetName = "Main"
     
-    ' Set the Excel cell reference for the first slot value
-    Dim excelCellReference As String
-    excelCellReference = "B142"
+    ' Set the Excel cell references for the slots
+    Dim slot1CellReference As String
+    slot1CellReference = "B142"
+    
+    Dim slot2CellReference As String
+    slot2CellReference = "B128"
+    
+    Dim slot3CellReference As String
+    slot3CellReference = "B130"
     
     ' Get the Excel application
     On Error Resume Next
@@ -81,20 +89,29 @@ Sub FillFirstSlotFromExcel()
     ' Set the Excel worksheet
     Set excelWorksheet = excelWorkbook.Worksheets(excelWorksheetName)
     
-    ' Get the value from the specified Excel cell
-    Set excelRange = excelWorksheet.Range(excelCellReference)
-    firstSlotValue = excelRange.Value
+    ' Get the values from the specified Excel cells
+    Set excelRange = excelWorksheet.Range(slot1CellReference)
+    slotValue1 = excelRange.Value
+    
+    Set excelRange = excelWorksheet.Range(slot2CellReference)
+    slotValue2 = excelRange.Value
+    
+    Set excelRange = excelWorksheet.Range(slot3CellReference)
+    slotValue3 = excelRange.Value
     
     ' Release the objects from memory
     Set excelRange = Nothing
     Set excelWorksheet = Nothing
     Set excelWorkbook = Nothing
     
-    ' Fill the first slot in the Word form with the value from Excel
-    ActiveDocument.FormFields(1).Result = firstSlotValue
+    ' Fill the slots in the Word form with the values from Excel
+    ActiveDocument.FormFields(1).Result = slotValue1
+    ActiveDocument.FormFields(2).Result = slotValue2
+    ActiveDocument.FormFields(3).Result = slotValue3
     
-    MsgBox "First slot filled with the value from Excel successfully!"
+    MsgBox "Slots filled with values from Excel successfully!"
 End Sub
+
 
 
 
