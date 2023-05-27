@@ -2,24 +2,38 @@ function DoHighlight(word) {
     var nTotal = 0;
     for (var p = 0; p < this.numPages; p++) {
         var cnt = this.getPageNumWords(p);
+        var lineRect = null; // Line rectangle
         for (var w = 0; w < cnt; w++) {
             var s = this.getPageNthWord(p, w);
             if (String(s).indexOf(word) >= 0) {
-                // Find the bounding box of the line containing the word
-                var lineRect = this.getPageNthWordQuads(p, w)[0].rect;
-                var lineHeight = lineRect[3] - lineRect[1];
-                for (var i = 0; i < cnt; i++) {
-                    var rect = this.getPageNthWordQuads(p, i)[0].rect;
-                    if (Math.abs(rect[3] - rect[1] - lineHeight) < 1e-4) {
-                        // Highlight the entire line
-                        this.addAnnot({
-                            page: p,
-                            type: "Highlight",
-                            quads: this.getPageNthWordQuads(p, i),
-                        });
-                        nTotal++;
+                var quads = this.getPageNthWordQuads(p, w);
+                for (var i = 0; i < quads.length; i++) {
+                    var quad = quads[i].rect;
+                    var x = Math.min(quad[0], quad[2], quad[4], quad[6]);
+                    var y = Math.min(quad[1], quad[3], quad[5], quad[7]);
+                    var width = Math.max(quad[0], quad[2], quad[4], quad[6]) - x;
+                    var height = Math.max(quad[1], quad[3], quad[5], quad[7]) - y;
+                    var rect = [x, y, x + width, y + height];
+                    
+                    if (lineRect === null) {
+                        lineRect = rect;
+                    } else {
+                        lineRect[0] = Math.min(lineRect[0], rect[0]);
+                        lineRect[1] = Math.min(lineRect[1], rect[1]);
+                        lineRect[2] = Math.max(lineRect[2], rect[2]);
+                        lineRect[3] = Math.max(lineRect[3], rect[3]);
                     }
                 }
+                
+                // Highlight the entire line
+                this.addAnnot({
+                    page: p,
+                    type: "Highlight",
+                    quads: [lineRect],
+                });
+                
+                nTotal++;
+                lineRect = null; // Reset line rectangle
             }
         }
     }
