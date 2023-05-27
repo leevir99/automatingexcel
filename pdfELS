@@ -1,19 +1,15 @@
-function DoHighlight() {
+function DoHighlight(word) {
     var nTotal = 0;
 
     for (var p = 0; p < this.numPages; p++) {
-        var content = this.getPageContent(p);
-        var matches = content.match(/Luototussuhde \d+,\d+ %/g);
-        if (matches) {
+        var matches = this.getPageSearchText(p, word);
+        if (matches && matches.length > 0) {
             for (var i = 0; i < matches.length; i++) {
                 var match = matches[i];
-                var startIndex = content.indexOf(match);
-                var endIndex = startIndex + match.length;
-
                 this.addAnnot({
                     page: p,
                     type: "Highlight",
-                    quads: this.getPageQuads(p, startIndex, endIndex),
+                    quads: match.quads,
                 });
                 nTotal++;
             }
@@ -23,5 +19,5 @@ function DoHighlight() {
     return nTotal;
 }
 
-var t = DoHighlight();
+var t = DoHighlight("Luototussuhde \\d+\\,\\d+ \\%");
 console.println(t + " words were highlighted");
