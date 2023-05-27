@@ -1,0 +1,2 @@
+#c-etuliite vai ei
+=IF(ISNUMBER(SEARCH("C"; B33)); "C-" & "Hanke"; "Hanke")
