@@ -1,25 +1,19 @@
-function DoHighlight() {
+function DoHighlight(word) {
     var nTotal = 0;
-
+    
     for (var p = 0; p < this.numPages; p++) {
         var cnt = this.getPageNumWords(p);
-
+        
         for (var w = 0; w < cnt; w++) {
             var s = this.getPageNthWord(p, w);
             
-            if (typeof s === 'string' && s.endsWith("%")) {
-                var startIndex = s.indexOf(" ");
-                if (startIndex >= 0) {
-                    var word = s.substring(startIndex + 1, s.length - 1);
-                    if (word.length > 0) {
-                        this.addAnnot({
-                            page: p,
-                            type: "Highlight",
-                            quads: this.getPageNthWordQuads(p, w),
-                        });
-                        nTotal++;
-                    }
-                }
+            if (typeof s === 'string' && s.startsWith(word) && s.endsWith("%")) {
+                this.addAnnot({
+                    page: p,
+                    type: "Highlight",
+                    quads: this.getPageNthWordQuads(p, w),
+                });
+                nTotal++;
             }
         }
     }
@@ -27,5 +21,5 @@ function DoHighlight() {
     return nTotal;
 }
 
-var t = DoHighlight();
+var t = DoHighlight("Enimmäisluototussuhde");
 console.println(t + " words were highlighted");
