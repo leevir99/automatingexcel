@@ -1,2 +1,3 @@
 @echo off
-PowerShell.exe -ExecutionPolicy Bypass -File "%USERPROFILE%\Desktop\execute_js.ps1"
+echo var message = "Hello, World!";
+echo app.activeDoc.javascript.ExecuteScript(message);
