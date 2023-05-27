@@ -1,6 +1,5 @@
 Sub RunJavaScriptInPDFXChangeEditor()
     Dim xlDataSheet As Worksheet ' Excel Worksheet (Data sheet)
-    Dim xlMainSheet As Worksheet ' Excel Worksheet (Main sheet)
     Dim jsCode As String ' JavaScript code
 
     ' Access the Data sheet with the code
@@ -9,25 +8,13 @@ Sub RunJavaScriptInPDFXChangeEditor()
     ' Get the JavaScript code from cells A44:A86 in the Data sheet
     jsCode = Join(Application.Transpose(xlDataSheet.Range("A44:A86").Value), vbNewLine)
 
-    ' Activate PDF-XChange Editor
-    Dim pdfEditor As Object ' PDF-XChange Editor Application
-    Set pdfEditor = CreateObject("PDFXEdit.Application")
+    ' Copy the JavaScript code to the clipboard
+    With CreateObject("New:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
+        .SetText jsCode
+        .PutInClipboard
+    End With
 
-    ' Open the JavaScript console in PDF-XChange Editor
-    pdfEditor.ExecuteCommand "JSConsole"
+    ' Prompt user to manually paste the code into the JavaScript console
+    MsgBox "Please navigate to the JavaScript console in PDF-XChange Editor and paste the code from the clipboard."
 
-    ' Wait for the JavaScript console to open
-    Application.Wait Now + TimeValue("00:00:02")
-
-    ' Paste the JavaScript code into the console
-    pdfEditor.ExecuteCommand "JSConsole", "JS.ExecuteScript(""" & jsCode & """);"
-
-    ' Navigate to the Main sheet within the Excel workbook
-    Set xlMainSheet = ThisWorkbook.Worksheets("Main")
-    xlMainSheet.Activate
-
-    ' Clean up
-    Set pdfEditor = Nothing
-    Set xlDataSheet = Nothing
-    Set xlMainSheet = Nothing
 End Sub
