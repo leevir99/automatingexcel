@@ -39,20 +39,54 @@ for (let i = 1; i <= 2000; i++) {
     continue; // Skip to the next iteration if an error occurs
   }
 }
-Sub EnterSlotNames()
-    Dim formField As FormField
+Sub FillFirstSlotFromExcel()
+    Dim excelApp As Object ' Excel Application
+    Dim excelWorkbook As Object ' Excel Workbook
+    Dim excelWorksheet As Object ' Excel Worksheet
+    Dim excelRange As Object ' Excel Range
+    Dim firstSlotValue As Variant
     
-    ' Loop through each form field in the document
-    For Each formField In ActiveDocument.FormFields
-        ' Check if the form field is enabled and has a name
-        If formField.Enabled And formField.Name <> "" Then
-            ' Fill the form field with its name
-            formField.Result = formField.Name
-        End If
-    Next formField
+    ' Set the path to your Excel workbook
+    Dim excelFilePath As String
+    excelFilePath = "C:\Path\To\Your\Excel\File.xls" ' Replace with the actual file path
     
-    MsgBox "Slot names entered successfully!"
+    ' Set the Excel worksheet name and cell reference
+    Dim excelWorksheetName As String
+    excelWorksheetName = "Main"
+    
+    ' Set the Excel cell reference for the first slot value
+    Dim excelCellReference As String
+    excelCellReference = "B142"
+    
+    ' Open the Excel workbook
+    Set excelApp = CreateObject("Excel.Application")
+    Set excelWorkbook = excelApp.Workbooks.Open(excelFilePath)
+    
+    ' Set the Excel worksheet
+    Set excelWorksheet = excelWorkbook.Worksheets(excelWorksheetName)
+    
+    ' Get the value from the specified Excel cell
+    Set excelRange = excelWorksheet.Range(excelCellReference)
+    firstSlotValue = excelRange.Value
+    
+    ' Close the Excel workbook
+    excelWorkbook.Close
+    
+    ' Quit the Excel application
+    excelApp.Quit
+    
+    ' Release the objects from memory
+    Set excelRange = Nothing
+    Set excelWorksheet = Nothing
+    Set excelWorkbook = Nothing
+    Set excelApp = Nothing
+    
+    ' Fill the first slot in the Word form with the value from Excel
+    ActiveDocument.FormFields(1).Result = firstSlotValue
+    
+    MsgBox "First slot filled with the value from Excel successfully!"
 End Sub
+
 
 
 
