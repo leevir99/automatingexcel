@@ -15,3 +15,22 @@ for (let i = 1; i <= 2000; i++) {
     continue; // Skip to the next iteration if an error occurs
   }
 }
+
+
+// Loop through radio buttons from 'Radio Button 1' to 'Radio Button 2000'
+for (let i = 1; i <= 2000; i++) {
+  try {
+    // Get the current radio button by its name
+    const fieldName = 'Radio Button ' + i;
+    const field = this.getField(fieldName);
+    
+    // Check if the field exists and is a radio button
+    if (field && field.type === 'radiobutton') {
+      // Select the radio button
+      field.value = field.exportValues[0];
+    }
+  } catch (error) {
+    console.error('Error occurred for field ' + fieldName + ':', error);
+    continue; // Skip to the next iteration if an error occurs
+  }
+}
