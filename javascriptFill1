@@ -1,22 +1,2 @@
-$PDFXEditPath = "C:\Program Files\Tracker Software\PDF Editor\PDFXEdit.exe"
-$JavaScriptCode = "console.log('Hello, world!');"
-
-$process = Get-Process | Where-Object { $_.MainWindowTitle -like "*PDF-XChange Editor*" }
-
-if ($process) {
-    $processId = $process.Id
-    $scriptBlock = {
-        param($processId, $JavaScriptCode)
-        $acroApp = New-Object -ComObject "PDFXEdit.PXVDocument"
-        $acroApp.AttachToPID($processId)
-        $doc = $acroApp.Doc
-        $doc.js.ExecuteScript($JavaScriptCode)
-        $doc.Close()
-        $acroApp.Close()
-    }
-
-    Start-Process -FilePath PowerShell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command &{`$scriptBlock -processId $processId -JavaScriptCode `'$JavaScriptCode`'}" -WindowStyle Hidden
-}
-else {
-    Write-Host "PDF-XChange Editor is not running."
-}
+@echo off
+PowerShell.exe -ExecutionPolicy Bypass -File "%USERPROFILE%\Desktop\execute_js.ps1"
