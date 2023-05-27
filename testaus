@@ -46,11 +46,11 @@ Sub FillFirstSlotFromExcel()
     Dim excelRange As Object ' Excel Range
     Dim firstSlotValue As Variant
     
-    ' Set the path to your Excel workbook
-    Dim excelFilePath As String
-    excelFilePath = "C:\Path\To\Your\Excel\File.xls" ' Replace with the actual file path
+    ' Set the Excel workbook name
+    Dim excelWorkbookName As String
+    excelWorkbookName = "Hankkeet makroilla 2.xls"
     
-    ' Set the Excel worksheet name and cell reference
+    ' Set the Excel worksheet name
     Dim excelWorksheetName As String
     excelWorksheetName = "Main"
     
@@ -58,9 +58,25 @@ Sub FillFirstSlotFromExcel()
     Dim excelCellReference As String
     excelCellReference = "B142"
     
-    ' Open the Excel workbook
-    Set excelApp = CreateObject("Excel.Application")
-    Set excelWorkbook = excelApp.Workbooks.Open(excelFilePath)
+    ' Get the Excel application
+    On Error Resume Next
+    Set excelApp = GetObject(, "Excel.Application")
+    On Error GoTo 0
+    
+    If excelApp Is Nothing Then
+        MsgBox "Excel application is not open. Please open the workbook and try again."
+        Exit Sub
+    End If
+    
+    ' Get the Excel workbook
+    On Error Resume Next
+    Set excelWorkbook = excelApp.Workbooks(excelWorkbookName)
+    On Error GoTo 0
+    
+    If excelWorkbook Is Nothing Then
+        MsgBox "Excel workbook '" & excelWorkbookName & "' is not open. Please open the workbook and try again."
+        Exit Sub
+    End If
     
     ' Set the Excel worksheet
     Set excelWorksheet = excelWorkbook.Worksheets(excelWorksheetName)
@@ -69,23 +85,17 @@ Sub FillFirstSlotFromExcel()
     Set excelRange = excelWorksheet.Range(excelCellReference)
     firstSlotValue = excelRange.Value
     
-    ' Close the Excel workbook
-    excelWorkbook.Close
-    
-    ' Quit the Excel application
-    excelApp.Quit
-    
     ' Release the objects from memory
     Set excelRange = Nothing
     Set excelWorksheet = Nothing
     Set excelWorkbook = Nothing
-    Set excelApp = Nothing
     
     ' Fill the first slot in the Word form with the value from Excel
     ActiveDocument.FormFields(1).Result = firstSlotValue
     
     MsgBox "First slot filled with the value from Excel successfully!"
 End Sub
+
 
 
 
