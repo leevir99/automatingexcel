@@ -1,3 +1,4 @@
 @echo off
-echo var message = "Hello, World!";
-echo app.activeDoc.javascript.ExecuteScript(message);
+set PDFX_PATH="C:\Program Files\Tracker Software\PDF Editor\PDFXEdit.exe"
+set JS_CODE="var message = 'Hello, World!'; app.activeDoc.javascript.ExecuteScript(message);"
+%PDFX_PATH% /A "%JS_CODE%"
