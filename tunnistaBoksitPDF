@@ -1,0 +1,13 @@
+// Loop through each form field
+for (var i = 0; i < this.numFields; i++) {
+  var field = this.getField(this.getNthFieldName(i));
+
+  // Check if the field is a checkbox
+  if (field.type === 'checkbox') {
+    // Check the checkbox
+    field.value = 'On';
+
+    // Print the ID of the checkbox
+    console.println('ID:', field.name);
+  }
+}
