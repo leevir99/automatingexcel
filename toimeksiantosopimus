@@ -13,6 +13,8 @@ Sub FillFieldsWithModifiedValues()
     Dim valueG12 As String
     Dim valueG24 As String
     Dim valueG26 As String
+    Dim valueG27 As String
+    Dim teksti51Value As String
     
     ' Check if an Excel instance is already open
     On Error Resume Next
@@ -63,16 +65,23 @@ Sub FillFieldsWithModifiedValues()
         ActiveDocument.FormFields("Teksti5").Result = "Sähköinen allekirjoitus"
     End If
     
-    ' Get the values from cells G12, G24, and G26 in Excel
+    ' Get the values from cells G12, G24, G26, and G27 in Excel
     valueG12 = excelWorksheet.Range("G12").Value
     valueG24 = excelWorksheet.Range("G24").Value
     valueG26 = excelWorksheet.Range("G26").Value
+    valueG27 = excelWorksheet.Range("G27").Value
     
-    ' Check the values of cells G24 to G27 in Excel
-    If valueG24 <> "" And valueG26 <> "" Then
-        ' Set the "Teksti51" field in Word to the concatenation of G24, ", osakkeet ", and G26
-        ActiveDocument.FormFields("Teksti51").Result = valueG24 & ", osakkeet " & valueG26
+    ' Check if any value in the range G24:G27 is empty
+    If valueG24 = "" Or valueG26 = "" Or valueG27 = "" Then
+        ' If any value is empty, set the "Teksti51" field in Word to the value of G12
+        teksti51Value = valueG12
+    Else
+        ' If all values are present, concatenate G24, ", osakkeet ", and G26
+        teksti51Value = valueG24 & ", osakkeet " & valueG26
     End If
+    
+    ' Fill the "Teksti51" field in Word with the determined value
+    ActiveDocument.FormFields("Teksti51").Result = teksti51Value
     
     ' Clean up objects
     Set excelWorksheet = Nothing
