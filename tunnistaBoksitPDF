@@ -1,29 +1,11 @@
-// Loop through each form field
-for (var i = 0; i < this.numFields; i++) {
-  var field = this.getField(this.getNthFieldName(i));
+// Find the field with the ID "Radio Button 16"
+var field = this.getField("Radio Button 16");
 
-  // Check if the field is a radio button
-  if (field.type === 'radiobutton') {
-    // Check the radio button
-    field.value = field.exportValues[0];
+// Check if the field exists and is a radio button
+if (field && field.type === "radiobutton") {
+  // Check the radio button
+  field.value = field.exportValues[0];
 
-    // Get the label of the radio button
-    var label = getFieldLabel(field);
-
-    // Print the label of the radio button
-    console.println('Radio Button:', label);
-  }
-}
-
-// Function to get the label of a form field
-function getFieldLabel(field) {
-  var annot = field.getMK();
-
-  if (annot) {
-    if (annot.AP && annot.AP.N) {
-      return annot.AP.N.toString();
-    }
-  }
-
-  return '';
+  // Print the ID of the radio button
+  console.println("ID:", field.name);
 }
