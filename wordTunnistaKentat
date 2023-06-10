@@ -6,3 +6,21 @@ Sub IdentifyFormFields()
         field.Result = field.Name
     Next field
 End Sub
+
+
+//ruksit
+
+Sub IdentifyFormFields()
+    Dim field As FormField
+    
+    For Each field In ActiveDocument.FormFields
+        If field.Type = wdFieldFormCheckBox Then
+            ' Set the name or ID as the result of the checkbox
+            field.CheckBox.Value = True
+            field.Result = field.Name
+            
+            ' Output the name of the checkbox field to the Immediate Window
+            Debug.Print field.Name
+        End If
+    Next field
+End Sub
