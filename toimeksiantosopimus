@@ -1,8 +1,9 @@
-Sub FillFieldWithSum()
+Sub FillFieldWithModifiedValue()
     Dim excelApp As Object ' Excel.Application
     Dim excelWorkbook As Object ' Excel.Workbook
     Dim excelWorksheet As Object ' Excel.Worksheet
-    Dim sumValue As Double
+    Dim value As String
+    Dim modifiedValue As String
     
     ' Check if an Excel instance is already open
     On Error Resume Next
@@ -18,11 +19,14 @@ Sub FillFieldWithSum()
     Set excelWorkbook = excelApp.Workbooks("MML-kululaskuri.xlsm")
     Set excelWorksheet = excelWorkbook.Worksheets(1)
     
-    ' Calculate the sum of cells C34 to C63
-    sumValue = excelWorksheet.Evaluate("SUM(C34:C63)")
+    ' Get the value from cell D65 in Excel
+    value = excelWorksheet.Range("D65").Value
     
-    ' Fill the "Teksti46" field with the sum value
-    ActiveDocument.FormFields("Teksti46").Result = sumValue
+    ' Trim the value and remove the Euro symbol
+    modifiedValue = Trim(Replace(value, "€", ""))
+    
+    ' Fill the "Teksti46" field in Word with the modified value
+    ActiveDocument.FormFields("Teksti46").Result = modifiedValue
     
     ' Clean up objects
     Set excelWorksheet = Nothing
