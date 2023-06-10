@@ -2,12 +2,12 @@
 for (var i = 0; i < this.numFields; i++) {
   var field = this.getField(this.getNthFieldName(i));
 
-  // Check if the field is a checkbox
-  if (field.type === 'checkbox') {
-    // Check the checkbox
-    field.value = 'On';
+  // Check if the field is a radio button
+  if (field.type === 'radiobutton') {
+    // Check the radio button
+    field.value = field.exportValues[0];
 
-    // Print the ID of the checkbox
+    // Print the ID of the radio button
     console.println('ID:', field.name);
   }
 }
