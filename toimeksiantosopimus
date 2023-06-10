@@ -15,7 +15,7 @@ Sub FillFieldWithSum()
     End If
     
     ' Set the workbook and worksheet
-    Set excelWorkbook = excelApp.Workbooks("MML-kululaskuri.xls")
+    Set excelWorkbook = excelApp.Workbooks("MML-kululaskuri.xlsm")
     Set excelWorksheet = excelWorkbook.Worksheets(1)
     
     ' Calculate the sum of cells C34 to C63
@@ -23,12 +23,6 @@ Sub FillFieldWithSum()
     
     ' Fill the "Teksti46" field with the sum value
     ActiveDocument.FormFields("Teksti46").Result = sumValue
-    
-    ' Close the Excel workbook (optional)
-    excelWorkbook.Close SaveChanges:=False
-    
-    ' Quit the Excel application (optional)
-    excelApp.Quit
     
     ' Clean up objects
     Set excelWorksheet = Nothing
