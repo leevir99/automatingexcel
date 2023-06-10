@@ -57,7 +57,7 @@ Sub FillFieldsWithModifiedValues()
     ' Check the value of cell G8 in Excel
     If excelWorksheet.Range("G8").Value = "Sopimus allekirjoitettu SA" Then
         ' Set the "Teksti 5" field in Word to "Sähköinen allekirjoitus"
-        ActiveDocument.FormFields("Teksti 5").Result = "Sähköinen allekirjoitus"
+        ActiveDocument.FormFields("Teksti5").Result = "Sähköinen allekirjoitus"
     End If
     
     ' Clean up objects
