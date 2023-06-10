@@ -1,9 +1,13 @@
-Sub FillFieldWithModifiedValue()
+Sub FillFieldsWithModifiedValues()
     Dim excelApp As Object ' Excel.Application
     Dim excelWorkbook As Object ' Excel.Workbook
     Dim excelWorksheet As Object ' Excel.Worksheet
-    Dim value As String
-    Dim modifiedValue As String
+    Dim valueD65 As String
+    Dim valueD32 As String
+    Dim valueD1 As String
+    Dim modifiedValueD65 As String
+    Dim modifiedValueD32 As String
+    Dim modifiedValueD1 As String
     
     ' Check if an Excel instance is already open
     On Error Resume Next
@@ -20,13 +24,31 @@ Sub FillFieldWithModifiedValue()
     Set excelWorksheet = excelWorkbook.Worksheets(1)
     
     ' Get the value from cell D65 in Excel
-    value = excelWorksheet.Range("D65").Value
+    valueD65 = excelWorksheet.Range("D65").Value
     
-    ' Trim the value and remove the Euro symbol
-    modifiedValue = Trim(Replace(value, "€", ""))
+    ' Trim the value from cell D65 and remove the Euro symbol
+    modifiedValueD65 = Trim(Replace(valueD65, "€", ""))
     
-    ' Fill the "Teksti46" field in Word with the modified value
-    ActiveDocument.FormFields("Teksti46").Result = modifiedValue
+    ' Fill the "Teksti46" field in Word with the modified value from D65
+    ActiveDocument.FormFields("Teksti46").Result = modifiedValueD65
+    
+    ' Get the value from cell D32 in Excel
+    valueD32 = excelWorksheet.Range("D32").Value
+    
+    ' Trim the value from cell D32 and remove the Euro symbol
+    modifiedValueD32 = Trim(Replace(valueD32, "€", ""))
+    
+    ' Fill the "Teksti45" field in Word with the modified value from D32
+    ActiveDocument.FormFields("Teksti45").Result = modifiedValueD32
+    
+    ' Get the value from cell D1 in Excel
+    valueD1 = excelWorksheet.Range("D1").Value
+    
+    ' Trim the value from cell D1 and remove the Euro symbol
+    modifiedValueD1 = Trim(Replace(valueD1, "€", ""))
+    
+    ' Fill the "Teksti48" field in Word with the modified value from D1
+    ActiveDocument.FormFields("Teksti48").Result = modifiedValueD1
     
     ' Clean up objects
     Set excelWorksheet = Nothing
