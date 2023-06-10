@@ -7,7 +7,23 @@ for (var i = 0; i < this.numFields; i++) {
     // Check the radio button
     field.value = field.exportValues[0];
 
-    // Print the ID of the radio button
-    console.println('ID:', field.name);
+    // Get the label of the radio button
+    var label = getFieldLabel(field);
+
+    // Print the label of the radio button
+    console.println('Radio Button:', label);
   }
+}
+
+// Function to get the label of a form field
+function getFieldLabel(field) {
+  var annot = field.getMK();
+
+  if (annot) {
+    if (annot.AP && annot.AP.N) {
+      return annot.AP.N.toString();
+    }
+  }
+
+  return '';
 }
