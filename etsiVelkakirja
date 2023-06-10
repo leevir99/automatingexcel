@@ -1,0 +1,56 @@
+Sub OpenPDFFile()
+    Dim folderPath As String
+    Dim fileName As String
+    Dim filePath As String
+    Dim searchPattern As String
+    
+    ' Set the folder path where the PDF files are located
+    folderPath = "C:\Your\Folder\Path"
+    
+    ' Get the value from cell B40
+    searchPattern = "Velkakirja " & Range("B40").Value
+    
+    ' Find the PDF file in the specified folder and its subfolders
+    filePath = FindPDFFile(folderPath, searchPattern)
+    
+    ' Open the PDF file or display a message if not found
+    If filePath <> "" Then
+        ShellExecute 0, "Open", filePath, "", "", 1
+    Else
+        MsgBox "PDF file not found in the specified folder and its subfolders.", vbInformation
+    End If
+End Sub
+
+Function FindPDFFile(folderPath As String, searchPattern As String) As String
+    Dim fileName As String
+    Dim subfolderPath As String
+    Dim filePath As String
+    
+    ' Find the PDF file in the current folder
+    fileName = Dir(folderPath & "\*.pdf", vbNormal)
+    
+    Do While fileName <> ""
+        If Left(fileName, 10) = "Velkakirja " And InStr(1, fileName, searchPattern) > 0 Then
+            filePath = folderPath & "\" & fileName
+            Exit Do
+        End If
+        fileName = Dir
+    Loop
+    
+    ' If not found, search in subfolders
+    If filePath = "" Then
+        subfolderPath = Dir(folderPath & "\*", vbDirectory)
+        
+        Do While subfolderPath <> ""
+            If subfolderPath <> "." And subfolderPath <> ".." Then
+                If (GetAttr(folderPath & "\" & subfolderPath) And vbDirectory) = vbDirectory Then
+                    filePath = FindPDFFile(folderPath & "\" & subfolderPath, searchPattern)
+                    If filePath <> "" Then Exit Do
+                End If
+            End If
+            subfolderPath = Dir
+        Loop
+    End If
+    
+    FindPDFFile = filePath
+End Function
