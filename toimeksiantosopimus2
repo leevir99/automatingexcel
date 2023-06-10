@@ -47,7 +47,7 @@ Sub FillFieldsWithModifiedValues()
         modifiedValueD32 = Trim(Replace(valueD32, "€", ""))
         
         ' Fill the "Teksti45" field in Word with the modified value from D32
-        Documents("Toimeksiantosopimus asuntokauppa ja vakuusjärjestelyt.docx").FormFields("Teksti45").Result = modifiedValueD32
+        ActiveDocument.FormFields("Teksti45").Result = modifiedValueD32
         
         ' Get the value from cell D1 in Excel
         valueD1 = excelWorksheet.Range("D1").Value
@@ -56,7 +56,7 @@ Sub FillFieldsWithModifiedValues()
         modifiedValueD1 = Trim(Replace(valueD1, "€", ""))
         
         ' Fill the "Teksti48" field in Word with the modified value from D1
-        Documents("Toimeksiantosopimus asuntokauppa ja vakuusjärjestelyt.docx").FormFields("Teksti48").Result = modifiedValueD1
+        ActiveDocument.FormFields("Teksti48").Result = modifiedValueD1
         
         ' Get the values from cells D50, D60, and D64 in Excel
         valueD50 = excelWorksheet.Range("D50").Value
@@ -67,7 +67,7 @@ Sub FillFieldsWithModifiedValues()
         sumValue = valueD50 + valueD60 + valueD64
         
         ' Fill the "Teksti46" field in Word with the calculated sum
-        Documents("Toimeksiantosopimus asuntokauppa ja vakuusjärjestelyt.docx").FormFields("Teksti46").Result = sumValue
+        ActiveDocument.FormFields("Teksti46").Result = sumValue
         
         ' Get the value from cell G12 in Excel
         valueG12 = excelWorksheet.Range("G12").Value
@@ -84,7 +84,7 @@ Sub FillFieldsWithModifiedValues()
         End If
         
         ' Fill the "Teksti51" field in Word with the determined value
-        Documents("Toimeksiantosopimus asuntokauppa ja vakuusjärjestelyt.docx").FormFields("Teksti51").Result = teksti51Value
+        ActiveDocument.FormFields("Teksti51").Result = teksti51Value
     End If
     
     ' Clean up objects
