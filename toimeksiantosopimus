@@ -1,0 +1,37 @@
+Sub FillFieldWithSum()
+    Dim excelApp As Object ' Excel.Application
+    Dim excelWorkbook As Object ' Excel.Workbook
+    Dim excelWorksheet As Object ' Excel.Worksheet
+    Dim sumValue As Double
+    
+    ' Check if an Excel instance is already open
+    On Error Resume Next
+    Set excelApp = GetObject(, "Excel.Application")
+    On Error GoTo 0
+    
+    ' If no open instance is found, create a new one
+    If excelApp Is Nothing Then
+        Set excelApp = CreateObject("Excel.Application")
+    End If
+    
+    ' Set the workbook and worksheet
+    Set excelWorkbook = excelApp.Workbooks("MML-kululaskuri.xls")
+    Set excelWorksheet = excelWorkbook.Worksheets(1)
+    
+    ' Calculate the sum of cells C34 to C63
+    sumValue = excelWorksheet.Evaluate("SUM(C34:C63)")
+    
+    ' Fill the "Teksti46" field with the sum value
+    ActiveDocument.FormFields("Teksti46").Result = sumValue
+    
+    ' Close the Excel workbook (optional)
+    excelWorkbook.Close SaveChanges:=False
+    
+    ' Quit the Excel application (optional)
+    excelApp.Quit
+    
+    ' Clean up objects
+    Set excelWorksheet = Nothing
+    Set excelWorkbook = Nothing
+    Set excelApp = Nothing
+End Sub
