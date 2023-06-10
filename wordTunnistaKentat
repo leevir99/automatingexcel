@@ -1,0 +1,8 @@
+Sub IdentifyFormFields()
+    Dim field As FormField
+    
+    For Each field In ActiveDocument.FormFields
+        ' Set the name or ID as the result of the form field
+        field.Result = field.Name
+    Next field
+End Sub
