@@ -47,7 +47,11 @@ Sub FillFieldsWithModifiedValues()
         modifiedValueD32 = Trim(Replace(valueD32, "€", ""))
         
         ' Fill the "Teksti45" field in Word with the modified value from D32
-        ActiveDocument.FormFields("Teksti45").Result = modifiedValueD32
+        If ActiveDocument.FormFields("Teksti45").Type = wdFieldFormTextInput Then
+            ActiveDocument.FormFields("Teksti45").Result = modifiedValueD32
+        ElseIf ActiveDocument.FormFields("Teksti45").Type = wdFieldContentControl Then
+            ActiveDocument.FormFields("Teksti45").Range.Text = modifiedValueD32
+        End If
         
         ' Get the value from cell D1 in Excel
         valueD1 = excelWorksheet.Range("D1").Value
@@ -56,7 +60,11 @@ Sub FillFieldsWithModifiedValues()
         modifiedValueD1 = Trim(Replace(valueD1, "€", ""))
         
         ' Fill the "Teksti48" field in Word with the modified value from D1
-        ActiveDocument.FormFields("Teksti48").Result = modifiedValueD1
+        If ActiveDocument.FormFields("Teksti48").Type = wdFieldFormTextInput Then
+            ActiveDocument.FormFields("Teksti48").Result = modifiedValueD1
+        ElseIf ActiveDocument.FormFields("Teksti48").Type = wdFieldContentControl Then
+            ActiveDocument.FormFields("Teksti48").Range.Text = modifiedValueD1
+        End If
         
         ' Get the values from cells D50, D60, and D64 in Excel
         valueD50 = excelWorksheet.Range("D50").Value
@@ -67,24 +75,44 @@ Sub FillFieldsWithModifiedValues()
         sumValue = valueD50 + valueD60 + valueD64
         
         ' Fill the "Teksti46" field in Word with the calculated sum
-        ActiveDocument.FormFields("Teksti46").Result = sumValue
-        
-        ' Get the value from cell G12 in Excel
-        valueG12 = excelWorksheet.Range("G12").Value
-        
-        ' Check if any value in the range G24:G27 is empty
-        If excelWorksheet.Range("G24:G27").Find("") Is Nothing Then
-            ' If all values are present, concatenate G24, ", osakkeet ", and G26
-            valueG24 = excelWorksheet.Range("G24").Value
-            valueG26 = excelWorksheet.Range("G26").Value
-            teksti51Value = valueG24 & ", osakkeet " & valueG26
-        Else
-            ' If any value is empty, set the "Teksti51" field in Word to the value of G12
-            teksti51Value = valueG12
+        If ActiveDocument.FormFields("Teksti46").Type = wdFieldFormTextInput Then
+            ActiveDocument.FormFields("Teksti46").Result = sumValue
+        ElseIf ActiveDocument.FormFields("Teksti46").Type = wdFieldContentControl Then
+            ActiveDocument.FormFields("Teksti46").Range.Text = sumValue
         End If
         
-        ' Fill the "Teksti51" field in Word with the determined value
-        ActiveDocument.FormFields("Teksti51").Result = teksti51Value
+        ' Check the value of cell G8 in Excel
+        If excelWorksheet.Range("G8").Value = "Sopimus allekirjoitettu SA" Then
+            ' Set the "Teksti5" field in Word to "Sähköinen allekirjoitus"
+            If ActiveDocument.FormFields("Teksti5").Type = wdFieldFormCheckBox Then
+                ActiveDocument.FormFields("Teksti5").CheckBox.Value = True
+            ElseIf ActiveDocument.FormFields("Teksti5").Type = wdFieldContentControl Then
+                ActiveDocument.FormFields("Teksti5").Range.Text = "Sähköinen allekirjoitus"
+            End If
+        End If
+        
+        ' Get the values from cells G12, G24, G26, and G27 in Excel
+        valueG12 = excelWorksheet.Range("G12").Value
+        valueG24 = excelWorksheet.Range("G24").Value
+        valueG26 = excelWorksheet.Range("G26").Value
+        valueG27 = excelWorksheet.Range("G27").Value
+        
+        ' Check if any value in the range G24:G27 is empty
+        If valueG24 = "" Or valueG26 = "" Or valueG27 = "" Then
+            ' If any value is empty, set the "Teksti51" field in Word to the value of G12
+            If ActiveDocument.FormFields("Teksti51").Type = wdFieldFormTextInput Then
+                ActiveDocument.FormFields("Teksti51").Result = valueG12
+            ElseIf ActiveDocument.FormFields("Teksti51").Type = wdFieldContentControl Then
+                ActiveDocument.FormFields("Teksti51").Range.Text = valueG12
+            End If
+        Else
+            ' If all values are present, concatenate G24, ", osakkeet ", and G26
+            If ActiveDocument.FormFields("Teksti51").Type = wdFieldFormTextInput Then
+                ActiveDocument.FormFields("Teksti51").Result = valueG24 & ", osakkeet " & valueG26
+            ElseIf ActiveDocument.FormFields("Teksti51").Type = wdFieldContentControl Then
+                ActiveDocument.FormFields("Teksti51").Range.Text = valueG24 & ", osakkeet " & valueG26
+            End If
+        End If
     End If
     
     ' Clean up objects
