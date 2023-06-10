@@ -2,12 +2,14 @@ Sub FillFieldsWithModifiedValues()
     Dim excelApp As Object ' Excel.Application
     Dim excelWorkbook As Object ' Excel.Workbook
     Dim excelWorksheet As Object ' Excel.Worksheet
-    Dim valueD65 As String
     Dim valueD32 As String
     Dim valueD1 As String
-    Dim modifiedValueD65 As String
+    Dim valueD50 As Double
+    Dim valueD60 As Double
+    Dim valueD64 As Double
     Dim modifiedValueD32 As String
     Dim modifiedValueD1 As String
+    Dim sumValue As Double
     
     ' Check if an Excel instance is already open
     On Error Resume Next
@@ -22,15 +24,6 @@ Sub FillFieldsWithModifiedValues()
     ' Set the workbook and worksheet
     Set excelWorkbook = excelApp.Workbooks("MML-kululaskuri.xlsm")
     Set excelWorksheet = excelWorkbook.Worksheets(1)
-    
-    ' Get the value from cell D65 in Excel
-    valueD65 = excelWorksheet.Range("D65").Value
-    
-    ' Trim the value from cell D65 and remove the Euro symbol
-    modifiedValueD65 = Trim(Replace(valueD65, "€", ""))
-    
-    ' Fill the "Teksti46" field in Word with the modified value from D65
-    ActiveDocument.FormFields("Teksti46").Result = modifiedValueD65
     
     ' Get the value from cell D32 in Excel
     valueD32 = excelWorksheet.Range("D32").Value
@@ -49,6 +42,17 @@ Sub FillFieldsWithModifiedValues()
     
     ' Fill the "Teksti48" field in Word with the modified value from D1
     ActiveDocument.FormFields("Teksti48").Result = modifiedValueD1
+    
+    ' Get the values from cells D50, D60, and D64 in Excel
+    valueD50 = excelWorksheet.Range("D50").Value
+    valueD60 = excelWorksheet.Range("D60").Value
+    valueD64 = excelWorksheet.Range("D64").Value
+    
+    ' Calculate the sum of the three values
+    sumValue = valueD50 + valueD60 + valueD64
+    
+    ' Fill the "Teksti46" field in Word with the calculated sum
+    ActiveDocument.FormFields("Teksti46").Result = sumValue
     
     ' Clean up objects
     Set excelWorksheet = Nothing
