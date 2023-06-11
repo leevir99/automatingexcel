@@ -19,18 +19,6 @@ Sub luoMMLkululaskuri()
         Exit Sub
     End If
     
-    ' Create a new Excel application instance
-    Dim xlApp As Object
-    Set xlApp = CreateObject("Excel.Application")
-    
-    ' Disable alerts and screen updating for better performance
-    xlApp.DisplayAlerts = False
-    xlApp.ScreenUpdating = False
-    
-    ' Open the source file from SharePoint
-    Dim sourceWorkbook As Object
-    Set sourceWorkbook = xlApp.Workbooks.Open(sharePointURL)
-    
     ' Get the desired filename based on cell B40
     newFileName = "MML-kululaskuri - " & Range("B40").Value & ".xlsm"
     
@@ -38,45 +26,65 @@ Sub luoMMLkululaskuri()
     Dim filePath As String
     filePath = folderAddress & "\" & newFileName
     If Dir(filePath) = "" Then
+        ' Create a new Excel application instance
+        Dim xlApp As Object
+        Set xlApp = CreateObject("Excel.Application")
+        
+        ' Disable alerts and screen updating for better performance
+        xlApp.DisplayAlerts = False
+        xlApp.ScreenUpdating = False
+        
+        ' Open the source file from SharePoint
+        Dim sourceWorkbook As Object
+        Set sourceWorkbook = xlApp.Workbooks.Open(sharePointURL)
+        
         ' Save the copy to the specified folder
         sourceWorkbook.SaveCopyAs filePath
+        
+        ' Close the source workbook
+        sourceWorkbook.Close False
+        
+        ' Quit the Excel application
+        xlApp.Quit
+        
+        ' Release the object references
+        Set sourceWorkbook = Nothing
+        Set xlApp = Nothing
+        
+        ' Enable alerts and screen updating
+        Application.DisplayAlerts = True
+        Application.ScreenUpdating = True
+        
+        MsgBox "File has been copied successfully!", vbInformation
+    Else
+        ' File with the same name already exists, open the existing file
+        Dim existingWorkbook As Workbook
+        Set existingWorkbook = Workbooks.Open(filePath)
+        
+        ' Ask the user if they want to insert values from "Hankkeet makroilla2.xls"
+        Dim response As VbMsgBoxResult
+        response = MsgBox("File already exists. Do you want to insert values from 'Hankkeet makroilla2.xls'?", vbQuestion + vbYesNo)
+        
+        If response = vbYes Then
+            ' Import values into the existing workbook
+            existingWorkbook.Sheets(1).Range("G5").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("D13").Value
+            
+            ' Check if A5 cell in "Hankkeet makroilla2.xls" contains "SA"
+            If InStr(1, Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("A5").Value, "SA") > 0 Then
+                ' Set dropdown value in G8 to "Sopimus allekirjoitettu SA"
+                Dim dropDownCell As Range
+                Set dropDownCell = existingWorkbook.Sheets(1).Range("G8")
+                dropDownCell.Validation.Delete
+                dropDownCell.Validation.Add Type:=xlValidateList, Formula1:="Sopimus allekirjoitettu SA"
+            End If
+            
+            MsgBox "Values have been inserted into the existing file.", vbInformation
+        End If
+        
+        ' Save the existing workbook
+        existingWorkbook.Save
+        
+        ' Release the object reference
+        Set existingWorkbook = Nothing
     End If
-    
-    ' Close the source workbook
-    sourceWorkbook.Close False
-    
-    ' Quit the Excel application
-    xlApp.Quit
-    
-    ' Release the object references
-    Set sourceWorkbook = Nothing
-    Set xlApp = Nothing
-    
-    ' Enable alerts and screen updating
-    Application.DisplayAlerts = True
-    Application.ScreenUpdating = True
-    
-    MsgBox "File has been copied successfully!", vbInformation
-    
-    ' Open the new copy of the Excel file
-    Dim newWorkbook As Workbook
-    Set newWorkbook = Workbooks.Open(filePath)
-    
-    ' Import values into the new workbook
-    newWorkbook.Sheets(1).Range("G5").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("D13").Value
-    
-    ' Check if A5 cell in "Hankkeet makroilla2.xls" contains "SA"
-    If Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("A5").Value = "SA" Then
-        ' Set dropdown value in G8 to "Sopimus allekirjoitettu SA"
-        Dim dropDownCell As Range
-        Set dropDownCell = newWorkbook.Sheets(1).Range("G8")
-        dropDownCell.Validation.Delete
-        dropDownCell.Validation.Add Type:=xlValidateList, Formula1:="Sopimus allekirjoitettu SA"
-    End If
-    
-    ' Save the new workbook
-    newWorkbook.Save
-    
-    ' Release the object reference
-    Set newWorkbook = Nothing
 End Sub
