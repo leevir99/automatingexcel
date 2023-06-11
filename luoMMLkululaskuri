@@ -25,77 +25,62 @@ Sub luoMMLkululaskuri()
     ' Check if a file with the same name already exists in the folder
     Dim filePath As String
     filePath = folderAddress & "\" & newFileName
-    If Dir(filePath) = "" Then
-        ' Create a new Excel application instance
-        Dim xlApp As Object
-        Set xlApp = CreateObject("Excel.Application")
-        
-        ' Disable alerts and screen updating for better performance
-        xlApp.DisplayAlerts = False
-        xlApp.ScreenUpdating = False
-        
-        ' Open the source file from SharePoint
-        Dim sourceWorkbook As Object
-        Set sourceWorkbook = xlApp.Workbooks.Open(sharePointURL)
-        
-        ' Save the copy to the specified folder
-        sourceWorkbook.SaveCopyAs filePath
-        
-        ' Close the source workbook
-        sourceWorkbook.Close False
-        
-        ' Quit the Excel application
-        xlApp.Quit
-        
-        ' Release the object references
-        Set sourceWorkbook = Nothing
-        Set xlApp = Nothing
-        
-        ' Enable alerts and screen updating
-        Application.DisplayAlerts = True
-        Application.ScreenUpdating = True
-        
-        MsgBox "File has been copied successfully!", vbInformation
-        
-        ' Open the newly created file
-        Workbooks.Open filePath
-        
+    
+    ' Create a new Excel application instance
+    Dim xlApp As Object
+    Set xlApp = CreateObject("Excel.Application")
+    
+    ' Disable alerts and screen updating for better performance
+    xlApp.DisplayAlerts = False
+    xlApp.ScreenUpdating = False
+    
+    ' Open the source file from SharePoint
+    Dim sourceWorkbook As Object
+    Set sourceWorkbook = xlApp.Workbooks.Open(sharePointURL)
+    
+    ' Save the copy to the specified folder
+    sourceWorkbook.SaveCopyAs filePath
+    
+    ' Close the source workbook
+    sourceWorkbook.Close False
+    
+    ' Quit the Excel application
+    xlApp.Quit
+    
+    ' Release the object references
+    Set sourceWorkbook = Nothing
+    Set xlApp = Nothing
+    
+    ' Enable alerts and screen updating
+    Application.DisplayAlerts = True
+    Application.ScreenUpdating = True
+    
+    MsgBox "File has been copied successfully!", vbInformation
+    
+    ' Open the newly created file
+    Dim newWorkbook As Workbook
+    Set newWorkbook = Workbooks.Open(filePath)
+    
+    ' Ask the user if they want to import values from "Hankkeet makroilla2.xls"
+    Dim response As VbMsgBoxResult
+    response = MsgBox("Do you want to import values from 'Hankkeet makroilla2.xls'?", vbQuestion + vbYesNo)
+    
+    If response = vbYes Then
         ' Import values from "Hankkeet makroilla2.xls" into the new file
         If InStr(1, Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("A5").Value, "SA") > 0 Then
             ' Import values from B128:B131 in "Hankkeet makroilla2.xls" to G24:G27 in the new file
-            Workbooks(filePath).Sheets(1).Range("G24:G27").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B128:B131").Value
+            newWorkbook.Sheets(1).Range("G24:G27").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B128:B131").Value
             
             ' Execute Sub viepasoytiedot() in the new file
             Application.Run "'" & filePath & "'!viepasoytiedot"
             
             MsgBox "Values have been imported into the newly created file.", vbInformation
         End If
-    Else
-        ' File with the same name already exists, open the existing file
-        Dim existingWorkbook As Workbook
-        Set existingWorkbook = Workbooks.Open(filePath)
-        
-        ' Ask the user if they want to insert values from "Hankkeet makroilla2.xls"
-        Dim response As VbMsgBoxResult
-        response = MsgBox("File already exists. Do you want to insert values from 'Hankkeet makroilla2.xls'?", vbQuestion + vbYesNo)
-        
-        If response = vbYes Then
-            ' Import values into the existing workbook
-            existingWorkbook.Sheets(1).Range("G5").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("D13").Value
-            
-            ' Check if A5 cell in "Hankkeet makroilla2.xls" contains "SA"
-            If InStr(1, Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("A5").Value, "SA") > 0 Then
-                ' Import additional values from "Hankkeet makroilla2.xls" into the existing workbook
-                existingWorkbook.Sheets(1).Range("G24:G27").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B128:B131").Value
-                
-                ' Execute Sub viepasoytiedot() in the existing workbook
-                Application.Run "'" & filePath & "'!viepasoytiedot"
-                
-                MsgBox "Values have been inserted into the existing file.", vbInformation
-            End If
-        End If
-        
-        ' Release the object reference
-        Set existingWorkbook = Nothing
     End If
+    
+    ' Do not save and close the new workbook
+    newWorkbook.Close False
+    
+    ' Release the object reference
+    Set newWorkbook = Nothing
 End Sub
