@@ -13,6 +13,12 @@ Sub CopyExcelFile()
         Exit Sub
     End If
     
+    ' Check if cell B40 is empty
+    If IsEmpty(Range("B40").Value) Then
+        MsgBox "Cell B40 is empty. Please enter a value in cell B40.", vbCritical
+        Exit Sub
+    End If
+    
     ' Create a new Excel application instance
     Dim xlApp As Object
     Set xlApp = CreateObject("Excel.Application")
@@ -21,26 +27,21 @@ Sub CopyExcelFile()
     xlApp.DisplayAlerts = False
     xlApp.ScreenUpdating = False
     
-    ' Open the source file from SharePoint in read-only mode
+    ' Open the source file from SharePoint
     Dim sourceWorkbook As Object
-    Set sourceWorkbook = xlApp.Workbooks.Open(sharePointURL, ReadOnly:=True)
+    Set sourceWorkbook = xlApp.Workbooks.Open(sharePointURL)
     
-    ' Generate a unique filename for the copy
-    newFileName = "Copy_" & Format(Now(), "YYYYMMDD_HHMMSS") & ".xlsm"
+    ' Get the desired filename based on cell B40
+    newFileName = "MML kululaskuri " & Range("B40").Value & ".xlsm"
     
     ' Save the copy to the specified folder
-    Dim destinationWorkbook As Object
-    Set destinationWorkbook = sourceWorkbook.SaveAs(folderAddress & "\" & newFileName)
+    sourceWorkbook.SaveCopyAs folderAddress & "\" & newFileName
     
-    ' Close the destination workbook and the source workbook
-    destinationWorkbook.Close False
+    ' Close the source workbook and quit the Excel application
     sourceWorkbook.Close False
-    
-    ' Quit the Excel application
     xlApp.Quit
     
     ' Release the object references
-    Set destinationWorkbook = Nothing
     Set sourceWorkbook = Nothing
     Set xlApp = Nothing
     
