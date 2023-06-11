@@ -56,6 +56,20 @@ Sub luoMMLkululaskuri()
         Application.ScreenUpdating = True
         
         MsgBox "File has been copied successfully!", vbInformation
+        
+        ' Open the newly created file
+        Workbooks.Open filePath
+        
+        ' Import values from "Hankkeet makroilla2.xls" into the new file
+        If InStr(1, Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("A5").Value, "SA") > 0 Then
+            ' Import values from B128:B131 in "Hankkeet makroilla2.xls" to G24:G27 in the new file
+            Workbooks(filePath).Sheets(1).Range("G24:G27").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B128:B131").Value
+            
+            ' Execute Sub viepasoytiedot() in the new file
+            Application.Run "'" & filePath & "'!viepasoytiedot"
+            
+            MsgBox "Values have been imported into the newly created file.", vbInformation
+        End If
     Else
         ' File with the same name already exists, open the existing file
         Dim existingWorkbook As Workbook
@@ -71,14 +85,14 @@ Sub luoMMLkululaskuri()
             
             ' Check if A5 cell in "Hankkeet makroilla2.xls" contains "SA"
             If InStr(1, Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("A5").Value, "SA") > 0 Then
-                ' Import additional values from "Hankkeet makroilla2.xls" into MML kululaskuri
+                ' Import additional values from "Hankkeet makroilla2.xls" into the existing workbook
                 existingWorkbook.Sheets(1).Range("G24:G27").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B128:B131").Value
                 
-                ' Execute Sub viepasoytiedot() in MML kululaskuri
+                ' Execute Sub viepasoytiedot() in the existing workbook
                 Application.Run "'" & filePath & "'!viepasoytiedot"
+                
+                MsgBox "Values have been inserted into the existing file.", vbInformation
             End If
-            
-            MsgBox "Values have been inserted into the existing file.", vbInformation
         End If
         
         ' Release the object reference
