@@ -1,0 +1,51 @@
+Sub tuoTiedotMMLkululaskuri()
+    ' Define the folder address and new filename
+    Dim folderAddress As String
+    Dim newFileName As String
+    
+    folderAddress = Range("E28").Value
+    
+    ' Check if the folder address is provided
+    If folderAddress = "" Then
+        MsgBox "Folder address is missing. Please enter the folder address in cell E28.", vbCritical
+        Exit Sub
+    End If
+    
+    ' Check if cell B40 is empty
+    If IsEmpty(Range("B40").Value) Then
+        MsgBox "Cell B40 is empty. Please enter a value in cell B40.", vbCritical
+        Exit Sub
+    End If
+    
+    ' Get the desired filename based on cell B40
+    newFileName = "MML-kululaskuri - " & Range("B40").Value & ".xlsm"
+    
+    ' Check if a file with the same name exists in the folder
+    Dim filePath As String
+    filePath = folderAddress & "\" & newFileName
+    
+    ' Check if the file exists in the folder
+    If Dir(filePath) <> "" Then
+        ' File exists, open the existing file
+        Workbooks.Open filePath
+        
+        ' Ask the user if they want to import values from "Hankkeet makroilla2.xls"
+        Dim response As VbMsgBoxResult
+        response = MsgBox("Do you want to import values from 'Hankkeet makroilla2.xls'?", vbQuestion + vbYesNo)
+        
+        If response = vbYes Then
+            ' Import values from "Hankkeet makroilla2.xls" into the file
+            If InStr(1, Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("A5").Value, "SA") > 0 Then
+                ' Import values from B128:B131 in "Hankkeet makroilla2.xls" to G24:G27 in the file
+                Workbooks(newFileName).Sheets(1).Range("G24:G27").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B128:B131").Value
+                
+                ' Execute Sub viepasoytiedot() in the file
+                Application.Run "'" & filePath & "'!viepasoytiedot"
+                
+                MsgBox "Values have been imported into the file.", vbInformation
+            End If
+        End If
+    Else
+        MsgBox "File does not exist in the specified folder.", vbCritical
+    End If
+End Sub
