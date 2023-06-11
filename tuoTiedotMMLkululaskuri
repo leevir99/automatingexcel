@@ -11,5 +11,18 @@ Sub tuoTiedotMMLkululaskuri()
     ' Import value from Hankkeet makroilla2 D13 to MML kululaskuri G5
     destWorkbook.Sheets(1).Range("G5").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("D13").Value
     
-    MsgBox "Values have been imported into the file.", vbInformation
+    ' Import values from B128:B131 in "Hankkeet makroilla2.xls" to G24:G27 in MML kululaskuri
+    destWorkbook.Sheets(1).Range("G24:G27").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B128:B131").Value
+    
+    ' Check if all values in G24:G27 are non-empty
+    Dim rangeG As Range
+    Set rangeG = destWorkbook.Sheets(1).Range("G24:G27")
+    If Application.CountBlank(rangeG) = 0 Then
+        ' Execute Sub viepasoytiedot() in MML kululaskuri
+        Application.Run "'" & destWorkbook.Name & "'!viepasoytiedot"
+        
+        MsgBox "Values have been imported into the file.", vbInformation
+    Else
+        MsgBox "Some values in G24:G27 are empty. Import canceled.", vbCritical
+    End If
 End Sub
