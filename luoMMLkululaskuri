@@ -1,4 +1,4 @@
-Sub CopyExcelFile()
+Sub luoMMLkululaskuri()
     ' Define the SharePoint URL and folder address
     Dim sharePointURL As String
     Dim folderAddress As String
@@ -32,13 +32,20 @@ Sub CopyExcelFile()
     Set sourceWorkbook = xlApp.Workbooks.Open(sharePointURL)
     
     ' Get the desired filename based on cell B40
-    newFileName = "MML kululaskuri " & Range("B40").Value & ".xlsm"
+    newFileName = "MML-kululaskuri - " & Range("B40").Value & ".xlsm"
     
-    ' Save the copy to the specified folder
-    sourceWorkbook.SaveCopyAs folderAddress & "\" & newFileName
+    ' Check if a file with the same name already exists in the folder
+    Dim filePath As String
+    filePath = folderAddress & "\" & newFileName
+    If Dir(filePath) = "" Then
+        ' Save the copy to the specified folder
+        sourceWorkbook.SaveCopyAs filePath
+    End If
     
-    ' Close the source workbook and quit the Excel application
+    ' Close the source workbook
     sourceWorkbook.Close False
+    
+    ' Quit the Excel application
     xlApp.Quit
     
     ' Release the object references
@@ -50,4 +57,26 @@ Sub CopyExcelFile()
     Application.ScreenUpdating = True
     
     MsgBox "File has been copied successfully!", vbInformation
+    
+    ' Open the new copy of the Excel file
+    Dim newWorkbook As Workbook
+    Set newWorkbook = Workbooks.Open(filePath)
+    
+    ' Import values into the new workbook
+    newWorkbook.Sheets(1).Range("G5").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("D13").Value
+    
+    ' Check if A5 cell in "Hankkeet makroilla2.xls" contains "SA"
+    If Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("A5").Value = "SA" Then
+        ' Set dropdown value in G8 to "Sopimus allekirjoitettu SA"
+        Dim dropDownCell As Range
+        Set dropDownCell = newWorkbook.Sheets(1).Range("G8")
+        dropDownCell.Validation.Delete
+        dropDownCell.Validation.Add Type:=xlValidateList, Formula1:="Sopimus allekirjoitettu SA"
+    End If
+    
+    ' Save the new workbook
+    newWorkbook.Save
+    
+    ' Release the object reference
+    Set newWorkbook = Nothing
 End Sub
