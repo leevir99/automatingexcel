@@ -71,11 +71,8 @@ Sub luoMMLkululaskuri()
             
             ' Check if A5 cell in "Hankkeet makroilla2.xls" contains "SA"
             If InStr(1, Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("A5").Value, "SA") > 0 Then
-                ' Set dropdown value in G8 to "Sopimus allekirjoitettu SA"
-                Dim dropDownCell As Range
-                Set dropDownCell = existingWorkbook.Sheets(1).Range("G8")
-                dropDownCell.Validation.Delete
-                dropDownCell.Validation.Add Type:=xlValidateList, Formula1:="Sopimus allekirjoitettu SA"
+                ' Set cell G8 to "Sopimus allekirjoitettu SA"
+                existingWorkbook.Sheets(1).Range("G8").Value = "Sopimus allekirjoitettu SA"
             End If
             
             MsgBox "Values have been inserted into the existing file.", vbInformation
