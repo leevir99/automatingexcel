@@ -1,0 +1,57 @@
+Sub tuoTiedotHakijanValtakirja()
+    ' Define the source file path
+    Dim sourceFilePath As String
+    sourceFilePath = "Z:\1. ASIAKIRJALAADINTA\Luojan työkalut\Pohjat\Hakijan valtakirja.docx"
+    
+    ' Check if the source file exists
+    If Dir(sourceFilePath) = "" Then
+        MsgBox "Source file does not exist. Please make sure the file is located at the specified path.", vbCritical
+        Exit Sub
+    End If
+    
+    ' Declare Word application and document objects
+    Dim wordApp As Object
+    Dim wordDoc As Object
+    
+    ' Set the Word application object using an existing instance
+    On Error Resume Next
+    Set wordApp = GetObject(, "Word.Application")
+    On Error GoTo 0
+    
+    ' If Word application object is not set, create a new instance
+    If wordApp Is Nothing Then
+        Set wordApp = CreateObject("Word.Application")
+        wordApp.Visible = True
+    End If
+    
+    ' Open the source document
+    Set wordDoc = wordApp.Documents.Open(sourceFilePath)
+    
+    ' Retrieve values from Excel
+    Dim valueTeksti1 As String
+    Dim valueTeksti2 As String
+    Dim valueTeksti3 As String
+    Dim valueTeksti4 As String
+    Dim valueTeksti15 As String
+    Dim valueTeksti16 As String
+    
+    valueTeksti1 = Range("B128").Value
+    valueTeksti2 = Range("B129").Value
+    valueTeksti3 = Range("B130").Value
+    valueTeksti4 = Range("B135").Value & ", " & Range("B136").Value
+    valueTeksti15 = Range("B142").Value
+    valueTeksti16 = Range("B144").Value
+    
+    ' Populate the values into Word document
+    With wordDoc
+        .FormFields("Teksti1").Result = valueTeksti1
+        .FormFields("Teksti2").Result = valueTeksti2
+        .FormFields("Teksti3").Result = valueTeksti3
+        .FormFields("Teksti4").Result = valueTeksti4
+        .FormFields("Teksti15").Result = valueTeksti15
+        .FormFields("Teksti16").Result = valueTeksti16
+    End With
+    
+    ' Display a message indicating the values have been imported
+    MsgBox "Values have been imported into Hakijan valtakirja document.", vbInformation
+End Sub
