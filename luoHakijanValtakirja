@@ -23,21 +23,30 @@ Sub luoHakijanValtakirja()
     Dim destinationFilePath As String
     destinationFilePath = destinationFolderPath & "\" & "Hakijan valtakirja.docx"
     
+    ' Declare Word application object
+    Dim wordApp As Object
+    
     ' Check if the file with the same name already exists in the destination folder
     If Dir(destinationFilePath) <> "" Then
         MsgBox "A file with the same name already exists in the destination folder. Opening the existing file.", vbInformation
         
-        ' Open the existing file using the CreateObject function
-        Dim wordApp As Object
-        Set wordApp = CreateObject("Word.Application")
-        wordApp.Visible = True
+        ' Set the Word application object using an existing instance
+        On Error Resume Next
+        Set wordApp = GetObject(, "Word.Application")
+        On Error GoTo 0
+        
+        ' If Word application object is not set, create a new instance
+        If wordApp Is Nothing Then
+            Set wordApp = CreateObject("Word.Application")
+            wordApp.Visible = True
+        End If
+        
         wordApp.Documents.Open destinationFilePath
     Else
         ' Copy the source file to the destination folder
         FileCopy sourceFilePath, destinationFilePath
         
-        ' Open the copied file using the CreateObject function
-        Dim wordApp As Object
+        ' Create a new instance of Word application and open the copied file
         Set wordApp = CreateObject("Word.Application")
         wordApp.Visible = True
         wordApp.Documents.Open destinationFilePath
