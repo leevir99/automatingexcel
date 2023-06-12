@@ -1,0 +1,43 @@
+Sub luoHakijanValtakirja()
+    ' Define the source file path
+    Dim sourceFilePath As String
+    sourceFilePath = "Z:\1.ASIAKIRJALAADINTA\Luojan työkalut\Pohjat\Hakijan valtakirja.docx"
+    
+    ' Define the destination folder path from cell E28
+    Dim destinationFolderPath As String
+    destinationFolderPath = Range("E28").Value
+    
+    ' Check if the destination folder path is empty
+    If destinationFolderPath = "" Then
+        MsgBox "Destination folder path is not specified. Please enter the folder path in cell E28.", vbCritical
+        Exit Sub
+    End If
+    
+    ' Check if the destination folder exists
+    If Dir(destinationFolderPath, vbDirectory) = "" Then
+        MsgBox "Destination folder does not exist. Please enter a valid folder path in cell E28.", vbCritical
+        Exit Sub
+    End If
+    
+    ' Create a new file name with the current date and time
+    Dim newFileName As String
+    newFileName = "Hakijan valtakirja - " & Format(Now, "yyyy-mm-dd_hh-mm-ss") & ".docx"
+    
+    ' Define the full destination file path
+    Dim destinationFilePath As String
+    destinationFilePath = destinationFolderPath & "\" & newFileName
+    
+    ' Check if the file with the same name already exists in the destination folder
+    If Dir(destinationFilePath) <> "" Then
+        MsgBox "A file with the same name already exists in the destination folder. Opening the existing file.", vbInformation
+        
+        ' Open the existing file
+        Documents.Open (destinationFilePath)
+    Else
+        ' Copy the source file to the destination folder
+        FileCopy sourceFilePath, destinationFilePath
+        
+        ' Open the copied file
+        Documents.Open (destinationFilePath)
+    End If
+End Sub
