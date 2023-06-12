@@ -24,3 +24,18 @@ Sub IdentifyFormFields()
         End If
     Next field
 End Sub
+
+//word
+
+Sub TuoTekstiKentat()
+    Dim i As Integer
+    For i = 1 To 4000
+        Dim fieldName As String
+        fieldName = "Teksti" & i
+        If ActiveDocument.FormFields.Exists(fieldName) Then
+            ActiveDocument.FormFields(fieldName).Result = i
+        End If
+    Next i
+    MsgBox "Field values have been imported into Hakijan valtakirja document.", vbInformation
+End Sub
+
