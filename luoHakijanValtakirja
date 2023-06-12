@@ -1,7 +1,7 @@
 Sub luoHakijanValtakirja()
     ' Define the source file path
     Dim sourceFilePath As String
-    sourceFilePath = "Z:\1.ASIAKIRJALAADINTA\Luojan työkalut\Pohjat\Hakijan valtakirja.docx"
+    sourceFilePath = "Z:\1. ASIAKIRJALAADINTA\Luojan työkalut\Pohjat\Hakijan valtakirja.docx"
     
     ' Define the destination folder path from cell E28
     Dim destinationFolderPath As String
