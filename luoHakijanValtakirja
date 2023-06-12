@@ -27,14 +27,20 @@ Sub CopyAndOpenWordFile()
     If Dir(destinationFilePath) <> "" Then
         MsgBox "A file with the same name already exists in the destination folder. Opening the existing file.", vbInformation
         
-        ' Open the existing file
-        Documents.Open (destinationFilePath)
+        ' Open the existing file using the CreateObject function
+        Dim wordApp As Object
+        Set wordApp = CreateObject("Word.Application")
+        wordApp.Visible = True
+        wordApp.Documents.Open destinationFilePath
     Else
         ' Copy the source file to the destination folder
         FileCopy sourceFilePath, destinationFilePath
         
-        ' Open the copied file
-        Documents.Open (destinationFilePath)
+        ' Open the copied file using the CreateObject function
+        Dim wordApp As Object
+        Set wordApp = CreateObject("Word.Application")
+        wordApp.Visible = True
+        wordApp.Documents.Open destinationFilePath
     End If
     
     ' Display the actual file path being used
