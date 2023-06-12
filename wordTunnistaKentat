@@ -27,15 +27,17 @@ End Sub
 
 //word
 
-Sub TuoTekstiKentat()
-    Dim i As Integer
-    For i = 1 To 4000
-        Dim fieldName As String
-        fieldName = "Teksti" & i
-        If ActiveDocument.FormFields.Exists(fieldName) Then
-            ActiveDocument.FormFields(fieldName).Result = i
+Sub GetTextFieldNames()
+    Dim field As Field
+    
+    ' Loop through all the fields in the document
+    For Each field In ActiveDocument.Fields
+        ' Check if the field is a text form field
+        If field.Type = wdFieldFormTextInput Then
+            ' Print the field name to the Immediate window
+            Debug.Print field.Code.Text
         End If
-    Next i
-    MsgBox "Field values have been imported into Hakijan valtakirja document.", vbInformation
+    Next field
 End Sub
+
 
