@@ -105,27 +105,33 @@ Sub tuoTiedotHakijanValtakirja()
         
         Select Case i
             Case 1 To 3
-                Set excelCell = ThisWorkbook.Sheets("Sheet1").Range("B" & (i + 127))
+                Set excelCell = ThisWorkbook.Sheets("Main").Range("B" & (i + 127))
             Case 4
-                Set excelCell = ThisWorkbook.Sheets("Sheet1").Range("B135")
+                Set excelCell = ThisWorkbook.Sheets("Main").Range("B135")
             Case 5
-                Set excelCell = ThisWorkbook.Sheets("Sheet1").Range("B136")
+                Set excelCell = ThisWorkbook.Sheets("Main").Range("B136")
             Case 6
-                Set excelCell = ThisWorkbook.Sheets("Sheet1").Range("B137")
+                Set excelCell = ThisWorkbook.Sheets("Main").Range("B137")
             Case 7
-                Set excelCell = ThisWorkbook.Sheets("Sheet1").Range("B138")
+                Set excelCell = ThisWorkbook.Sheets("Main").Range("B138")
             Case 8, 10
-                Set excelCell = ThisWorkbook.Sheets("Sheet1").Range("B146")
+                Set excelCell = ThisWorkbook.Sheets("Main").Range("B146")
             Case 9, 11
-                Set excelCell = ThisWorkbook.Sheets("Sheet1").Range("B148")
+                Set excelCell = ThisWorkbook.Sheets("Main").Range("B148")
         End Select
         
         ' Fill the corresponding text field in Word with the value
         Dim fieldName As String
         fieldName = "Teksti" & i
         
-        ' Update the field value in Word
+        On Error Resume Next
         wdDoc.FormFields(fieldName).Result = excelCell.Value
+        On Error GoTo 0
+        
+        ' Check if an error occurred while filling the field
+        If Err.Number <> 0 Then
+            MsgBox "An error occurred while filling the field: " & fieldName
+        End If
     Next i
     
     ' Cleanup
