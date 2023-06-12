@@ -62,20 +62,21 @@ End Function
 
 
 -----
-Sub FillGrayTextFields()
+Sub FillAllTextFields()
     Dim fld As FormField
     Dim doc As Document
     Set doc = ActiveDocument
     
     ' Loop through all form fields in the document
     For Each fld In doc.FormFields
-        ' Check if the form field is a text field and the text is gray
-        If fld.Type = wdFieldFormTextInput And fld.Result.Font.Color = wdColorGray50 Then
+        ' Check if the form field is a text field
+        If fld.Type = wdFieldFormTextInput Then
             ' Fill the field with its name
             fld.Result = fld.Name
         End If
     Next fld
 End Sub
+
 
 
 
