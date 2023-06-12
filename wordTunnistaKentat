@@ -84,5 +84,59 @@ End Sub
 
 
 
+---
+final
+
+
+Sub FillWordFromExcel()
+    Dim wdApp As Object
+    Dim wdDoc As Object
+    Dim excelRng As Range
+    Dim i As Integer
+    
+    ' Initialize Word application and open the document
+    Set wdApp = GetObject(, "Word.Application")
+    Set wdDoc = wdApp.Documents("Hakijan valtakirja.docx")
+    
+    ' Set the range in Excel where the values are stored
+    Set excelRng = ThisWorkbook.Sheets("Sheet1").Range("B135:B148") ' Update the sheet and range as needed
+    
+    ' Loop through each counter value
+    For i = 1 To 11
+        ' Get the corresponding value from Excel
+        Dim value As String
+        
+        Select Case i
+            Case 1 To 3
+                value = excelRng.Cells(i).Value
+            Case 4
+                value = excelRng.Cells(1).Value
+            Case 5
+                value = excelRng.Cells(2).Value
+            Case 6
+                value = excelRng.Cells(3).Value
+            Case 7
+                value = excelRng.Cells(4).Value
+            Case 8, 10
+                value = excelRng.Cells(5).Value
+            Case 9, 11
+                value = excelRng.Cells(7).Value
+        End Select
+        
+        ' Fill the corresponding text field in Word with the value
+        Dim fieldName As String
+        fieldName = "Teksti" & i
+        
+        ' Update the field value in Word
+        wdDoc.FormFields(fieldName).Result = value
+    Next i
+    
+    ' Cleanup
+    Set wdDoc = Nothing
+    Set wdApp = Nothing
+End Sub
+
+
+
 
 
