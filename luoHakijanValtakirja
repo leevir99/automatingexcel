@@ -1,4 +1,4 @@
-Sub luoHakijanValtakirja()
+Sub CopyAndOpenWordFile()
     ' Define the source file path
     Dim sourceFilePath As String
     sourceFilePath = "Z:\1.ASIAKIRJALAADINTA\Luojan työkalut\Pohjat\Hakijan valtakirja.docx"
@@ -36,4 +36,7 @@ Sub luoHakijanValtakirja()
         ' Open the copied file
         Documents.Open (destinationFilePath)
     End If
+    
+    ' Display the actual file path being used
+    MsgBox "Destination file path: " & destinationFilePath, vbInformation
 End Sub
