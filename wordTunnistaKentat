@@ -27,17 +27,38 @@ End Sub
 
 //word
 
-Sub GetTextFieldNames()
+Sub InsertTextFieldNames()
     Dim field As Field
     
     ' Loop through all the fields in the document
     For Each field In ActiveDocument.Fields
         ' Check if the field is a text form field
         If field.Type = wdFieldFormTextInput Then
-            ' Print the field name to the Immediate window
-            Debug.Print field.Code.Text
+            ' Get the field name
+            Dim fieldName As String
+            fieldName = GetFieldName(field)
+            
+            ' Insert the field name into the text field
+            field.Result.Text = fieldName
         End If
     Next field
 End Sub
+
+Function GetFieldName(field As Field) As String
+    ' Extract the field name from the field code
+    Dim fieldCode As String
+    fieldCode = field.Code.Text
+    
+    ' Remove the field code syntax to get the field name
+    Dim fieldName As String
+    fieldName = Replace(fieldCode, " FORMTEXT ", "")
+    
+    ' Remove leading and trailing spaces
+    fieldName = Trim(fieldName)
+    
+    ' Return the field name
+    GetFieldName = fieldName
+End Function
+
 
 
