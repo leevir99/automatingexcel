@@ -19,13 +19,9 @@ Sub luoHakijanValtakirja()
         Exit Sub
     End If
     
-    ' Create a new file name with the current date and time
-    Dim newFileName As String
-    newFileName = "Hakijan valtakirja - " & Format(Now, "yyyy-mm-dd_hh-mm-ss") & ".docx"
-    
-    ' Define the full destination file path
+    ' Define the destination file path with the original file name
     Dim destinationFilePath As String
-    destinationFilePath = destinationFolderPath & "\" & newFileName
+    destinationFilePath = destinationFolderPath & "\" & "Hakijan valtakirja.docx"
     
     ' Check if the file with the same name already exists in the destination folder
     If Dir(destinationFilePath) <> "" Then
