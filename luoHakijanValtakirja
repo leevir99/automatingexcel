@@ -1,4 +1,4 @@
-Sub CopyAndOpenWordFile()
+Sub luoHakijanValtakirja()
     ' Define the source file path
     Dim sourceFilePath As String
     sourceFilePath = "Z:\1.ASIAKIRJALAADINTA\Luojan työkalut\Pohjat\Hakijan valtakirja.docx"
