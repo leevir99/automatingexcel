@@ -1,0 +1,41 @@
+Sub kansioHakijanValtakirja()
+    Dim mainFolder As String
+    Dim subfolderName As String
+    Dim subfolderPath As String
+    Dim separator As String
+    
+    ' Set the main folder address
+    mainFolder = "Z:\1. ASIAKIRJALAADINTA\" & Range("B40").Value
+    
+    ' Get the values from the cells
+    Dim prefix As String
+    If InStr(1, Range("A5").Value, "AV") > 0 Then
+        prefix = "NI"
+    Else
+        prefix = "SA"
+    End If
+    
+    Dim value1 As String
+    Dim value2 As String
+    Dim value3 As String
+    value1 = Range("B136").Value
+    value2 = Range("B138").Value
+    value3 = Range("B140").Value
+    
+    ' Set the separator
+    separator = ", "
+    
+    ' Create the subfolder name
+    subfolderName = prefix & value1 & separator & value2 & separator & value3 & ", Osakekirjan sähköistämisen valtuutukset"
+    
+    ' Create the subfolder path
+    subfolderPath = mainFolder & subfolderName
+    
+    ' Create the subfolder
+    If Len(Dir(subfolderPath, vbDirectory)) = 0 Then
+        MkDir subfolderPath
+        MsgBox "Subfolder created successfully!"
+    Else
+        MsgBox "Subfolder already exists!"
+    End If
+End Sub
