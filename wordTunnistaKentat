@@ -738,6 +738,56 @@ Sub tuoTiedotHakijanValtakirja()
     Set wordApp = Nothing
 End Sub
 
+---
+
+Sub tuoTiedotHakijanValtakirja()
+    Dim wordApp As Object
+    Dim doc As Document
+    Dim counter As Integer
+    Dim rng As Range
+    
+    ' Get the Word application and open the document
+    Set wordApp = GetObject(, "Word.Application")
+    Set doc = wordApp.Documents("Hakijan valtakirja.docx")
+    
+    ' Set the range to the desired worksheet and range
+    Set rng = ThisWorkbook.Worksheets("Main").Range("B128:B138")
+    
+    ' Initialize the counter
+    counter = 1
+    
+    ' Loop through each form field in the Word document
+    For Each fld In doc.FormFields
+        ' Check if the form field is a text field
+        If fld.Type = wdFieldFormTextInput Then
+            ' Fill the field with the value based on the counter
+            Select Case counter
+                Case 1 To 3 ' Fields 1 to 3 - Use values from B128:B130
+                    fld.Result = rng.Cells(counter, 1).Value
+                Case 4 To 7 ' Fields 4 to 7 - Use values from B135:B138
+                    fld.Result = rng.Cells(counter - 1, 1).Value
+                Case 8 ' Field 8 - Use value from B146
+                    fld.Result = ThisWorkbook.Worksheets("Main").Range("B146").Value
+                Case 9 ' Field 9 - Use value from B148
+                    fld.Result = ThisWorkbook.Worksheets("Main").Range("B148").Value
+                Case 10 ' Field 10 - Use value from B146
+                    fld.Result = ThisWorkbook.Worksheets("Main").Range("B146").Value
+                Case 11 ' Field 11 - Use value from B148
+                    fld.Result = ThisWorkbook.Worksheets("Main").Range("B148").Value
+                Case 13 ' Field 13 - Use value from B158
+                    fld.Result = ThisWorkbook.Worksheets("Main").Range("B158").Value
+                ' Add more cases as needed for other fields
+            End Select
+            counter = counter + 1
+        End If
+    Next fld
+    
+    ' Clean up Word application
+    Set doc = Nothing
+    Set wordApp = Nothing
+End Sub
+
+
 
 
 
