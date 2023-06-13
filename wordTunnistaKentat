@@ -909,6 +909,73 @@ End Sub
 
 
 
+---
+
+Sub tuoTiedotHakijanValtakirja()
+    Dim wordApp As Object
+    Dim doc As Document
+    Dim counter As Integer
+    Dim rng As Range
+    
+    ' Get the Word application and open the document
+    Set wordApp = GetObject(, "Word.Application")
+    Set doc = wordApp.Documents("Hakijan valtakirja.docx")
+    
+    ' Set the range to the desired worksheet and range
+    Set rng = ThisWorkbook.Worksheets("Main").Range("B128:B138")
+    
+    ' Initialize the counter
+    counter = 1
+    
+    ' Loop through each form field in the Word document
+    For Each fld In doc.FormFields
+        ' Check if the form field is a text field
+        If fld.Type = wdFieldFormTextInput Then
+            ' Fill the field with the value based on the counter
+            Select Case counter
+                Case 1 To 3 ' Fields 1 to 3 - Use values from B128:B130
+                    fld.Result = rng.Cells(counter, 1).Value
+                Case 4 ' Field 4 - Use value from B135
+                    fld.Result = ThisWorkbook.Worksheets("Main").Range("B135").Value
+                Case 5 ' Field 5 - Use value from B136
+                    fld.Result = ThisWorkbook.Worksheets("Main").Range("B136").Value
+                Case 6 ' Field 6 - Use value from B137
+                    fld.Result = ThisWorkbook.Worksheets("Main").Range("B137").Value
+                Case 7 ' Field 7 - Use value from B138
+                    fld.Result = ThisWorkbook.Worksheets("Main").Range("B138").Value
+                Case 8 ' Field 8 - Use value from B146
+                    fld.Result = ThisWorkbook.Worksheets("Main").Range("B146").Value
+                Case 9 ' Field 9 - Use value from B148
+                    fld.Result = ThisWorkbook.Worksheets("Main").Range("B148").Value
+                Case 10 ' Field 10 - Use value from B146
+                    fld.Result = ThisWorkbook.Worksheets("Main").Range("B146").Value
+                Case 11 ' Field 11 - Use value from B148
+                    fld.Result = ThisWorkbook.Worksheets("Main").Range("B148").Value
+                Case 13 ' Field 13 - Use value from B158
+                    fld.Result = ThisWorkbook.Worksheets("Main").Range("B158").Value
+                Case 12 ' Field 12 - Use value from B159 if not empty and greater than 0
+                    If ThisWorkbook.Worksheets("Main").Range("B159").Value <> "" And ThisWorkbook.Worksheets("Main").Range("B159").Value > 0 Then
+                        fld.Result = ThisWorkbook.Worksheets("Main").Range("B159").Value
+                    End If
+                ' Add more cases as needed for other fields
+                
+            End Select
+            counter = counter + 1
+        End If
+    Next fld
+    
+    ' Tick checkboxes based on cell values
+    doc.Bookmarks("BookmarkName1").Range.CheckBox.Value = Not IsEmpty(ThisWorkbook.Worksheets("Main").Range("B160"))
+    doc.Bookmarks("BookmarkName2").Range.CheckBox.Value = Not IsEmpty(ThisWorkbook.Worksheets("Main").Range("B161"))
+    doc.Bookmarks("BookmarkName3").Range.CheckBox.Value = Not IsEmpty(ThisWorkbook.Worksheets("Main").Range("B162"))
+    
+    ' Clean up Word application
+    Set doc = Nothing
+    Set wordApp = Nothing
+End Sub
+
+
+
 
 
 
