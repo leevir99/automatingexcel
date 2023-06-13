@@ -177,8 +177,18 @@ Sub tuoTiedotHakijanValtakirja()
     Dim excelCell As Range
     Dim counter As Integer
     
-    ' Initialize Word application and open the document
+    ' Check if the Word document is already open
+    On Error Resume Next
     Set wdApp = GetObject(, "Word.Application")
+    On Error GoTo 0
+    
+    ' If the Word application is not open or the document is not open, exit the sub
+    If wdApp Is Nothing Or wdApp.Documents("Hakijan valtakirja.docx") Is Nothing Then
+        MsgBox "The Word document 'Hakijan valtakirja.docx' is not open.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Set the document object
     Set wdDoc = wdApp.Documents("Hakijan valtakirja.docx")
     
     ' Set the counter for sequential filling
@@ -225,9 +235,14 @@ Sub tuoTiedotHakijanValtakirja()
     Set excelCell = Nothing
     Set excelSheet = Nothing
     
+    ' Make the Word application visible and activate the document
+    wdApp.Visible = True
+    wdDoc.Activate
+    
     Set wdDoc = Nothing
     Set wdApp = Nothing
 End Sub
+
 
 
 
