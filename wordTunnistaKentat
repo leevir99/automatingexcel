@@ -765,7 +765,7 @@ Sub tuoTiedotHakijanValtakirja()
                 Case 1 To 3 ' Fields 1 to 3 - Use values from B128:B130
                     fld.Result = rng.Cells(counter, 1).Value
                 Case 4 To 7 ' Fields 4 to 7 - Use values from B135:B138
-                    fld.Result = rng.Cells(counter - 1, 1).Value
+                    fld.Result = rng.Cells(counter + 2, 1).Value
                 Case 8 ' Field 8 - Use value from B146
                     fld.Result = ThisWorkbook.Worksheets("Main").Range("B146").Value
                 Case 9 ' Field 9 - Use value from B148
@@ -786,6 +786,7 @@ Sub tuoTiedotHakijanValtakirja()
     Set doc = Nothing
     Set wordApp = Nothing
 End Sub
+
 
 
 
