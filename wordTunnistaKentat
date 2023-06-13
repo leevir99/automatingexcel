@@ -647,7 +647,7 @@ End Sub
 
 Sub tuoTiedotHakijanValtakirja()
     Dim wordApp As Object
-    Dim doc As Document
+    Dim doc As Object
     Dim counter As Integer
     Dim rng1 As Range
     Dim rng2 As Range
@@ -668,7 +668,7 @@ Sub tuoTiedotHakijanValtakirja()
     ' Loop through each form field in the Word document
     For Each fld In doc.FormFields
         ' Check if the form field is a text field
-        If fld.Type = wdFieldFormTextInput Then
+        If fld.Type = 3 Then 'wdFieldFormTextInput
             ' Fill the field with the corresponding value from the Excel range
             
             Select Case counter
