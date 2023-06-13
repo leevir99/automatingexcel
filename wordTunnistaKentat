@@ -313,6 +313,58 @@ End Sub
 
 
 
+----
+
+Sub ReplaceTextFieldWithExcelValue()
+    Dim wdApp As Object
+    Dim wdDoc As Object
+    Dim excelApp As Object
+    Dim excelBook As Object
+    Dim excelSheet As Object
+    
+    ' Check if the Word document is already open
+    On Error Resume Next
+    Set wdApp = GetObject(, "Word.Application")
+    If wdApp Is Nothing Then
+        MsgBox "The Word application is not open.", vbExclamation
+        Exit Sub
+    End If
+    
+    Set wdDoc = wdApp.Documents("Hakijan valtakirja.docx")
+    On Error GoTo 0
+    
+    ' If the Word document is not open, exit the sub
+    If wdDoc Is Nothing Then
+        MsgBox "The Word document 'Hakijan valtakirja.docx' is not open.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Set the active Excel application object
+    Set excelApp = GetObject(, "Excel.Application")
+    
+    ' Set the active workbook object
+    Set excelBook = excelApp.ActiveWorkbook
+    
+    ' Set the active sheet object (update the sheet name as needed)
+    Set excelSheet = excelBook.Sheets("Main")
+    
+    ' Replace the value of the specific text field with the value from Excel cell B136
+    wdDoc.FormFields("5").Result = excelSheet.Range("B136").Value
+    
+    ' Make the Word application visible and activate the document
+    wdApp.Visible = True
+    wdDoc.Activate
+    
+    ' Release objects
+    Set wdDoc = Nothing
+    Set wdApp = Nothing
+    Set excelSheet = Nothing
+    Set excelBook = Nothing
+    Set excelApp = Nothing
+End Sub
+
+
+
 
 
 
