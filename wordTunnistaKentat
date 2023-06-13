@@ -650,15 +650,23 @@ Sub tuoTiedotHakijanValtakirja()
     Dim doc As Object
     Dim counter As Integer
     Dim cellValues() As Variant
+    Dim randValues() As Variant
+    Dim i As Integer
     
     ' Get the Word application and open the document
     Set wordApp = GetObject(, "Word.Application")
     Set doc = wordApp.Documents("Hakijan valtakirja.docx")
     
-    ' Specify the cell values for each form field
+    ' Specify the static values for each form field
     cellValues = Array("Asunto Oy Tähti", "Company ABC", "John Doe", "Field 4", "Field 5", _
                        "Field 6", "Field 7", "Field 8", "Field 9", "Field 10", _
                        "Field 11", "", "Field 13")
+    
+    ' Generate random values for the remaining form fields
+    ReDim randValues(doc.FormFields.Count - UBound(cellValues), 1)
+    For i = 1 To UBound(randValues) + 1
+        randValues(i - 1, 1) = "RandomValue" & i ' Modify this line to generate your desired random values
+    Next i
     
     ' Initialize the counter
     counter = 1
@@ -667,9 +675,13 @@ Sub tuoTiedotHakijanValtakirja()
     For Each fld In doc.FormFields
         ' Check if the form field is a text field
         If fld.Type = 3 Then 'wdFieldFormTextInput
-            ' Fill the field with the corresponding value from the cellValues array
+            ' Fill the field with the corresponding value
             If counter <= UBound(cellValues) + 1 Then
+                ' Fill with static value if available
                 fld.Result = cellValues(counter - 1)
+            Else
+                ' Fill with random value
+                fld.Result = randValues(counter - UBound(cellValues) - 1, 1)
             End If
             counter = counter + 1
         End If
@@ -679,6 +691,7 @@ Sub tuoTiedotHakijanValtakirja()
     Set doc = Nothing
     Set wordApp = Nothing
 End Sub
+
 
 
 
