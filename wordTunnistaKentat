@@ -321,6 +321,7 @@ Sub ReplaceTextFieldWithExcelValue()
     Dim excelApp As Object
     Dim excelBook As Object
     Dim excelSheet As Object
+    Dim targetValue As String
     
     ' Check if the Word document is already open
     On Error Resume Next
@@ -348,8 +349,18 @@ Sub ReplaceTextFieldWithExcelValue()
     ' Set the active sheet object (update the sheet name as needed)
     Set excelSheet = excelBook.Sheets("Main")
     
-    ' Replace the value of the specific text field with the value from Excel cell B136
-    wdDoc.FormFields("5").Result = excelSheet.Range("B136").Value
+    ' Set the target value to find in the text fields
+    targetValue = "5"
+    
+    ' Loop through all form fields in the Word document
+    For Each fld In wdDoc.FormFields
+        ' Check if the form field is a text field and its value matches the target value
+        If fld.Type = 3 And fld.Result = targetValue Then
+            ' Replace the value of the text field with the value from Excel cell B136
+            fld.Result = excelSheet.Range("B136").Value
+            Exit For ' Exit the loop after the first match is found (assuming there's only one matching field)
+        End If
+    Next fld
     
     ' Make the Word application visible and activate the document
     wdApp.Visible = True
@@ -362,6 +373,7 @@ Sub ReplaceTextFieldWithExcelValue()
     Set excelBook = Nothing
     Set excelApp = Nothing
 End Sub
+
 
 
 
