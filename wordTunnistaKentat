@@ -461,11 +461,14 @@ Sub FillAllFields()
     Next shp
     
     ' Remove trailing comma and space from the counter-only field names
-    counterOnlyNames = Left(counterOnlyNames, Len(counterOnlyNames) - 2)
+    If Len(counterOnlyNames) > 0 Then
+        counterOnlyNames = Left(counterOnlyNames, Len(counterOnlyNames) - 2)
+    End If
     
     ' Print the names of the counter-only fields
     MsgBox "Counter-only field names: " & counterOnlyNames
 End Sub
+
 
 
 
