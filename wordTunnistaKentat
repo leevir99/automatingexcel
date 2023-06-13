@@ -509,6 +509,46 @@ Sub tuoTiedotHakijanValtakirja()
     Set wordApp = Nothing
 End Sub
 
+---
+
+Sub tuoTiedotHakijanValtakirja()
+    Dim counter As Integer
+    Dim rng As Range
+    Dim cell As Range
+    Dim values() As Variant
+    Dim doc As Document
+    Dim wordApp As Object
+    
+    ' Define the values to be filled in the corresponding cells
+    values = Array("B128", "B129", "B130", "B135", "B136", "B137", "B138", "B146", "B148", "B146", "B148", "B158")
+    
+    ' Initialize the counter
+    counter = 1
+    
+    ' Set the range to the desired worksheet and range
+    Set rng = ThisWorkbook.Worksheets("Main").Range("A1:A11")
+    
+    ' Get the Word application and open the document
+    Set wordApp = GetObject(, "Word.Application")
+    Set doc = wordApp.Documents("Hakijan valtakirja.docx")
+    
+    ' Loop through each cell in the range
+    For Each cell In rng
+        ' Check if the cell value matches the "Teksti" followed by a number pattern
+        If Left(cell.Value, 6) = "Teksti" Then
+            ' Fill the corresponding field in the Word document
+            doc.FormFields("Teksti" & counter).Result = values(counter - 1)
+            
+            counter = counter + 1
+        End If
+    Next cell
+    
+    ' Clean up Word application
+    Set doc = Nothing
+    Set wordApp = Nothing
+End Sub
+
+
 
 
 
