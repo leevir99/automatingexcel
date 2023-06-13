@@ -104,38 +104,48 @@ Sub tuoTiedotHakijanValtakirja()
     
     ' Loop through each form field in Word
     For Each wdField In wdDoc.FormFields
-        ' Check if the form field is a text field
-        If wdField.Type = 21 Then
-            ' Get the corresponding value from Excel
-            Select Case counter
-                Case 1 To 3
-                    Set excelCell = ThisWorkbook.Sheets("Main").Range("B" & (counter + 127))
-                Case 4
-                    Set excelCell = ThisWorkbook.Sheets("Main").Range("B135")
-                Case 5
-                    Set excelCell = ThisWorkbook.Sheets("Main").Range("B136")
-                Case 6
-                    Set excelCell = ThisWorkbook.Sheets("Main").Range("B137")
-                Case 7
-                    Set excelCell = ThisWorkbook.Sheets("Main").Range("B138")
-                Case 8, 10
-                    Set excelCell = ThisWorkbook.Sheets("Main").Range("B146")
-                Case 9, 11
-                    Set excelCell = ThisWorkbook.Sheets("Main").Range("B148")
-            End Select
+        ' Check the type of form field
+        Select Case wdField.Type
+            Case 21 ' Text field
+                ' Get the corresponding value from Excel
+                Select Case counter
+                    Case 1 To 3
+                        Set excelCell = ThisWorkbook.Sheets("Main").Range("B" & (counter + 127))
+                    Case 4
+                        Set excelCell = ThisWorkbook.Sheets("Main").Range("B135")
+                    Case 5
+                        Set excelCell = ThisWorkbook.Sheets("Main").Range("B136")
+                    Case 6
+                        Set excelCell = ThisWorkbook.Sheets("Main").Range("B137")
+                    Case 7
+                        Set excelCell = ThisWorkbook.Sheets("Main").Range("B138")
+                    Case 8, 10
+                        Set excelCell = ThisWorkbook.Sheets("Main").Range("B146")
+                    Case 9, 11
+                        Set excelCell = ThisWorkbook.Sheets("Main").Range("B148")
+                End Select
+                
+                ' Fill the text field in Word with the value from Excel
+                wdField.Result = excelCell.Value
+                
+                ' Increment the counter
+                counter = counter + 1
             
-            ' Fill the text field in Word with the value from Excel
-            wdField.Result = excelCell.Value
+            Case 3 ' Dropdown field
+                ' Fill the dropdown field with a specific value (modify as needed)
+                wdField.DropDown.Value = "Option1"
             
-            ' Increment the counter
-            counter = counter + 1
-        End If
+            Case 2 ' Checkbox field
+                ' Check the checkbox (modify as needed)
+                wdField.CheckBox.Value = True
+        End Select
     Next wdField
     
     ' Cleanup
     Set wdDoc = Nothing
     Set wdApp = Nothing
 End Sub
+
 
 
 
