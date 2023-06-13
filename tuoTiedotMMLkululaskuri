@@ -42,14 +42,25 @@ Sub tuoTiedotMMLkululaskuri()
     ' Import value from Hankkeet makroilla2 D13 to MML kululaskuri G5
     destWorkbook.Sheets(1).Range("G5").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("D13").Value
     
+    ' Import value from Hankkeet makroilla2 B129 to MML kululaskuri G12
+    destWorkbook.Sheets(1).Range("G12").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B129").Value
+    
     ' Import values from B128:B131 in "Hankkeet makroilla2.xls" to G24:G27 in MML kululaskuri
     destWorkbook.Sheets(1).Range("G24:G27").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B128:B131").Value
     
-    ' Populate G10 with combined values from B135 and B136 separated by ", "
-    destWorkbook.Sheets(1).Range("G10").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B135").Value & ", " & Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B136").Value
+    ' Populate G10 with combined values from B135 and B136 separated by ", " if both values are non-empty
+    Dim valueG10 As String
+    If Trim(Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B135").Value) <> "" And Trim(Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B136").Value) <> "" Then
+        valueG10 = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B135").Value & ", " & Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B136").Value
+    End If
+    destWorkbook.Sheets(1).Range("G10").Value = valueG10
     
-    ' Populate G11 with combined values from B137 and B138 separated by ", "
-    destWorkbook.Sheets(1).Range("G11").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B137").Value & ", " & Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B138").Value
+    ' Populate G11 with combined values from B137 and B138 separated by ", " if both values are non-empty
+    Dim valueG11 As String
+    If Trim(Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B137").Value) <> "" And Trim(Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B138").Value) <> "" Then
+        valueG11 = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B137").Value & ", " & Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B138").Value
+    End If
+    destWorkbook.Sheets(1).Range("G11").Value = valueG11
     
     ' Check if all values in G24:G27 are non-empty
     Dim rangeG As Range
