@@ -413,20 +413,28 @@ Sub FillAllFields()
     Dim shp As Shape
     Dim doc As Document
     Dim counter As Integer
+    Dim counterOnlyNames As String
     Set doc = ActiveDocument
     
-    ' Initialize the counter
+    ' Initialize the counter and the string for storing counter-only field names
     counter = 1
+    counterOnlyNames = ""
     
     ' Loop through all form fields in the document
     For Each fld In doc.FormFields
-        ' Fill the field with a unique value
-        fld.Result = fld.Name & counter
-        
-        ' Print the name of the field being processed
-        Debug.Print "Form Field Name: " & fld.Name
-        
-        counter = counter + 1
+        ' Check if the field is a text input field
+        If fld.Type = wdFieldFormTextInput Then
+            ' Fill the field with a unique value
+            fld.Result = "Teksti" & counter
+            
+            ' Check if the field name matches the counter value
+            If fld.Name = CStr(counter) Then
+                ' Store the name of the field that was filled with only the counter value
+                counterOnlyNames = counterOnlyNames & fld.Name & ", "
+            End If
+            
+            counter = counter + 1
+        End If
     Next fld
     
     ' Loop through all inline shapes in the document
@@ -435,17 +443,30 @@ Sub FillAllFields()
         If shp.Type = wdInlineShapeOLEControlObject Then
             ' Get the form field object
             Set fld = shp.OLEFormat.Object
-        
-            ' Fill the field with a unique value
-            fld.Result = fld.Name & counter
             
-            ' Print the name of the field being processed
-            Debug.Print "Inline Shape Field Name: " & fld.Name
-        
-            counter = counter + 1
+            ' Check if the field is a text input field
+            If fld.Type = wdFieldFormTextInput Then
+                ' Fill the field with a unique value
+                fld.Result = "Teksti" & counter
+                
+                ' Check if the field name matches the counter value
+                If fld.Name = CStr(counter) Then
+                    ' Store the name of the field that was filled with only the counter value
+                    counterOnlyNames = counterOnlyNames & fld.Name & ", "
+                End If
+                
+                counter = counter + 1
+            End If
         End If
     Next shp
+    
+    ' Remove trailing comma and space from the counter-only field names
+    counterOnlyNames = Left(counterOnlyNames, Len(counterOnlyNames) - 2)
+    
+    ' Print the names of the counter-only fields
+    MsgBox "Counter-only field names: " & counterOnlyNames
 End Sub
+
 
 
 
