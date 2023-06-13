@@ -170,6 +170,74 @@ Sub FillAllTextFields()
     Next fld
 End Sub
 
+---
+Sub tuoTiedotHakijanValtakirja()
+    Dim wdApp As Object
+    Dim wdDoc As Object
+    Dim excelCell As Range
+    Dim counter As Integer
+    
+    ' Initialize Word application and open the document
+    Set wdApp = GetObject(, "Word.Application")
+    Set wdDoc = wdApp.Documents("Hakijan valtakirja.docx")
+    
+    ' Set the counter for sequential filling
+    counter = 1
+    
+    ' Get the Excel workbook and sheet
+    Dim excelApp As Object
+    Dim excelBook As Object
+    Dim excelSheet As Object
+    
+    Set excelApp = CreateObject("Excel.Application")
+    Set excelBook = excelApp.Workbooks.Open(ThisWorkbook.Path & "\" & ThisWorkbook.Name) ' Open the current Excel file
+    Set excelSheet = excelBook.Sheets("Main") ' Update the sheet name as needed
+    
+    ' Loop through each form field in Word
+    For Each wdField In wdDoc.FormFields
+        ' Check if the form field is a text field
+        If wdField.Type = wdFieldFormTextInput Then
+            ' Extract the counter value from the field name
+            Dim fieldName As String
+            fieldName = wdField.Name
+            Dim fieldCounter As Integer
+            fieldCounter = CInt(Right(fieldName, 1))
+            
+            ' Get the corresponding value from Excel based on the counter value
+            Select Case fieldCounter
+                Case 1 To 3
+                    Set excelCell = excelSheet.Range("B" & (fieldCounter + 127))
+                Case 4
+                    Set excelCell = excelSheet.Range("B135")
+                Case 5
+                    Set excelCell = excelSheet.Range("B136")
+                Case 6
+                    Set excelCell = excelSheet.Range("B137")
+                Case 7
+                    Set excelCell = excelSheet.Range("B138")
+                Case 8, 10
+                    Set excelCell = excelSheet.Range("B146")
+                Case 9, 11
+                    Set excelCell = excelSheet.Range("B148")
+            End Select
+            
+            ' Fill the text field in Word with the value from Excel
+            wdField.Result = excelCell.Value
+        End If
+    Next wdField
+    
+    ' Cleanup
+    excelBook.Close SaveChanges:=False
+    excelApp.Quit
+    
+    Set excelCell = Nothing
+    Set excelSheet = Nothing
+    Set excelBook = Nothing
+    Set excelApp = Nothing
+    
+    Set wdDoc = Nothing
+    Set wdApp = Nothing
+End Sub
 
 
 
