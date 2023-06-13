@@ -148,6 +148,31 @@ End Sub
 
 
 
+---
+
+Sub FillAllTextFields()
+    Dim fld As FormField
+    Dim doc As Document
+    Dim counter As Integer
+    Set doc = ActiveDocument
+    
+    ' Initialize the counter
+    counter = 1
+    
+    ' Loop through all form fields in the document
+    For Each fld In doc.FormFields
+        ' Check if the form field is a text field
+        If fld.Type = wdFieldFormTextInput Then
+            ' Fill the field with a unique value
+            fld.Result = fld.Name & counter
+            counter = counter + 1
+        End If
+    Next fld
+End Sub
+
+
+
+
 
 
 
