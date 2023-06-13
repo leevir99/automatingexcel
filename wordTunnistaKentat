@@ -649,18 +649,16 @@ Sub tuoTiedotHakijanValtakirja()
     Dim wordApp As Object
     Dim doc As Object
     Dim counter As Integer
-    Dim rng1 As Range
-    Dim rng2 As Range
-    Dim rng3 As Range
+    Dim cellValues() As Variant
     
     ' Get the Word application and open the document
     Set wordApp = GetObject(, "Word.Application")
     Set doc = wordApp.Documents("Hakijan valtakirja.docx")
     
-    ' Set the ranges for the desired worksheet and cell values
-    Set rng1 = ThisWorkbook.Worksheets("Main").Range("B128:B130")
-    Set rng2 = ThisWorkbook.Worksheets("Main").Range("B135,B136,B137,B138")
-    Set rng3 = ThisWorkbook.Worksheets("Main").Range("B146,B148,B146,B148,B158")
+    ' Specify the cell values for each form field
+    cellValues = Array("Asunto Oy Tähti", "Company ABC", "John Doe", "Field 4", "Field 5", _
+                       "Field 6", "Field 7", "Field 8", "Field 9", "Field 10", _
+                       "Field 11", "", "Field 13")
     
     ' Initialize the counter
     counter = 1
@@ -669,25 +667,10 @@ Sub tuoTiedotHakijanValtakirja()
     For Each fld In doc.FormFields
         ' Check if the form field is a text field
         If fld.Type = 3 Then 'wdFieldFormTextInput
-            ' Fill the field with the corresponding value from the Excel range
-            
-            Select Case counter
-                Case 1 To 3
-                    If counter <= rng1.Rows.Count Then
-                        fld.Result = rng1.Cells(counter, 1).Value
-                    End If
-                Case 4 To 7
-                    If (counter - 4) <= rng2.Cells.Count Then
-                        fld.Result = rng2.Cells(counter - 4).Value
-                    End If
-                Case 8, 9, 10, 11
-                    If (counter - 8) <= rng3.Cells.Count Then
-                        fld.Result = rng3.Cells(counter - 8).Value
-                    End If
-                Case 13
-                    fld.Result = rng3.Cells(5).Value
-            End Select
-            
+            ' Fill the field with the corresponding value from the cellValues array
+            If counter <= UBound(cellValues) + 1 Then
+                fld.Result = cellValues(counter - 1)
+            End If
             counter = counter + 1
         End If
     Next fld
@@ -696,6 +679,7 @@ Sub tuoTiedotHakijanValtakirja()
     Set doc = Nothing
     Set wordApp = Nothing
 End Sub
+
 
 
 
