@@ -315,13 +315,14 @@ End Sub
 
 ----
 
-Sub ReplaceTextFieldWithExcelValue()
+Sub tuoTiedotHakijanValtakirja()
     Dim wdApp As Object
     Dim wdDoc As Object
     Dim excelApp As Object
     Dim excelBook As Object
     Dim excelSheet As Object
-    Dim targetValue As String
+    Dim counter As Integer
+    Dim fieldName As String
     
     ' Check if the Word document is already open
     On Error Resume Next
@@ -349,16 +350,46 @@ Sub ReplaceTextFieldWithExcelValue()
     ' Set the active sheet object (update the sheet name as needed)
     Set excelSheet = excelBook.Sheets("Main")
     
-    ' Set the target value to find in the text fields
-    targetValue = "5"
+    ' Initialize the counter
+    counter = 1
     
     ' Loop through all form fields in the Word document
     For Each fld In wdDoc.FormFields
-        ' Check if the form field is a text field and its value matches the target value
-        If fld.Type = 3 And fld.Result = targetValue Then
-            ' Replace the value of the text field with the value from Excel cell B136
-            fld.Result = excelSheet.Range("B136").Value
-            Exit For ' Exit the loop after the first match is found (assuming there's only one matching field)
+        ' Check if the form field is a text field
+        If fld.Type = 3 Then
+            ' Fill the field with a unique value
+            fld.Result = fld.Name & counter
+            counter = counter + 1
+            
+            ' Replace specific text fields with values from Excel
+            fieldName = fld.Result
+            Select Case fieldName
+                Case "Teksti11"
+                    fld.Result = excelSheet.Range("B128").Value
+                Case "Teksti22"
+                    fld.Result = excelSheet.Range("B129").Value
+                Case "Teksti33"
+                    fld.Result = excelSheet.Range("B130").Value
+                Case "Teksti44"
+                    fld.Result = excelSheet.Range("B135").Value
+                Case "5"
+                    fld.Result = excelSheet.Range("B136").Value
+                Case "Teksti46"
+                    fld.Result = excelSheet.Range("B137").Value
+                Case "Teksti57"
+                    fld.Result = excelSheet.Range("B138").Value
+                Case "Teksti48"
+                    fld.Result = excelSheet.Range("B146").Value
+                Case "9"
+                    fld.Result = excelSheet.Range("B148").Value
+                Case "Teksti1510"
+                    fld.Result = excelSheet.Range("B146").Value
+                Case "Teksti1611"
+                    fld.Result = excelSheet.Range("B148").Value
+                Case "13"
+                    fld.Result = excelSheet.Range("B158").Value
+                ' Add more cases for other specific text fields as needed
+            End Select
         End If
     Next fld
     
