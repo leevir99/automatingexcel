@@ -174,7 +174,10 @@ End Sub
 Sub tuoTiedotHakijanValtakirja()
     Dim wdApp As Object
     Dim wdDoc As Object
-    Dim excelCell As Range
+    Dim excelApp As Object
+    Dim excelBook As Object
+    Dim excelSheet As Object
+    Dim excelCell As Object
     Dim counter As Integer
     
     ' Check if the Word document is already open
@@ -195,13 +198,24 @@ Sub tuoTiedotHakijanValtakirja()
     counter = 1
     
     ' Get the Excel workbook and sheet
-    Dim excelSheet As Excel.Worksheet
-    Set excelSheet = ThisWorkbook.Sheets("Main") ' Update the sheet name as needed
+    On Error Resume Next
+    Set excelApp = GetObject(, "Excel.Application")
+    On Error GoTo 0
+    
+    ' If the Excel application is not open or the workbook is not open, exit the sub
+    If excelApp Is Nothing Or excelApp.Workbooks.Count = 0 Then
+        MsgBox "The Excel workbook is not open.", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Set the workbook and sheet objects
+    Set excelBook = excelApp.ActiveWorkbook
+    Set excelSheet = excelBook.Sheets("Main") ' Update the sheet name as needed
     
     ' Loop through each form field in Word
     For Each wdField In wdDoc.FormFields
         ' Check if the form field is a text field
-        If wdField.Type = wdFieldFormTextInput Then
+        If wdField.Type = 3 Then ' wdFieldFormTextInput = 3
             ' Extract the counter value from the field name
             Dim fieldName As String
             fieldName = wdField.Name
@@ -234,13 +248,16 @@ Sub tuoTiedotHakijanValtakirja()
     ' Cleanup
     Set excelCell = Nothing
     Set excelSheet = Nothing
+    Set excelBook = Nothing
     
     ' Make the Word application visible and activate the document
     wdApp.Visible = True
     wdDoc.Activate
     
+    ' Release objects
     Set wdDoc = Nothing
     Set wdApp = Nothing
+    Set excelApp = Nothing
 End Sub
 
 
