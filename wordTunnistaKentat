@@ -422,6 +422,10 @@ Sub FillAllFields()
     For Each fld In doc.FormFields
         ' Fill the field with a unique value
         fld.Result = fld.Name & counter
+        
+        ' Print the name of the field being processed
+        Debug.Print "Form Field Name: " & fld.Name
+        
         counter = counter + 1
     Next fld
     
@@ -434,10 +438,15 @@ Sub FillAllFields()
         
             ' Fill the field with a unique value
             fld.Result = fld.Name & counter
+            
+            ' Print the name of the field being processed
+            Debug.Print "Inline Shape Field Name: " & fld.Name
+        
             counter = counter + 1
         End If
     Next shp
 End Sub
+
 
 
 
