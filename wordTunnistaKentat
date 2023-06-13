@@ -606,6 +606,41 @@ Sub tuoTiedotHakijanValtakirja()
     Set wordApp = Nothing
 End Sub
 
+----
+
+Sub tuoTiedotHakijanValtakirja()
+    Dim wordApp As Object
+    Dim doc As Document
+    Dim counter As Integer
+    Dim rng As Range
+    
+    ' Get the Word application and open the document
+    Set wordApp = GetObject(, "Word.Application")
+    Set doc = wordApp.Documents("Hakijan valtakirja.docx")
+    
+    ' Set the range to the desired worksheet and range
+    Set rng = ThisWorkbook.Worksheets("Main").Range("B128:B138")
+    
+    ' Initialize the counter
+    counter = 1
+    
+    ' Loop through each form field in the Word document
+    For Each fld In doc.FormFields
+        ' Check if the form field is a text field
+        If fld.Type = wdFieldFormTextInput Then
+            ' Check if the counter is within the range of the Excel data
+            If counter <= rng.Rows.Count Then
+                ' Fill the field with the value from the corresponding cell in the range
+                fld.Result = rng.Cells(counter, 1).Value
+            End If
+            counter = counter + 1
+        End If
+    Next fld
+    
+    ' Clean up Word application
+    Set doc = Nothing
+    Set wordApp = Nothing
+End Sub
 
 
 
