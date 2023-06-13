@@ -677,16 +677,12 @@ Sub tuoTiedotHakijanValtakirja()
                         fld.Result = rng1.Cells(counter, 1).Value
                     End If
                 Case 4 To 7
-                    Dim offsetCounter As Integer
-                    offsetCounter = counter - 4
-                    If offsetCounter <= rng2.Cells.Count Then
-                        fld.Result = rng2.Cells(offsetCounter).Value
+                    If (counter - 4) <= rng2.Cells.Count Then
+                        fld.Result = rng2.Cells(counter - 4).Value
                     End If
                 Case 8, 9, 10, 11
-                    Dim offsetCounter As Integer
-                    offsetCounter = counter - 8
-                    If offsetCounter <= rng3.Cells.Count Then
-                        fld.Result = rng3.Cells(offsetCounter).Value
+                    If (counter - 8) <= rng3.Cells.Count Then
+                        fld.Result = rng3.Cells(counter - 8).Value
                     End If
                 Case 13
                     fld.Result = rng3.Cells(5).Value
