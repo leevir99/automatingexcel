@@ -26,3 +26,41 @@ Sub tuoTiedotMMLkululaskuri()
         MsgBox "Some values in G24:G27 are empty. Import canceled.", vbCritical
     End If
 End Sub
+
+
+---
+Sub tuoTiedotMMLkululaskuri()
+    ' Import values from B128:B131 in "Hankkeet makroilla2.xls" to G24:G27 in MML kululaskuri
+    Dim destWorkbook As Workbook
+    Set destWorkbook = Workbooks("MML-kululaskuri - " & Range("B40").Value & ".xlsm")
+    
+    ' Check if cell A5 in "Hankkeet makroilla2.xls" contains "SA"
+    If InStr(1, Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("A5").Value, "SA") > 0 Then
+        destWorkbook.Sheets(1).Range("G8").Value = "Sopimus allekirjoitettu SA"
+    End If
+    
+    ' Import value from Hankkeet makroilla2 D13 to MML kululaskuri G5
+    destWorkbook.Sheets(1).Range("G5").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("D13").Value
+    
+    ' Import values from B128:B131 in "Hankkeet makroilla2.xls" to G24:G27 in MML kululaskuri
+    destWorkbook.Sheets(1).Range("G24:G27").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B128:B131").Value
+    
+    ' Populate G10 with combined values from B135 and B136 separated by ", "
+    destWorkbook.Sheets(1).Range("G10").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B135").Value & ", " & Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B136").Value
+    
+    ' Populate G11 with combined values from B137 and B138 separated by ", "
+    destWorkbook.Sheets(1).Range("G11").Value = Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B137").Value & ", " & Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B138").Value
+    
+    ' Check if all values in G24:G27 are non-empty
+    Dim rangeG As Range
+    Set rangeG = destWorkbook.Sheets(1).Range("G24:G27")
+    If Application.CountBlank(rangeG) = 0 Then
+        ' Execute Sub viepasoytiedot() in MML kululaskuri
+        Application.Run "'" & destWorkbook.Name & "'!viepasoytiedot"
+        
+        MsgBox "Values have been imported into the file.", vbInformation
+    Else
+        MsgBox "Some values in G24:G27 are empty. Import canceled.", vbCritical
+    End If
+End Sub
+
