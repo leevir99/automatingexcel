@@ -974,6 +974,39 @@ Sub tuoTiedotHakijanValtakirja()
     Set wordApp = Nothing
 End Sub
 
+---
+Sub ClickAutoShapes()
+    Dim wordApp As Object
+    Dim doc As Document
+    Dim rng As Range
+    Dim i As Integer
+    
+    ' Get the Word application and open the document
+    Set wordApp = GetObject(, "Word.Application")
+    Set doc = wordApp.Documents("Hakijan valtakirja.docx")
+    
+    ' Set the range to the desired worksheet and range
+    Set rng = ThisWorkbook.Worksheets("Main").Range("B160:B162")
+    
+    ' Loop through each shape in the Word document
+    For i = 1 To doc.Shapes.Count
+        ' Check if the shape is an AutoShape or Shape
+        If doc.Shapes(i).Type = msoAutoShape Or doc.Shapes(i).Type = msoShape Then
+            ' Check if the counter is within the range of the Excel data
+            If i - 1 <= rng.Rows.Count Then
+                ' Click the shape if the corresponding cell is not empty
+                If Not IsEmpty(rng.Cells(i - 1, 1)) Then
+                    doc.Shapes(i).Select
+                    wordApp.Selection.ShapeRange.TextFrame.TextRange.Text = "x"
+                End If
+            End If
+        End If
+    Next i
+    
+    ' Clean up Word application
+    Set doc = Nothing
+    Set wordApp = Nothing
+End Sub
 
 
 
