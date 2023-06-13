@@ -651,6 +651,7 @@ Sub tuoTiedotHakijanValtakirja()
     Dim counter As Integer
     Dim rng1 As Range
     Dim rng2 As Range
+    Dim rng3 As Range
     
     ' Get the Word application and open the document
     Set wordApp = GetObject(, "Word.Application")
@@ -658,7 +659,8 @@ Sub tuoTiedotHakijanValtakirja()
     
     ' Set the ranges for the desired worksheet and cell values
     Set rng1 = ThisWorkbook.Worksheets("Main").Range("B128:B130")
-    Set rng2 = ThisWorkbook.Worksheets("Main").Range("B135:B138,B146,B148,B158")
+    Set rng2 = ThisWorkbook.Worksheets("Main").Range("B135,B136,B137,B138")
+    Set rng3 = ThisWorkbook.Worksheets("Main").Range("B146,B148,B146,B148,B158")
     
     ' Initialize the counter
     counter = 1
@@ -677,13 +679,17 @@ Sub tuoTiedotHakijanValtakirja()
                 Case 4 To 7
                     Dim offsetCounter As Integer
                     offsetCounter = counter - 4
-                    If offsetCounter <= rng2.Rows.Count Then
-                        fld.Result = rng2.Cells(offsetCounter, 1).Value
+                    If offsetCounter <= rng2.Cells.Count Then
+                        fld.Result = rng2.Cells(offsetCounter).Value
                     End If
                 Case 8, 9, 10, 11
-                    fld.Result = rng2.Cells(1, 1).Value
+                    Dim offsetCounter As Integer
+                    offsetCounter = counter - 8
+                    If offsetCounter <= rng3.Cells.Count Then
+                        fld.Result = rng3.Cells(offsetCounter).Value
+                    End If
                 Case 13
-                    fld.Result = rng2.Cells(4, 1).Value
+                    fld.Result = rng3.Cells(5).Value
             End Select
             
             counter = counter + 1
