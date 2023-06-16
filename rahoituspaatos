@@ -1,0 +1,35 @@
+Sub UpdateDataFromPDF()
+    Dim pdfText As String
+    Dim luototussuhde As String
+    Dim luototussuhdeValue As String
+    Dim rpSheet As Worksheet
+    Dim mainSheet As Worksheet
+    
+    ' Set the worksheet variables
+    Set rpSheet = ThisWorkbook.Sheets("rp")
+    Set mainSheet = ThisWorkbook.Sheets("Main")
+    
+    ' Prompt the user to copy the contents of the PDF file
+    MsgBox "Please copy the entire text content of the PDF file and click OK when ready."
+    
+    ' Clear the entire "rp" sheet
+    rpSheet.Cells.Clear
+    
+    ' Prompt the user to indicate that the copying is complete
+    MsgBox "Please paste the copied text into the 'rp' tab starting from cell A1 and click OK."
+    
+    ' Retrieve the copied text from the "rp" sheet
+    pdfText = rpSheet.Range("A1").Value
+    
+    ' Find the luototussuhde value between "Ratkaisuehdotus" and "Vakuudet yhteensä"
+    luototussuhde = FindTextBetween(pdfText, "Ratkaisuehdotus", "Vakuudet yhteensä")
+    
+    ' Check if luototussuhde value exists
+    If luototussuhde <> "" Then
+        ' Extract the number from the luototussuhde string
+        luototussuhdeValue = ExtractNumberFromString(luototussuhde)
+        
+        ' Update cell B82 in the "Main" sheet with luototussuhde value
+        mainSheet.Range("B82").Value = "Luototussuhde " & luototussuhdeValue & " %"
+    End If
+End Sub
