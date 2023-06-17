@@ -15,11 +15,11 @@ Sub UpdateDataFromPDF()
     ' Clear the entire "rp" sheet
     rpSheet.Cells.Clear
     
-    ' Prompt the user to indicate that the copying is complete
-    MsgBox "Please paste the copied text into the 'rp' tab starting from cell A1 and click OK."
+    ' Retrieve the copied text from the clipboard
+    pdfText = GetClipboardText()
     
-    ' Retrieve the copied text from the "rp" sheet
-    pdfText = rpSheet.Range("A1").Value
+    ' Insert the PDF text into the "rp" sheet starting from cell A1
+    rpSheet.Range("A1").Value = pdfText
     
     ' Find the luototussuhde value between "Ratkaisuehdotus" and "Vakuudet yhteensä"
     luototussuhde = FindTextBetween(pdfText, "Ratkaisuehdotus", "Vakuudet yhteensä")
@@ -33,6 +33,14 @@ Sub UpdateDataFromPDF()
         mainSheet.Range("B82").Value = "Luototussuhde " & luototussuhdeValue & " %"
     End If
 End Sub
+
+Function GetClipboardText() As String
+    Dim dataObj As MSForms.DataObject
+    
+    Set dataObj = New MSForms.DataObject
+    dataObj.GetFromClipboard
+    GetClipboardText = dataObj.GetText
+End Function
 
 Function FindTextBetween(sourceText As String, startText As String, endText As String) As String
     Dim startPos As Long
