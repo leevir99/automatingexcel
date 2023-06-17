@@ -180,12 +180,12 @@ End Sub
 
 
 ---
-Sub tiedotToimeksiantosopimukselle()
+Sub FillFieldsWithModifiedValues()
     Dim excelWorksheet As Object ' Excel.Worksheet
     Dim valueD32 As String
     Dim valueD1 As String
     Dim valueD50 As Variant ' Use Variant type for compatibility
-    Dim valueD60 As Double
+    Dim valueD60 As Variant ' Use Variant type for compatibility
     Dim valueD64 As Double
     Dim modifiedValueD32 As String
     Dim modifiedValueD1 As String
@@ -228,6 +228,14 @@ Sub tiedotToimeksiantosopimukselle()
     End If
     
     valueD60 = excelWorksheet.Range("D60").Value
+    
+    ' Convert valueD60 to Double explicitly
+    If IsNumeric(valueD60) Then
+        valueD60 = CDbl(valueD60)
+    Else
+        valueD60 = 0 ' Set default value if conversion fails
+    End If
+    
     valueD64 = excelWorksheet.Range("D64").Value
     
     ' Calculate the sum of the three values
@@ -260,5 +268,6 @@ Sub tiedotToimeksiantosopimukselle()
     ' Fill the "Teksti51" field in Word with the determined value
     ActiveDocument.FormFields("Teksti51").Result = teksti51Value
 End Sub
+
 
 
