@@ -1,3 +1,15 @@
+Function ValueExistsInCollection(ByVal coll As Collection, ByVal value As Variant) As Boolean
+    On Error Resume Next
+    coll.Add value, CStr(value)
+    If Err.Number = 457 Then ' Duplicate key error
+        ValueExistsInCollection = True
+        coll.Remove CStr(value)
+    Else
+        ValueExistsInCollection = False
+    End If
+    On Error GoTo 0
+End Function
+
 Sub UpdateDataFromPDF()
     Dim pdfText As String
     Dim lines As Variant
@@ -9,7 +21,7 @@ Sub UpdateDataFromPDF()
     Dim luototussuhdeCell As Range
     Dim luototussuhdeCount As Long
     Dim targetRange As Range
-    Dim luototussuhdeValues As Collection
+    Dim luototussuhdeValues As New Collection
     
     ' Set the worksheet variables
     Set rpSheet = ThisWorkbook.Sheets("rp")
@@ -45,11 +57,10 @@ Sub UpdateDataFromPDF()
         
         If Not luototussuhdeCell Is Nothing Then
             Set targetRange = ThisWorkbook.Sheets("Main").Range("B82")
-            Set luototussuhdeValues = New Collection
             luototussuhdeCount = 0
             
             Do
-                If Not luototussuhdeValues.Contains(luototussuhdeCell.Value) Then
+                If Not ValueExistsInCollection(luototussuhdeValues, luototussuhdeCell.Value) Then
                     luototussuhdeCount = luototussuhdeCount + 1
                     targetRange.Offset(luototussuhdeCount - 1).Value = luototussuhdeCell.Value
                     luototussuhdeValues.Add luototussuhdeCell.Value
