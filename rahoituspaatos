@@ -1,16 +1,14 @@
 Sub UpdateDataFromPDF()
     Dim pdfText As String
-    Dim luototussuhde As String
-    Dim luototussuhdeValue As String
+    Dim lines As Variant
     Dim rpSheet As Worksheet
-    Dim mainSheet As Worksheet
     Dim startCell As Range
     Dim ratkaisuehdotusCell As Range
     Dim hakijatCell As Range
+    Dim luototussuhdeCell As Range
     
     ' Set the worksheet variables
     Set rpSheet = ThisWorkbook.Sheets("rp")
-    Set mainSheet = ThisWorkbook.Sheets("Main")
     
     ' Prompt the user to copy the contents of the PDF file
     MsgBox "Please copy the entire text content of the PDF file and click OK when ready."
@@ -21,36 +19,33 @@ Sub UpdateDataFromPDF()
     ' Retrieve the copied text from the clipboard
     pdfText = GetClipboardText()
     
+    ' Split the text into lines
+    lines = Split(pdfText, vbCrLf)
+    
     ' Specify the starting cell for inserting the PDF text (change A1 to the desired cell reference)
     Set startCell = rpSheet.Range("A1")
     
     ' Insert the PDF text into the "rp" sheet starting from cell A1
-    startCell.Value = pdfText
+    startCell.Resize(UBound(lines) + 1).Value = Application.Transpose(lines)
     
     ' Find the ratkaisuehdotus cell
     Set ratkaisuehdotusCell = rpSheet.Cells.Find("Ratkaisuehdotus", LookIn:=xlValues, LookAt:=xlWhole)
     
     ' Find the hakijat cell
-    If Not ratkaisuehdotusCell Is Nothing Then
-        Dim hakijatRange As Range
-        Set hakijatRange = rpSheet.Range(ratkaisuehdotusCell.Offset(1), rpSheet.Cells(rpSheet.Rows.Count, ratkaisuehdotusCell.Column).End(xlUp))
-        Set hakijatCell = hakijatRange.Find("Hakijat", LookIn:=xlValues, LookAt:=xlWhole)
-    End If
+    Set hakijatCell = rpSheet.Cells.Find("Hakijat", LookIn:=xlValues, LookAt:=xlWhole, After:=ratkaisuehdotusCell)
     
     ' Find the luototussuhde value between ratkaisuehdotus and hakijat cells
     If Not ratkaisuehdotusCell Is Nothing And Not hakijatCell Is Nothing Then
-        Dim luototussuhdeRange As Range
-        Set luototussuhdeRange = rpSheet.Range(ratkaisuehdotusCell.Offset(1), hakijatCell.Offset(-1))
-        luototussuhde = FindTextContaining(luototussuhdeRange, "Luototussuhde")
+        Set luototussuhdeCell = rpSheet.Range(ratkaisuehdotusCell.Offset(1), hakijatCell.Offset(-1)).Find("Luototussuhde", LookIn:=xlValues, LookAt:=xlPart)
     End If
     
     ' Check if luototussuhde value exists
-    If luototussuhde <> "" Then
-        ' Extract the number from the luototussuhde string
-        luototussuhdeValue = ExtractNumberFromString(luototussuhde)
+    If Not luototussuhdeCell Is Nothing Then
+        Dim luototussuhdeValue As String
+        luototussuhdeValue = ExtractNumberFromString(luototussuhdeCell.Value)
         
         ' Update cell B82 in the "Main" sheet with luototussuhde value
-        mainSheet.Range("B82").Value = "Luototussuhde " & luototussuhdeValue & " %"
+        ThisWorkbook.Sheets("Main").Range("B82").Value = "Luototussuhde " & luototussuhdeValue & " %"
     End If
 End Sub
 
@@ -60,17 +55,6 @@ Function GetClipboardText() As String
     Set dataObj = New MSForms.DataObject
     dataObj.GetFromClipboard
     GetClipboardText = dataObj.GetText
-End Function
-
-Function FindTextContaining(rng As Range, searchText As String) As String
-    Dim cell As Range
-    For Each cell In rng
-        If InStr(1, cell.Value, searchText, vbTextCompare) > 0 Then
-            FindTextContaining = cell.Value
-            Exit Function
-        End If
-    Next cell
-    FindTextContaining = ""
 End Function
 
 Function ExtractNumberFromString(text As String) As String
