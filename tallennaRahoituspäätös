@@ -1,0 +1,52 @@
+Sub SavePDF()
+    Dim pdfApp As Object
+    Dim pdfDoc As Object
+    Dim savePath As String
+    Dim fileName As String
+    Dim hankenumero As String
+    
+    ' Check if hankenumero is empty
+    hankenumero = Range("B40").Value
+    If Len(hankenumero) = 0 Then
+        MsgBox "Hankenumero puuttuu solusta B40", vbExclamation, "Virhe"
+        Exit Sub
+    End If
+    
+    ' Ask the user to activate the desired PDF
+    MsgBox "Aseta PDF-XChange Editor -ohjelmassa rahoituspäätös aktiiviseksi/näkyville ja paina sen jälkeen OK.", vbInformation, "Ohje"
+    
+    ' Set the save path and file name
+    savePath = Range("E28").Value
+    fileName = "Rahoituspäätös"
+    
+    ' Create PDF application object
+    Set pdfApp = CreateObject("PDFXEdit.PDFXEditCtrl.2")
+    
+    ' Check if PDF application is running
+    If pdfApp Is Nothing Then
+        MsgBox "PDF-XChange Editor -ohjelma ei ole käynnissä.", vbExclamation, "Virhe"
+        Exit Sub
+    End If
+    
+    ' Get the active document
+    Set pdfDoc = pdfApp.ActiveDocument
+    
+    ' Check if a document is active
+    If pdfDoc Is Nothing Then
+        MsgBox "Rahoituspäätöstä ei ole avattu PDF-XChange Editor -ohjelmassa.", vbExclamation, "Virhe"
+        Exit Sub
+    End If
+    
+    ' Save the active document as PDF
+    pdfDoc.Save savePath & "\" & fileName & ".pdf", False
+    
+    ' Close the document
+    pdfDoc.Close
+    
+    ' Release the objects
+    Set pdfDoc = Nothing
+    Set pdfApp = Nothing
+    
+    ' Display a success message
+    MsgBox "PDF tallennettu onnistuneesti.", vbInformation, "Tallennus"
+End Sub
