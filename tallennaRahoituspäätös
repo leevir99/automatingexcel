@@ -1,23 +1,11 @@
 // Get the active document
 var doc = this.document;
 
-// Get the Excel application object
-var excelApp = new ActiveXObject("Excel.Application");
+// Define the output file name
+var fileName = "Rahoituspäätös.pdf";
 
-// Get the active Excel workbook
-var workbook = excelApp.ActiveWorkbook;
-
-// Get the value of cell E28
-var cellValue = workbook.ActiveSheet.Range("E28").Value;
-
-// Combine the cell value with the file name
-var outputPath = cellValue + "\\output.pdf";
+// Define the output file path
+var outputPath = "C:\\path\\to\\" + fileName;
 
 // Save the active document to the specified location
 doc.SaveToFile(outputPath, false);
-
-// Close the Excel workbook
-workbook.Close(false);
-
-// Quit the Excel application
-excelApp.Quit();
