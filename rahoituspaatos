@@ -5,7 +5,10 @@ Sub UpdateDataFromPDF()
     Dim startCell As Range
     Dim ratkaisuehdotusCell As Range
     Dim hakijatCell As Range
+    Dim luototussuhdeRange As Range
+    Dim luototussuhdeCells As Range
     Dim luototussuhdeCell As Range
+    Dim luototussuhdeCount As Long
     
     ' Set the worksheet variables
     Set rpSheet = ThisWorkbook.Sheets("rp")
@@ -34,36 +37,28 @@ Sub UpdateDataFromPDF()
     ' Find the hakijat cell
     Set hakijatCell = rpSheet.Cells.Find("Hakijat", LookIn:=xlValues, LookAt:=xlWhole, After:=ratkaisuehdotusCell)
     
-    ' Find the luototussuhde value between ratkaisuehdotus and hakijat cells
+    ' Find the luototussuhde values between ratkaisuehdotus and hakijat cells
     If Not ratkaisuehdotusCell Is Nothing And Not hakijatCell Is Nothing Then
-        Set luototussuhdeCell = rpSheet.Range(ratkaisuehdotusCell.Offset(1), hakijatCell.Offset(-1)).Find("Luototussuhde", LookIn:=xlValues, LookAt:=xlPart)
-    End If
-    
-    ' Check if luototussuhde value exists
-    If Not luototussuhdeCell Is Nothing Then
-        Dim luototussuhdeValue As String
-        luototussuhdeValue = ExtractNumberFromString(luototussuhdeCell.Value)
+        Set luototussuhdeRange = rpSheet.Range(ratkaisuehdotusCell.Offset(1), hakijatCell.Offset(-1))
+        Set luototussuhdeCells = luototussuhdeRange.Find("Luototussuhde", LookIn:=xlValues, LookAt:=xlPart)
         
-        ' Update cell B82 in the "Main" sheet with luototussuhde value
-        ThisWorkbook.Sheets("Main").Range("B82").Value = "Luototussuhde " & luototussuhdeValue & " %"
+        If Not luototussuhdeCells Is Nothing Then
+            luototussuhdeCount = WorksheetFunction.Min(luototussuhdeCells.Count, 4)
+            
+            Dim luototussuhdeValue As String
+            Dim targetRange As Range
+            Dim i As Long
+            
+            Set targetRange = ThisWorkbook.Sheets("Main").Range("B82").Resize(luototussuhdeCount)
+            
+            For i = 1 To luototussuhdeCount
+                luototussuhdeValue = ExtractNumberFromString(luototussuhdeCells(i).Value)
+                targetRange.Cells(i).Value = "Luototussuhde " & luototussuhdeValue & " %"
+            Next i
+            
+            If luototussuhdeCells.Count > 4 Then
+                MsgBox "HUOM! Luototussuhteita havaittiin enemmän kuin neljä. Datan syöttö lopetettu. Tarkista solut B82:B85 ja rahoituspäätöksen tiedot lainoista."
+            End If
+        End If
     End If
 End Sub
-
-Function GetClipboardText() As String
-    Dim dataObj As MSForms.DataObject
-    
-    Set dataObj = New MSForms.DataObject
-    dataObj.GetFromClipboard
-    GetClipboardText = dataObj.GetText
-End Function
-
-Function ExtractNumberFromString(text As String) As String
-    Dim num As String
-    Dim i As Integer
-    For i = 1 To Len(text)
-        If IsNumeric(Mid(text, i, 1)) Or Mid(text, i, 1) = "," Then
-            num = num & Mid(text, i, 1)
-        End If
-    Next i
-    ExtractNumberFromString = num
-End Function
