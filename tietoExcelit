@@ -1,0 +1,93 @@
+Sub tietoExcelit()
+    ' Check if B40 is empty
+    If Range("B40").Value <> "" Then
+        Dim folderAddress As String
+        Dim infoExcelName As String
+        Dim infoExcelPath As String
+        
+        ' Define the folder address and info excel name based on B40 value
+        folderAddress = "Z:\Lähetysohjeet\Asiakirjojen tietoexcelit\"
+        infoExcelName = Range("B40").Value & ".xlsx"
+        infoExcelPath = folderAddress & infoExcelName
+        
+        ' Check if the info excel exists
+        If Dir(infoExcelPath) <> "" Then
+            ' Open the info excel in the background
+            Application.ScreenUpdating = False
+            Dim infoExcel As Workbook
+            Set infoExcel = Workbooks.Open(infoExcelPath)
+            
+            ' Retrieve the bank name from "Yleinen" tab
+            Dim bankName As String
+            bankName = infoExcel.Sheets("Yleinen").Range("H1").Value
+            
+            ' Copy the bank name to specified cells in "Main" sheet
+            ThisWorkbook.Sheets("Main").Range("D18").Value = bankName
+            ThisWorkbook.Sheets("Main").Range("B146").Value = bankName
+            ThisWorkbook.Sheets("Main").Range("C146").Value = bankName
+            
+            ' Retrieve loan numbers from specific range in column B
+            Dim startCell As Range
+            Dim endCell As Range
+            Dim loanRange As Range
+            Dim loanCell As Range
+            Dim bankID As String
+            Dim loanCount As Integer
+            Dim copiedLoanCount As Integer
+            
+            ' Find the starting and ending points of the specific range
+            Set startCell = infoExcel.Sheets("Yleinen").Range("B1")
+            Set endCell = infoExcel.Sheets("Yleinen").Columns("A:A").Find("LISÄTIEDOT")
+            
+            If Not endCell Is Nothing Then
+                ' Determine the bank ID
+                bankID = infoExcel.Sheets("Yleinen").Range("B" & endCell.Row - 1).Value
+                
+                ' Set the loan range to be scraped
+                Set loanRange = infoExcel.Sheets("Yleinen").Range(startCell, endCell.Offset(-1, 0))
+                
+                ' Initialize loan count
+                loanCount = 0
+                copiedLoanCount = 0
+                
+                ' Loop through each cell in the loan range
+                For Each loanCell In loanRange
+                    ' Check if the cell value starts with the bank ID
+                    If Left(loanCell.Value, Len(bankID)) = bankID Then
+                        loanCount = loanCount + 1
+                        
+                        ' Copy the loan number to the specified range in "Main" sheet
+                        If copiedLoanCount < 4 Then
+                            ThisWorkbook.Sheets("Main").Range("B53").Offset(copiedLoanCount, 0).Value = loanCell.Value
+                            copiedLoanCount = copiedLoanCount + 1
+                        Else
+                            MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista"
+                            Exit For
+                        End If
+                    End If
+                Next loanCell
+                
+                ' Close the info excel without saving changes
+                infoExcel.Close False
+                
+                ' Reset screen updating
+                Application.ScreenUpdating = True
+                
+                ' Show success message to the user
+                MsgBox "Tiedot tuotu onnistuneesti."
+            Else
+                ' Close the info excel without saving changes
+                infoExcel.Close False
+                
+                ' Reset screen updating
+                Application.ScreenUpdating = True
+                
+                ' Show error message to the user
+                MsgBox "Tietoja ei onnistuttu tuomaan. Tarkista hankenumero solusta B40."
+            End If
+        Else
+            ' Show error message to the user
+            MsgBox "Tietoja ei onnistuttu tuomaan. Tarkista hankenumero solusta B40."
+        End If
+    End If
+End Sub
