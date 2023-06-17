@@ -11,7 +11,7 @@ Sub tietoExcelit()
         infoExcelPath = folderAddress & infoExcelName
         
         ' Check if the info excel exists
-        If Dir(infoExcelPath) <> "" Then
+        If Len(Dir(infoExcelPath)) > 0 Then
             ' Open the info excel in the background
             Application.ScreenUpdating = False
             Dim infoExcel As Workbook
@@ -76,7 +76,7 @@ Sub tietoExcelit()
                 ' Reset screen updating
                 Application.ScreenUpdating = True
                 
-                ' Check if more than four loan numbers were found
+                ' Check the number of loan numbers found
                 If loanCount > 4 Then
                     MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
                 Else
