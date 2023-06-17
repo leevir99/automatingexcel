@@ -7,11 +7,5 @@ var fileName = "Rahoituspäätös.pdf";
 // Define the output file path
 var outputPath = "Z:\\1. ASIAKIRJALAADINTA\\10350114\\" + fileName;
 
-// Create a new document with the desired file name
-var newDoc = this.NewDoc();
-
-// Import the pages from the original document to the new document
-newDoc.InsertPages(-1, doc);
-
-// Save the new document with the desired name and path
-newDoc.SaveToFile(outputPath, false);
+// Export the active document's pages to a new document
+var newDoc = this.ExportPages(0, doc.GetNumPages() - 1, outputPath, 0);
