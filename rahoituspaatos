@@ -7,7 +7,6 @@ Sub UpdateDataFromPDF()
     Dim hakijatCell As Range
     Dim luototussuhdeRange As Range
     Dim luototussuhdeCell As Range
-    Dim luototussuhdeCount As Long
     Dim targetRange As Range
     Dim luototussuhdeValues As New Collection
     Dim nextCell As Range
@@ -45,37 +44,42 @@ Sub UpdateDataFromPDF()
         Set luototussuhdeCell = luototussuhdeRange.Find("Luototussuhde", LookIn:=xlValues, LookAt:=xlPart)
         
         If Not luototussuhdeCell Is Nothing Then
-            Set targetRange = ThisWorkbook.Sheets("Main").Range("B82")
-            luototussuhdeCount = 0
+            Set targetRange = ThisWorkbook.Sheets("Main").Range("B82:B85")
+            luototussuhdeValues.Clear
             
             ' Loop through the luototussuhde values and import them into the "Main" sheet
             Do
                 If Not ValueExistsInCollection(luototussuhdeValues, luototussuhdeCell.Value) Then
-                    luototussuhdeCount = luototussuhdeCount + 1
-                    
                     ' Find the next available cell in the target range
-                    Set nextCell = targetRange.Offset(luototussuhdeCount - 1).End(xlDown).Offset(1)
+                    Set nextCell = targetRange.Cells.Find("", LookIn:=xlValues, LookAt:=xlWhole)
                     
-                    ' Check if the next available cell is within the target range
-                    If nextCell.Row > targetRange.Row + 3 Then
-                        ' If more than 3 matches found, display a message and exit the loop
-                        MsgBox "HUOM! Luototussuhteita havaittiin enemmän kuin kaksi. Datan syöttö lopetettu. Tarkista solut B82:B85 ja rahoituspäätöksen tiedot lainoista."
+                    ' Check if a next available cell is found
+                    If Not nextCell Is Nothing Then
+                        ' Import the luototussuhde value into the next available cell
+                        nextCell.Value = luototussuhdeCell.Value
+                        
+                        ' Add the luototussuhde value to the collection
+                        luototussuhdeValues.Add luototussuhdeCell.Value
+                    Else
+                        ' More than 4 matches found, display a message and exit the loop
+                        MsgBox "HUOM! Luototussuhteita havaittiin enemmän kuin neljä. Datan syöttö lopetettu. Tarkista solut B82:B85 ja rahoituspäätöksen tiedot lainoista."
                         Exit Do
                     End If
-                    
-                    ' Import the luototussuhde value into the next available cell
-                    nextCell.Value = luototussuhdeCell.Value
-                    
-                    ' Add the luototussuhde value to the collection
-                    luototussuhdeValues.Add luototussuhdeCell.Value
                 End If
                 
                 Set luototussuhdeCell = luototussuhdeRange.FindNext(luototussuhdeCell)
                 
-            Loop While luototussuhdeCount < 2 And Not luototussuhdeCell Is Nothing
+            Loop While Not luototussuhdeCell Is Nothing
         End If
     End If
 End Sub
+
+Function GetClipboardText() As String
+    Dim clipboard As MSForms.DataObject
+    Set clipboard = New MSForms.DataObject
+    clipboard.GetFromClipboard
+    GetClipboardText = clipboard.GetText
+End Function
 
 Function ValueExistsInCollection(col As Collection, val As Variant) As Boolean
     On Error Resume Next
