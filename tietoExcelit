@@ -16,15 +16,8 @@ Sub tietoExcelit()
     End If
     
     ' Avataan tietoexcel taustalla
-    Application.ScreenUpdating = False
-    Application.DisplayAlerts = False
-    
     Dim infoTiedosto As Workbook
     Set infoTiedosto = Workbooks.Open(kansioPolku)
-    infoTiedosto.Windows(1).Visible = False
-    
-    Application.ScreenUpdating = True
-    Application.DisplayAlerts = True
     
     ' Haetaan pankin nimi välilehdeltä "Yleinen"
     Dim pankinNimi As String
@@ -63,12 +56,17 @@ Sub tietoExcelit()
     Dim lainaNro As Range
     Dim lainaNumerot As Range
     Set lainaNumerot = ThisWorkbook.Sheets("Main").Range("B53:B56")
+    
+    Dim lainaMaarat As Range
+    Set lainaMaarat = ThisWorkbook.Sheets("Main").Range("C53:C56")
+    
     Dim laskuri As Integer
     laskuri = 1
     
     For Each lainaNro In lainaNumerotAlue
         If Left(lainaNro.Value, Len(pankkiID)) = pankkiID Then
             lainaNumerot.Cells(laskuri, 1).Value = lainaNro.Value
+            lainaMaarat.Cells(laskuri, 1).Value = infoTiedosto.Sheets("Yleinen").Cells(lainaNro.Row, "D").Value
             laskuri = laskuri + 1
             If laskuri > 4 Then
                 MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
