@@ -57,12 +57,16 @@ Sub tietoExcelit()
     Dim loanNumbers As Range
     Set loanNumbers = ThisWorkbook.Sheets("Main").Range("B53:B56")
     
+    Dim loanAmounts As Range
+    Set loanAmounts = ThisWorkbook.Sheets("Main").Range("C53:C56")
+    
     Dim count As Integer
     count = 1
     
     For Each loanNumber In loanNumbersRange
         If Left(loanNumber.Value, Len(bankID)) = bankID Then
             loanNumbers.Cells(count, 1).Value = loanNumber.Value
+            loanAmounts.Cells(count, 1).Value = infoWorkbook.Sheets("Yleinen").Cells(loanNumber.Row, "D").Value
             count = count + 1
             If count > 4 Then
                 MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
