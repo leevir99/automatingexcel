@@ -1,0 +1,67 @@
+Sub luoEnimmaisluototussuhdelaskuri()
+    ' Define the SharePoint URL and folder address
+    Dim sharePointURL As String
+    Dim folderAddress As String
+    Dim newFileName As String
+    
+    sharePointURL = "https://oppalveluto365.sharepoint.com/sites/intra-apuna_arjessa/Jaetut%20asiakirjat/Laskurit/Enimmaisluototussuhdelaskuri.xlsx"
+    folderAddress = "Z:\1. ASIAKIRJALAADINTA\" & Range("B40").Value
+    
+    ' Check if cell B40 is empty
+    If IsEmpty(Range("B40").Value) Then
+        MsgBox "Cell B40 is empty. Please enter a value in cell B40.", vbCritical
+        Exit Sub
+    End If
+    
+    ' Get the desired filename based on cell B40
+    newFileName = "Enimmaisluototussuhdelaskuri - " & Range("B40").Value & ".xlsx"
+    
+    ' Check if a file with the same name already exists in the folder
+    Dim filePath As String
+    filePath = folderAddress & "\" & newFileName
+    
+    ' Check if the file exists in the folder
+    If Dir(filePath) <> "" Then
+        ' File with the same name already exists, open the existing file
+        Workbooks.Open filePath
+        
+        ' Notify the user
+        MsgBox "Existing file has been opened.", vbInformation
+    Else
+        ' File with the same name does not exist, create a new copy
+        ' Create a new Excel application instance
+        Dim xlApp As Object
+        Set xlApp = CreateObject("Excel.Application")
+        
+        ' Disable alerts and screen updating for better performance
+        xlApp.DisplayAlerts = False
+        xlApp.ScreenUpdating = False
+        
+        ' Open the source file from SharePoint
+        Dim sourceWorkbook As Object
+        Set sourceWorkbook = xlApp.Workbooks.Open(sharePointURL)
+        
+        ' Save the copy to the specified folder
+        sourceWorkbook.SaveCopyAs filePath
+        
+        ' Close the source workbook
+        sourceWorkbook.Close False
+        
+        ' Quit the Excel application
+        xlApp.Quit
+        
+        ' Release the object references
+        Set sourceWorkbook = Nothing
+        Set xlApp = Nothing
+        
+        ' Enable alerts and screen updating
+        Application.DisplayAlerts = True
+        Application.ScreenUpdating = True
+        
+        ' Open the newly created file
+        Workbooks.Open filePath
+        
+        ' Notify the user
+        MsgBox "New file has been created and opened.", vbInformation
+    End If
+End Sub
