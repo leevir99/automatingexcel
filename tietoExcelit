@@ -1,108 +1,111 @@
 Sub tietoExcelit()
-    ' Check if B40 is empty
+    ' Tarkistetaan, onko B40 tyhjä
     If Range("B40").Value = "" Then
         MsgBox "Tietoja ei onnistuttu tuomaan. Tarkista hankenumero solusta B40."
         Exit Sub
     End If
     
-    ' Define the folder and file path
-    Dim folderAddress As String
-    folderAddress = "Z:\Lähetysohjeet\Asiakirjojen tietoexcelit\" & Range("B40").Value & ".xlsx"
+    ' Määritellään kansio ja tiedostopolku
+    Dim kansioPolku As String
+    kansioPolku = "Z:\Lähetysohjeet\Asiakirjojen tietoexcelit\" & Range("B40").Value & ".xlsx"
     
-    ' Check if the info excel exists
-    If Dir(folderAddress) = "" Then
+    ' Tarkistetaan, onko tiedostoa olemassa
+    If Dir(kansioPolku) = "" Then
         MsgBox "Tietoja ei onnistuttu tuomaan. Tarkista hankenumero solusta B40."
         Exit Sub
     End If
     
-    ' Open the info excel in the background
-    Dim infoWorkbook As Workbook
-    Set infoWorkbook = Workbooks.Open(folderAddress)
+    ' Avataan tietoexcel taustalla
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
     
-    ' Retrieve the bank name from "Yleinen" tab
-    Dim bankName As String
-    bankName = infoWorkbook.Sheets("Yleinen").Range("H1").Value
+    Dim infoTiedosto As Workbook
+    Set infoTiedosto = Workbooks.Open(kansioPolku)
+    infoTiedosto.Windows(1).Visible = False
     
-    ' Copy the bank name to the desired locations in "Main" sheet
-    ThisWorkbook.Sheets("Main").Range("D18").Value = bankName
-    ThisWorkbook.Sheets("Main").Range("B146:C146").Value = bankName
+    Application.ScreenUpdating = True
+    Application.DisplayAlerts = True
     
-    ' Find the range of loan numbers
-    Dim lastRow As Long
+    ' Haetaan pankin nimi välilehdeltä "Yleinen"
+    Dim pankinNimi As String
+    pankinNimi = infoTiedosto.Sheets("Yleinen").Range("H1").Value
+    
+    ' Kopioidaan pankin nimi haluttuihin kohtiin "Main"-välilehdellä
+    ThisWorkbook.Sheets("Main").Range("D18").Value = pankinNimi
+    ThisWorkbook.Sheets("Main").Range("B146:C146").Value = pankinNimi
+    
+    ' Etsitään lainanumeroiden alue
+    Dim viimeinenRivi As Long
     On Error Resume Next
-    lastRow = infoWorkbook.Sheets("Yleinen").Range("A:A").Find("LISÄTIEDOT").Row - 1
+    viimeinenRivi = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("LISÄTIEDOT").Row - 1
     On Error GoTo 0
     
-    If lastRow < 1 Then
+    If viimeinenRivi < 1 Then
         MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
-        infoWorkbook.Close False
+        infoTiedosto.Close False
         Exit Sub
     End If
     
-    Dim bankID As String
+    Dim pankkiID As String
     On Error Resume Next
-    bankID = infoWorkbook.Sheets("Yleinen").Range("A:A").Find("Konttorin numero").Offset(0, 1).Value
+    pankkiID = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Konttorin numero").Offset(0, 1).Value
     On Error GoTo 0
     
-    If bankID = "" Then
+    If pankkiID = "" Then
         MsgBox "Konttorin numero ei löydy. Tarkista tuodut tiedot lainoista."
-        infoWorkbook.Close False
+        infoTiedosto.Close False
         Exit Sub
     End If
     
-    Dim loanNumbersRange As Range
-    Set loanNumbersRange = infoWorkbook.Sheets("Yleinen").Range("B1:B" & lastRow)
+    Dim lainaNumerotAlue As Range
+    Set lainaNumerotAlue = infoTiedosto.Sheets("Yleinen").Range("B1:B" & viimeinenRivi)
     
-    Dim loanNumber As Range
-    Dim loanNumbers As Range
-    Set loanNumbers = ThisWorkbook.Sheets("Main").Range("B53:B56")
+    Dim lainaNro As Range
+    Dim lainaNumerot As Range
+    Set lainaNumerot = ThisWorkbook.Sheets("Main").Range("B53:B56")
     
-    Dim loanAmounts As Range
-    Set loanAmounts = ThisWorkbook.Sheets("Main").Range("C53:C56")
+    Dim laskuri As Integer
+    laskuri = 1
     
-    Dim count As Integer
-    count = 1
-    
-    For Each loanNumber In loanNumbersRange
-        If Left(loanNumber.Value, Len(bankID)) = bankID Then
-            loanNumbers.Cells(count, 1).Value = loanNumber.Value
-            loanAmounts.Cells(count, 1).Value = infoWorkbook.Sheets("Yleinen").Cells(loanNumber.Row, "D").Value
-            count = count + 1
-            If count > 4 Then
+    For Each lainaNro In lainaNumerotAlue
+        If Left(lainaNro.Value, Len(pankkiID)) = pankkiID Then
+            lainaNumerot.Cells(laskuri, 1).Value = lainaNro.Value
+            laskuri = laskuri + 1
+            If laskuri > 4 Then
                 MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
-                infoWorkbook.Close False
+                infoTiedosto.Close False
                 Exit Sub
             End If
         End If
-    Next loanNumber
+    Next lainaNro
     
-    ' Find and retrieve "Vak_arvon vahvistaja" from column A
+    ' Etsitään "Vak_arvon vahvistaja" ja kopioidaan arvo
     Dim vakArvonVahvistaja As Range
-    Set vakArvonVahvistaja = infoWorkbook.Sheets("Yleinen").Range("A:A").Find("Vak_arvon vahvistaja", LookAt:=xlWhole)
+    Set vakArvonVahvistaja = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Vak_arvon vahvistaja", LookAt:=xlWhole)
     
     If Not vakArvonVahvistaja Is Nothing Then
         ThisWorkbook.Sheets("Main").Range("A120").Value = vakArvonVahvistaja.Offset(0, 1).Value
     End If
     
-    ' Find and retrieve "Päättäjät" from column A
+    ' Etsitään "Päättäjät" ja kopioidaan arvo
     Dim paattajat As Range
-    Set paattajat = infoWorkbook.Sheets("Yleinen").Range("A:A").Find("Päättäjät", LookAt:=xlWhole)
+    Set paattajat = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Päättäjät", LookAt:=xlWhole)
     
     If Not paattajat Is Nothing Then
         ThisWorkbook.Sheets("Main").Range("A121").Value = paattajat.Offset(0, 1).Value
     End If
     
-    ' Find and retrieve "Päätös pvm" from column A
+    ' Etsitään "Päätös pvm" ja kopioidaan arvo
     Dim paatosPvm As Range
-    Set paatosPvm = infoWorkbook.Sheets("Yleinen").Range("A:A").Find("Päätös pvm", LookAt:=xlWhole)
+    Set paatosPvm = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Päätös pvm", LookAt:=xlWhole)
     
     If Not paatosPvm Is Nothing Then
         ThisWorkbook.Sheets("Main").Range("A122").Value = paatosPvm.Offset(0, 1).Value
     End If
     
-    ' Close the info excel
-    infoWorkbook.Close False
+    ' Suljetaan tietoexcel
+    infoTiedosto.Close False
     
-    ' Display success message
+    ' Näytetään viesti onnistuneesta tuonnista
     MsgBox "Tiedot tuotu onnistuneesti."
 End Sub
