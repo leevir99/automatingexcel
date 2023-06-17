@@ -1,5 +1,4 @@
 Sub tallennaRahoituspaatos()
-    Dim pdfApp As Object
     Dim savePath As String
     Dim fileName As String
     Dim hankenumero As String
@@ -18,21 +17,20 @@ Sub tallennaRahoituspaatos()
     savePath = Range("E28").Value
     fileName = "Rahoituspäätös"
     
-    ' Create PDF application object
-    Set pdfApp = CreateObject("Shell.Application")
+    ' Save the active document as PDF
+    On Error Resume Next
+    With CreateObject("Shell.Application")
+        .Windows.Find("PDF-XChange Editor").Document.ExportAsFixedFormat 0, savePath & "\" & fileName & ".pdf"
+    End With
+    On Error GoTo 0
     
-    ' Check if PDF application is running
-    If pdfApp Is Nothing Then
-        MsgBox "PDF-XChange Editor -ohjelma ei ole käynnissä.", vbExclamation, "Virhe"
-        Exit Sub
+    ' Check if the save operation was successful
+    If Dir(savePath & "\" & fileName & ".pdf") <> "" Then
+        ' Display a success message
+        MsgBox "PDF tallennettu onnistuneesti.", vbInformation, "Tallennus"
+    Else
+        ' Display an error message
+        MsgBox "Virhe tallennettaessa PDF:ää.", vbExclamation, "Virhe"
     End If
-    
-    ' Activate the PDF-XChange Editor window
-    pdfApp.Open savePath & "\" & fileName & ".pdf"
-    
-    ' Wait for the user to save the PDF and click OK
-    MsgBox "Kun olet tallentanut PDF:n PDF-XChange Editor -ohjelmassa, paina OK.", vbInformation, "Ohje"
-    
-    ' Display a success message
-    MsgBox "PDF tallennettu onnistuneesti.", vbInformation, "Tallennus"
 End Sub
+
