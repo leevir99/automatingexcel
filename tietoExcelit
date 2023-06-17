@@ -41,7 +41,7 @@ Sub tietoExcelit()
     
     Dim bankID As String
     On Error Resume Next
-    bankID = infoWorkbook.Sheets("Yleinen").Range("B:B").Find("Konttorin numero").Offset(0, 1).Value
+    bankID = infoWorkbook.Sheets("Yleinen").Range("A:A").Find("Konttorin numero").Offset(0, 1).Value
     On Error GoTo 0
     
     If bankID = "" Then
