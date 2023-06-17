@@ -17,55 +17,44 @@ Sub tietoExcelit()
             Dim infoExcel As Workbook
             Set infoExcel = Workbooks.Open(infoExcelPath)
             
-            ' Retrieve the bank name from "Yleinen" tab
-            Dim bankName As String
-            bankName = infoExcel.Sheets("Yleinen").Range("H1").Value
+            ' Retrieve the bank number from "Yleinen" tab
+            Dim bankNumberCell As Range
+            Set bankNumberCell = infoExcel.Sheets("Yleinen").Columns("A:A").Find("Konttorin numero")
             
-            ' Copy the bank name to specified cells in "Main" sheet
-            ThisWorkbook.Sheets("Main").Range("D18").Value = bankName
-            ThisWorkbook.Sheets("Main").Range("B146").Value = bankName
-            ThisWorkbook.Sheets("Main").Range("C146").Value = bankName
-            
-            ' Retrieve loan numbers from column B
-            Dim startCell As Range
-            Dim endCell As Range
-            Dim loanRange As Range
-            Dim loanCell As Range
-            Dim bankID As String
-            Dim loanCount As Integer
-            Dim copiedLoanCount As Integer
-            Dim destRange As Range
-            
-            ' Find the starting and ending points of the specific range
-            Set startCell = infoExcel.Sheets("Yleinen").Range("B1")
-            Set endCell = infoExcel.Sheets("Yleinen").Columns("A:A").Find("LISÄTIEDOT")
-            
-            If Not endCell Is Nothing Then
-                ' Determine the bank ID
-                bankID = infoExcel.Sheets("Yleinen").Range("B" & endCell.Row - 2).Value
+            If Not bankNumberCell Is Nothing Then
+                Dim bankNumber As String
+                bankNumber = infoExcel.Sheets("Yleinen").Cells(bankNumberCell.Row, bankNumberCell.Column + 1).Value
+                
+                ' Copy the bank name to specified cells in "Main" sheet
+                ThisWorkbook.Sheets("Main").Range("D18").Value = bankNumber
+                ThisWorkbook.Sheets("Main").Range("B146").Value = bankNumber
+                ThisWorkbook.Sheets("Main").Range("C146").Value = bankNumber
+                
+                ' Retrieve loan numbers from column B
+                Dim loanRange As Range
+                Dim loanCell As Range
+                Dim copiedLoanCount As Integer
+                Dim destRange As Range
                 
                 ' Set the loan range to be scraped
-                Set loanRange = infoExcel.Sheets("Yleinen").Range(startCell, endCell.Offset(-1, 0))
+                Set loanRange = infoExcel.Sheets("Yleinen").Columns("B:B")
                 
-                ' Initialize loan count and copied loan count
-                loanCount = 0
+                ' Initialize copied loan count
                 copiedLoanCount = 0
                 
-                ' Loop through each cell in the specific range
+                ' Loop through each cell in the loan range
                 For Each loanCell In loanRange
-                    ' Check if the cell value starts with the bank ID
-                    If Left(loanCell.Value, Len(bankID)) = bankID Then
-                        loanCount = loanCount + 1
+                    ' Check if the cell value starts with the bank number and "-"
+                    If Left(loanCell.Value, Len(bankNumber)) = bankNumber And Mid(loanCell.Value, Len(bankNumber) + 1, 1) = "-" Then
+                        copiedLoanCount = copiedLoanCount + 1
                         
                         ' Copy the loan number to the specified range in "Main" sheet
-                        If copiedLoanCount < 4 Then
+                        If copiedLoanCount <= 4 Then
                             ' Determine the destination range for loan numbers
-                            Set destRange = ThisWorkbook.Sheets("Main").Range("B53").Offset(copiedLoanCount, 0)
+                            Set destRange = ThisWorkbook.Sheets("Main").Range("B53").Offset(copiedLoanCount - 1, 0)
                             
                             ' Copy the loan number to the destination range
                             destRange.Value = loanCell.Value
-                            
-                            copiedLoanCount = copiedLoanCount + 1
                         End If
                     End If
                 Next loanCell
@@ -81,7 +70,7 @@ Sub tietoExcelit()
                 
                 ' Check the number of loan numbers found
                 If copiedLoanCount > 4 Then
-                    MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
+                    MsgBox "Enemmän kuin neljä lainaa lödetty. Tarkista tuodut tiedot lainoista."
                 End If
             Else
                 ' Close the info excel without saving changes
@@ -91,7 +80,7 @@ Sub tietoExcelit()
                 Application.ScreenUpdating = True
                 
                 ' Show error message to the user
-                MsgBox "Tietoja ei onnistuttu tuomaan. Tarkista hankenumero solusta B40."
+                MsgBox "Tietoja ei onnistuttu tuomaan. Tarkista 'Konttorin numero' solun sijainti."
             End If
         Else
             ' Show error message to the user
