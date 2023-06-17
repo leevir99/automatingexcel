@@ -3,7 +3,7 @@ Sub tallennaRahoituspaatos()
     Dim folderPath As String
     
     ' Set the folder path where the PDF should be saved
-    folderPath = "C:\Users\B730706\OneDrive - OP\E28\"
+    folderPath = "Z:\1. ASIAKIRJALAADINTA\10350114\"
     
     ' Set the PDF file name
     pdfPath = folderPath & "rpp.pdf"
@@ -13,3 +13,4 @@ Sub tallennaRahoituspaatos()
         .ShellExecute "C:\Program Files\Tracker Software\PDF Editor\PDFXEdit.exe", "/A ""SaveToFile=""" & pdfPath & """", "", "open", 1
     End With
 End Sub
+
