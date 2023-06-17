@@ -1,4 +1,5 @@
 Sub SaveActivePDF()
+    Dim pdfEditor As Object
     Dim pdfPath As String
     Dim folderPath As String
     
@@ -8,8 +9,18 @@ Sub SaveActivePDF()
     ' Set the PDF file name
     pdfPath = folderPath & "rpp.pdf"
     
-    ' Save the active PDF using PDF-XChange Editor
-    With CreateObject("Shell.Application")
-        .ShellExecute "C:\Program Files\Tracker Software\PDF Editor\PDFXEdit.exe", "/A ""SaveToFile=""" & pdfPath & """ /S /N ""temp.pdf""", "", "open", 1
-    End With
+    ' Create an instance of PDF-XChange Editor
+    Set pdfEditor = CreateObject("PDFXEdit.PXVDocument")
+    
+    ' Get the active document
+    Set pdfEditor = pdfEditor.GetDocument(0)
+    
+    ' Save the active PDF document
+    pdfEditor.Save pdfPath, 0
+    
+    ' Close the PDF-XChange Editor application
+    pdfEditor.Close
+    
+    ' Clean up the object
+    Set pdfEditor = Nothing
 End Sub
