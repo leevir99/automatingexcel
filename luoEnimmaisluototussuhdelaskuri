@@ -44,31 +44,27 @@ Sub luoEnimmaisluototussuhdelaskuri()
         End If
     Else
         ' File with the same name does not exist, create a new copy
-        ' Create a new Excel application instance
-        Dim xlApp As Object
-        Set xlApp = CreateObject("Excel.Application")
-        
-        ' Disable alerts and screen updating for better performance
-        xlApp.DisplayAlerts = False
-        xlApp.ScreenUpdating = False
+        ' Create a new Excel workbook
+        Dim newWorkbook As Workbook
+        Set newWorkbook = Workbooks.Add
         
         ' Open the source file from SharePoint
-        Dim sourceWorkbook As Object
-        Set sourceWorkbook = xlApp.Workbooks.Open(sharePointURL)
+        Dim sourceWorkbook As Workbook
+        Set sourceWorkbook = Workbooks.Open(sharePointURL)
         
-        ' Save the copy to the specified folder
-        sourceWorkbook.SaveCopyAs filePath
+        ' Copy all sheets from the source workbook to the new workbook
+        sourceWorkbook.Sheets.Copy Before:=newWorkbook.Sheets(1)
         
-        ' Close the source workbook
+        ' Save the new workbook with the desired file name
+        newWorkbook.SaveAs filePath
+        
+        ' Close the workbooks
+        newWorkbook.Close False
         sourceWorkbook.Close False
         
         ' Release the object references
+        Set newWorkbook = Nothing
         Set sourceWorkbook = Nothing
-        Set xlApp = Nothing
-        
-        ' Enable alerts and screen updating
-        Application.DisplayAlerts = True
-        Application.ScreenUpdating = True
         
         ' Open the newly created file
         Workbooks.Open filePath
