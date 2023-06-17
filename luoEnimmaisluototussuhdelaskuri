@@ -22,11 +22,26 @@ Sub luoEnimmaisluototussuhdelaskuri()
     
     ' Check if the file exists in the folder
     If Dir(filePath) <> "" Then
-        ' File with the same name already exists, open the existing file
-        Workbooks.Open filePath
+        ' File with the same name already exists
+        ' Check if the file is open or being used by another program
+        Dim existingWorkbook As Workbook
+        On Error Resume Next
+        Set existingWorkbook = Workbooks(Dir(filePath))
+        On Error GoTo 0
         
-        ' Notify the user
-        MsgBox "Existing file has been opened.", vbInformation
+        If Not existingWorkbook Is Nothing Then
+            ' File is already open, activate the workbook
+            existingWorkbook.Activate
+            
+            ' Notify the user
+            MsgBox "File is already open.", vbInformation
+        Else
+            ' File is not open, open the existing file
+            Workbooks.Open filePath
+            
+            ' Notify the user
+            MsgBox "Existing file has been opened.", vbInformation
+        End If
     Else
         ' File with the same name does not exist, create a new copy
         ' Create a new Excel application instance
@@ -46,9 +61,6 @@ Sub luoEnimmaisluototussuhdelaskuri()
         
         ' Close the source workbook
         sourceWorkbook.Close False
-        
-        ' Quit the Excel application
-        xlApp.Quit
         
         ' Release the object references
         Set sourceWorkbook = Nothing
