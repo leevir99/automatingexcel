@@ -1,11 +1,15 @@
-// Get the active document
-var doc = this.ActiveDoc;
-
-// Define the output file name
-var fileName = "Rahoituspäätös.pdf";
-
-// Define the output file path
-var outputPath = "Z:\\1. ASIAKIRJALAADINTA\\10350114\\" + fileName;
-
-// Export the active document's pages to a new document
-var newDoc = this.ExportPages(0, doc.GetNumPages() - 1, outputPath, 0);
+Sub tallennaRahoituspaatos()
+    Dim pdfPath As String
+    Dim folderPath As String
+    
+    ' Set the folder path where the PDF should be saved
+    folderPath = "E28\"
+    
+    ' Set the PDF file name
+    pdfPath = folderPath & "rpp.pdf"
+    
+    ' Save the active PDF using PDF-XChange Editor
+    With CreateObject("Shell.Application")
+        .ShellExecute "PDFXEdit.exe", "/A ""SaveToFile=""" & pdfPath & """", "", "open", 1
+    End With
+End Sub
