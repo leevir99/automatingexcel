@@ -5,7 +5,13 @@ var doc = this.document;
 var fileName = "Rahoituspäätös.pdf";
 
 // Define the output file path
-var outputPath = "C:\\path\\to\\" + fileName;
+var outputPath = "Z:\\1. ASIAKIRJALAADINTA\\10350114\\" + fileName;
 
-// Save the active document to the specified location
+// Save the active document with a temporary name
+doc.SaveAs(outputPath + ".tmp", false);
+
+// Rename the temporary file to the desired name
 doc.SaveToFile(outputPath, false);
+
+// Delete the temporary file
+doc.DeletePages(0);
