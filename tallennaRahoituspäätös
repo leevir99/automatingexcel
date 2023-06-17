@@ -1,8 +1,17 @@
+// Get the active document
+var doc = this.ActiveDoc;
+
 // Define the output file name
 var fileName = "Rahoituspäätös.pdf";
 
 // Define the output file path
 var outputPath = "Z:\\1. ASIAKIRJALAADINTA\\10350114\\" + fileName;
 
-// Save the active document to the specified location with the desired name
-this.saveToFile(outputPath, false);
+// Create a new document with the desired file name
+var newDoc = this.NewDoc();
+
+// Import the pages from the original document to the new document
+newDoc.InsertPages(-1, doc);
+
+// Save the new document with the desired name and path
+newDoc.SaveToFile(outputPath, false);
