@@ -1,4 +1,4 @@
-Sub tallennaRahoituspaatos()
+Sub SaveActivePDF()
     Dim pdfPath As String
     Dim folderPath As String
     
@@ -10,7 +10,6 @@ Sub tallennaRahoituspaatos()
     
     ' Save the active PDF using PDF-XChange Editor
     With CreateObject("Shell.Application")
-        .ShellExecute "C:\Program Files\Tracker Software\PDF Editor\PDFXEdit.exe", "/A ""SaveToFile=""" & pdfPath & """", "", "open", 1
+        .ShellExecute "C:\Program Files\Tracker Software\PDF Editor\PDFXEdit.exe", "/A ""SaveToFile=""" & pdfPath & """ /S /N ""temp.pdf""", "", "open", 1
     End With
 End Sub
-
