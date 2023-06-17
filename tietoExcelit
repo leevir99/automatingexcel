@@ -76,6 +76,30 @@ Sub tietoExcelit()
         End If
     Next loanNumber
     
+    ' Find and retrieve "Vak_arvon vahvistaja" from column A
+    Dim vakArvonVahvistaja As Range
+    Set vakArvonVahvistaja = infoWorkbook.Sheets("Yleinen").Range("A:A").Find("Vak_arvon vahvistaja", LookAt:=xlWhole)
+    
+    If Not vakArvonVahvistaja Is Nothing Then
+        ThisWorkbook.Sheets("Main").Range("A120").Value = vakArvonVahvistaja.Offset(0, 1).Value
+    End If
+    
+    ' Find and retrieve "Päättäjät" from column A
+    Dim paattajat As Range
+    Set paattajat = infoWorkbook.Sheets("Yleinen").Range("A:A").Find("Päättäjät", LookAt:=xlWhole)
+    
+    If Not paattajat Is Nothing Then
+        ThisWorkbook.Sheets("Main").Range("A121").Value = paattajat.Offset(0, 1).Value
+    End If
+    
+    ' Find and retrieve "Päätös pvm" from column A
+    Dim paatosPvm As Range
+    Set paatosPvm = infoWorkbook.Sheets("Yleinen").Range("A:A").Find("Päätös pvm", LookAt:=xlWhole)
+    
+    If Not paatosPvm Is Nothing Then
+        ThisWorkbook.Sheets("Main").Range("A122").Value = paatosPvm.Offset(0, 1).Value
+    End If
+    
     ' Close the info excel
     infoWorkbook.Close False
     
