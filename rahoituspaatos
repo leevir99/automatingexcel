@@ -16,17 +16,21 @@ Sub UpdateDataFromPDF()
     ' Clear the entire "rp" sheet
     rpSheet.Cells.Clear
     
-    ' Prompt the user to indicate that the copying is complete
-    MsgBox "Please paste the copied text into the 'rp' tab starting from the desired cell and click OK."
-    
     ' Retrieve the copied text from the clipboard
     pdfText = GetClipboardText()
     
     ' Specify the starting cell for inserting the PDF text (change A1 to the desired cell reference)
     Set startCell = rpSheet.Range("A1")
     
-    ' Insert the PDF text into the "rp" sheet starting from the specified cell
-    startCell.Value = pdfText
+    ' Split the text into lines
+    Dim lines As Variant
+    lines = Split(pdfText, vbNewLine)
+    
+    ' Insert each line of the text into consecutive cells in column A
+    Dim i As Long
+    For i = 0 To UBound(lines)
+        startCell.Offset(i, 0).Value = lines(i)
+    Next i
     
     ' Find the luototussuhde value between "Ratkaisuehdotus" and "Vakuudet yhteensä"
     luototussuhde = FindTextBetween(pdfText, "Ratkaisuehdotus", "Vakuudet yhteensä")
