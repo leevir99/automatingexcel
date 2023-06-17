@@ -51,3 +51,40 @@ Sub UpdateDataFromPDF()
         mainSheet.Range("B82").Value = "Luototussuhde " & luototussuhdeValue & " %"
     End If
 End Sub
+
+
+Function GetClipboardText() As String
+    Dim dataObj As MSForms.DataObject
+    
+    Set dataObj = New MSForms.DataObject
+    dataObj.GetFromClipboard
+    GetClipboardText = dataObj.GetText
+End Function
+
+Function FindTextBetween(sourceText As String, startText As String, endText As String) As String
+    Dim startPos As Long
+    Dim endPos As Long
+    
+    startPos = InStr(sourceText, startText)
+    If startPos > 0 Then
+        startPos = startPos + Len(startText)
+        endPos = InStr(startPos, sourceText, endText)
+        If endPos > startPos Then
+            FindTextBetween = Trim(Mid(sourceText, startPos, endPos - startPos))
+        End If
+    End If
+End Function
+
+Function ExtractNumberFromString(sourceText As String) As String
+    Dim numStr As String
+    Dim i As Integer
+    
+    numStr = ""
+    For i = 1 To Len(sourceText)
+        If IsNumeric(Mid(sourceText, i, 1)) Or Mid(sourceText, i, 1) = "," Then
+            numStr = numStr & Mid(sourceText, i, 1)
+        End If
+    Next i
+    
+    ExtractNumberFromString = numStr
+End Function
