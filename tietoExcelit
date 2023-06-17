@@ -51,7 +51,7 @@ Sub tietoExcelit()
                 loanCount = 0
                 copiedLoanCount = 0
                 
-                ' Loop through each cell in column B
+                ' Loop through each cell in the specific range
                 For Each loanCell In loanRange
                     ' Check if the cell value starts with the bank ID
                     If Left(loanCell.Value, Len(bankID)) = bankID Then
@@ -66,9 +66,6 @@ Sub tietoExcelit()
                             destRange.Value = loanCell.Value
                             
                             copiedLoanCount = copiedLoanCount + 1
-                        Else
-                            MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
-                            Exit For
                         End If
                     End If
                 Next loanCell
@@ -79,8 +76,13 @@ Sub tietoExcelit()
                 ' Reset screen updating
                 Application.ScreenUpdating = True
                 
-                ' Show message indicating successful import
-                MsgBox "Tiedot tuotu onnistuneesti."
+                ' Check if more than four loan numbers were found
+                If loanCount > 4 Then
+                    MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
+                Else
+                    ' Show message indicating successful import
+                    MsgBox "Tiedot tuotu onnistuneesti."
+                End If
             Else
                 ' Close the info excel without saving changes
                 infoExcel.Close False
