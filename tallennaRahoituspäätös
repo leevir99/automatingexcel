@@ -1,62 +1,23 @@
-Sub tallennaRahoituspaatos()
-    Dim savePath As String
-    Dim fileName As String
-    Dim hankenumero As String
-    
-    ' Check if hankenumero is empty
-    hankenumero = Range("B40").Value
-    If Len(hankenumero) = 0 Then
-        MsgBox "Hankenumero puuttuu solusta B40", vbExclamation, "Virhe"
-        Exit Sub
-    End If
-    
-    ' Ask the user to activate the desired PDF
-    MsgBox "Aseta PDF-XChange Editor -ohjelmassa rahoituspäätös aktiiviseksi/näkyville ja paina sen jälkeen OK.", vbInformation, "Ohje"
-    
-    ' Set the save path and file name
-    savePath = Range("E28").Value
-    fileName = "Rahoituspäätös"
-    
-    On Error Resume Next
-    
-    ' Save the active document as PDF
-    With CreateObject("Shell.Application")
-        Dim editorWindow As Object
-        Set editorWindow = .Windows.Find("PDF-XChangeEditor")
-        
-        If Not editorWindow Is Nothing Then
-            Dim pdfDoc As Object
-            Set pdfDoc = editorWindow.Document
-            
-            If Not pdfDoc Is Nothing Then
-                pdfDoc.ExportAsFixedFormat 0, savePath & "\" & fileName & ".pdf"
-                
-                If Err.Number <> 0 Then
-                    MsgBox "Virhe tallennettaessa PDF:ää." & vbNewLine & Err.Description, vbExclamation, "Virhe"
-                Else
-                    ' Check if the PDF file was created
-                    If Dir(savePath & "\" & fileName & ".pdf") <> "" Then
-                        ' Display a success message
-                        MsgBox "PDF tallennettu onnistuneesti.", vbInformation, "Tallennus"
-                    Else
-                        ' Display an error message
-                        MsgBox "Virhe tallennettaessa PDF:ää.", vbExclamation, "Virhe"
-                    End If
-                End If
-                
-                ' Release the PDF document object
-                Set pdfDoc = Nothing
-            End If
-        Else
-            MsgBox "PDF-XChange Editor -ohjelmaa ei löytynyt.", vbExclamation, "Virhe"
-        End If
-        
-        ' Release the editor window object
-        Set editorWindow = Nothing
-    End With
-    
-    On Error GoTo 0
-End Sub
+// Get the active document
+var doc = this.document;
 
+// Get the Excel application object
+var excelApp = new ActiveXObject("Excel.Application");
 
+// Get the active Excel workbook
+var workbook = excelApp.ActiveWorkbook;
 
+// Get the value of cell E28
+var cellValue = workbook.ActiveSheet.Range("E28").Value;
+
+// Combine the cell value with the file name
+var outputPath = cellValue + "\\output.pdf";
+
+// Save the active document to the specified location
+doc.SaveToFile(outputPath, false);
+
+// Close the Excel workbook
+workbook.Close(false);
+
+// Quit the Excel application
+excelApp.Quit();
