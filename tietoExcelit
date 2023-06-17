@@ -42,7 +42,7 @@ Sub tietoExcelit()
             
             If Not endCell Is Nothing Then
                 ' Determine the bank ID
-                bankID = infoExcel.Sheets("Yleinen").Range("B" & endCell.Row - 1).Value
+                bankID = infoExcel.Sheets("Yleinen").Range("B" & endCell.Row - 2).Value
                 
                 ' Set the loan range to be scraped
                 Set loanRange = infoExcel.Sheets("Yleinen").Range(startCell, endCell.Offset(-1, 0))
