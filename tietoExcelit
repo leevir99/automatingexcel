@@ -23,7 +23,7 @@ Sub tietoExcelit()
             
             If Not bankNumberCell Is Nothing Then
                 Dim bankNumber As String
-                bankNumber = infoExcel.Sheets("Yleinen").Cells(bankNumberCell.Row, bankNumberCell.Column + 1).Value
+                bankNumber = CStr(infoExcel.Sheets("Yleinen").Cells(bankNumberCell.Row, bankNumberCell.Column + 1).Value)
                 
                 ' Copy the bank name to specified cells in "Main" sheet
                 ThisWorkbook.Sheets("Main").Range("D18").Value = bankNumber
@@ -47,7 +47,7 @@ Sub tietoExcelit()
                 ' Loop through each cell in the loan range
                 For Each loanCell In loanRange
                     ' Check if the cell value starts with the bank number and "-"
-                    If Left(loanCell.Value, Len(bankNumber)) = bankNumber And Mid(loanCell.Value, Len(bankNumber) + 1, 1) = "-" Then
+                    If Left(CStr(loanCell.Value), Len(bankNumber)) = bankNumber And Mid(CStr(loanCell.Value), Len(bankNumber) + 1, 1) = "-" Then
                         ' Add the loan number to the dictionary if it's not already present
                         If Not loanNumbers.Exists(loanCell.Value) Then
                             loanNumbers.Add loanCell.Value, True
