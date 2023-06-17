@@ -17,3 +17,10 @@ foreach ($item in $quickAccessItems) {
 
 $shellApp.Namespace('shell:::{679F85CB-0220-4080-B29B-5540CC05AAB6}').Self.InvokeVerb('Refresh')
 Write-Host "Quick Access refreshed."
+
+
+
+----
+@echo off
+powershell -ExecutionPolicy Bypass -File "C:\path\to\unpin_folders.ps1"
+pause
