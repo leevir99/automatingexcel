@@ -63,7 +63,6 @@ Sub tietoExcelit()
     Dim lainaNro As Range
     Dim lainaNumerot As Range
     Set lainaNumerot = ThisWorkbook.Sheets("Main").Range("B53:B56")
-    
     Dim laskuri As Integer
     laskuri = 1
     
