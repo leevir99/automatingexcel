@@ -6,7 +6,6 @@ Sub UpdateDataFromPDF()
     Dim ratkaisuehdotusCell As Range
     Dim hakijatCell As Range
     Dim luototussuhdeRange As Range
-    Dim luototussuhdeCells As Range
     Dim luototussuhdeCell As Range
     Dim luototussuhdeCount As Long
     
@@ -40,23 +39,20 @@ Sub UpdateDataFromPDF()
     ' Find the luototussuhde values between ratkaisuehdotus and hakijat cells
     If Not ratkaisuehdotusCell Is Nothing And Not hakijatCell Is Nothing Then
         Set luototussuhdeRange = rpSheet.Range(ratkaisuehdotusCell.Offset(1), hakijatCell.Offset(-1))
-        Set luototussuhdeCells = luototussuhdeRange.Find("Luototussuhde", LookIn:=xlValues, LookAt:=xlPart)
+        Set luototussuhdeCell = luototussuhdeRange.Find("Luototussuhde", LookIn:=xlValues, LookAt:=xlPart)
         
-        If Not luototussuhdeCells Is Nothing Then
-            luototussuhdeCount = WorksheetFunction.Min(luototussuhdeCells.Count, 4)
+        If Not luototussuhdeCell Is Nothing Then
+            luototussuhdeCount = 0
             
-            Dim luototussuhdeValue As String
-            Dim targetRange As Range
-            Dim i As Long
+            Do
+                luototussuhdeCount = luototussuhdeCount + 1
+                ThisWorkbook.Sheets("Main").Range("B" & luototussuhdeCount + 81).Value = luototussuhdeCell.Value
+                
+                Set luototussuhdeCell = luototussuhdeRange.FindNext(luototussuhdeCell)
+                
+            Loop While luototussuhdeCount < 4 And Not luototussuhdeCell Is Nothing
             
-            Set targetRange = ThisWorkbook.Sheets("Main").Range("B82").Resize(luototussuhdeCount)
-            
-            For i = 1 To luototussuhdeCount
-                luototussuhdeValue = ExtractNumberFromString(luototussuhdeCells(i).Value)
-                targetRange.Cells(i).Value = "Luototussuhde " & luototussuhdeValue & " %"
-            Next i
-            
-            If luototussuhdeCells.Count > 4 Then
+            If luototussuhdeCount > 4 Then
                 MsgBox "HUOM! Luototussuhteita havaittiin enemmän kuin neljä. Datan syöttö lopetettu. Tarkista solut B82:B85 ja rahoituspäätöksen tiedot lainoista."
             End If
         End If
