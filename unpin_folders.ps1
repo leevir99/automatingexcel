@@ -22,5 +22,6 @@ Write-Host "Quick Access refreshed."
 
 ----
 @echo off
-powershell -ExecutionPolicy Bypass -File "C:\path\to\unpin_folders.ps1"
+powershell -ExecutionPolicy Bypass -File "%USERPROFILE%\Desktop\unpin_folders.ps1"
 pause
+
