@@ -5,6 +5,9 @@ Sub UpdateDataFromPDF()
     Dim rpSheet As Worksheet
     Dim mainSheet As Worksheet
     Dim startCell As Range
+    Dim ratkaisuehdotusCell As Range
+    Dim hakijatCell As Range
+    Dim luototussuhdeCell As Range
     
     ' Set the worksheet variables
     Set rpSheet = ThisWorkbook.Sheets("rp")
@@ -22,18 +25,22 @@ Sub UpdateDataFromPDF()
     ' Specify the starting cell for inserting the PDF text (change A1 to the desired cell reference)
     Set startCell = rpSheet.Range("A1")
     
-    ' Split the text into lines
-    Dim lines As Variant
-    lines = Split(pdfText, vbNewLine)
+    ' Insert the PDF text into the "rp" sheet starting from cell A1
+    startCell.Value = pdfText
     
-    ' Insert each line of the text into consecutive cells in column A
-    Dim i As Long
-    For i = 0 To UBound(lines)
-        startCell.Offset(i, 0).Value = lines(i)
-    Next i
+    ' Find the ratkaisuehdotus cell
+    Set ratkaisuehdotusCell = rpSheet.Cells.Find("Ratkaisuehdotus", LookIn:=xlValues, LookAt:=xlWhole)
     
-    ' Find the luototussuhde value between "Ratkaisuehdotus" and "Vakuudet yhteensä"
-    luototussuhde = FindTextBetween(pdfText, "Ratkaisuehdotus", "Vakuudet yhteensä")
+    ' Find the hakijat cell
+    Set hakijatCell = rpSheet.Cells.Find("Hakijat", LookIn:=xlValues, LookAt:=xlWhole, After:=ratkaisuehdotusCell)
+    
+    ' Find the luototussuhde value between ratkaisuehdotus and hakijat cells
+    If Not ratkaisuehdotusCell Is Nothing And Not hakijatCell Is Nothing Then
+        Set luototussuhdeCell = rpSheet.Range(ratkaisuehdotusCell.Offset(1), hakijatCell.Offset(-1)).Find("Luototussuhde", LookIn:=xlValues, LookAt:=xlPart)
+        If Not luototussuhdeCell Is Nothing Then
+            luototussuhde = luototussuhdeCell.Value
+        End If
+    End If
     
     ' Check if luototussuhde value exists
     If luototussuhde <> "" Then
@@ -44,39 +51,3 @@ Sub UpdateDataFromPDF()
         mainSheet.Range("B82").Value = "Luototussuhde " & luototussuhdeValue & " %"
     End If
 End Sub
-
-Function GetClipboardText() As String
-    Dim dataObj As MSForms.DataObject
-    
-    Set dataObj = New MSForms.DataObject
-    dataObj.GetFromClipboard
-    GetClipboardText = dataObj.GetText
-End Function
-
-Function FindTextBetween(sourceText As String, startText As String, endText As String) As String
-    Dim startPos As Long
-    Dim endPos As Long
-    
-    startPos = InStr(sourceText, startText)
-    If startPos > 0 Then
-        startPos = startPos + Len(startText)
-        endPos = InStr(startPos, sourceText, endText)
-        If endPos > startPos Then
-            FindTextBetween = Trim(Mid(sourceText, startPos, endPos - startPos))
-        End If
-    End If
-End Function
-
-Function ExtractNumberFromString(sourceText As String) As String
-    Dim numStr As String
-    Dim i As Integer
-    
-    numStr = ""
-    For i = 1 To Len(sourceText)
-        If IsNumeric(Mid(sourceText, i, 1)) Or Mid(sourceText, i, 1) = "," Then
-            numStr = numStr & Mid(sourceText, i, 1)
-        End If
-    Next i
-    
-    ExtractNumberFromString = numStr
-End Function
