@@ -8,6 +8,7 @@ Sub UpdateDataFromPDF()
     Dim luototussuhdeRange As Range
     Dim luototussuhdeCell As Range
     Dim luototussuhdeCount As Long
+    Dim targetRange As Range
     
     ' Set the worksheet variables
     Set rpSheet = ThisWorkbook.Sheets("rp")
@@ -42,18 +43,19 @@ Sub UpdateDataFromPDF()
         Set luototussuhdeCell = luototussuhdeRange.Find("Luototussuhde", LookIn:=xlValues, LookAt:=xlPart)
         
         If Not luototussuhdeCell Is Nothing Then
+            Set targetRange = ThisWorkbook.Sheets("Main").Range("B82")
             luototussuhdeCount = 0
             
             Do
                 luototussuhdeCount = luototussuhdeCount + 1
-                ThisWorkbook.Sheets("Main").Range("B" & luototussuhdeCount + 81).Value = luototussuhdeCell.Value
+                targetRange.Offset(luototussuhdeCount - 1).Value = luototussuhdeCell.Value
                 
                 Set luototussuhdeCell = luototussuhdeRange.FindNext(luototussuhdeCell)
                 
             Loop While luototussuhdeCount < 4 And Not luototussuhdeCell Is Nothing
             
-            If luototussuhdeCount > 4 Then
-                MsgBox "HUOM! Luototussuhteita havaittiin enemmän kuin neljä. Datan syöttö lopetettu. Tarkista solut B82:B85 ja rahoituspäätöksen tiedot lainoista."
+            If luototussuhdeCount > 3 Then
+                MsgBox "HUOM! Luototussuhteita havaittiin enemmän kuin kolme. Datan syöttö lopetettu. Tarkista solut B82:B85 ja rahoituspäätöksen tiedot lainoista."
             End If
         End If
     End If
