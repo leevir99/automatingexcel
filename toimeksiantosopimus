@@ -184,7 +184,7 @@ Sub tiedotToimeksiantosopimukselle()
     Dim excelWorksheet As Object ' Excel.Worksheet
     Dim valueD32 As String
     Dim valueD1 As String
-    Dim valueD50 As Double
+    Dim valueD50 As Variant ' Use Variant type for compatibility
     Dim valueD60 As Double
     Dim valueD64 As Double
     Dim modifiedValueD32 As String
@@ -219,6 +219,14 @@ Sub tiedotToimeksiantosopimukselle()
     
     ' Get the values from cells D50, D60, and D64 in Excel
     valueD50 = excelWorksheet.Range("D50").Value
+    
+    ' Convert valueD50 to Double explicitly
+    If IsNumeric(valueD50) Then
+        valueD50 = CDbl(valueD50)
+    Else
+        valueD50 = 0 ' Set default value if conversion fails
+    End If
+    
     valueD60 = excelWorksheet.Range("D60").Value
     valueD64 = excelWorksheet.Range("D64").Value
     
@@ -252,4 +260,5 @@ Sub tiedotToimeksiantosopimukselle()
     ' Fill the "Teksti51" field in Word with the determined value
     ActiveDocument.FormFields("Teksti51").Result = teksti51Value
 End Sub
+
 
