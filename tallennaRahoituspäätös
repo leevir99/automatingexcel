@@ -1,17 +1,8 @@
-// Get the active document
-var doc = this.document;
-
 // Define the output file name
 var fileName = "Rahoituspäätös.pdf";
 
 // Define the output file path
 var outputPath = "Z:\\1. ASIAKIRJALAADINTA\\10350114\\" + fileName;
 
-// Save the active document with a temporary name
-doc.SaveAs(outputPath + ".tmp", false);
-
-// Rename the temporary file to the desired name
-doc.SaveToFile(outputPath, false);
-
-// Delete the temporary file
-doc.DeletePages(0);
+// Save the active document to the specified location with the desired name
+this.saveToFile(outputPath, false);
