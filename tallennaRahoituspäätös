@@ -17,20 +17,45 @@ Sub tallennaRahoituspaatos()
     savePath = Range("E28").Value
     fileName = "Rahoituspäätös"
     
-    ' Save the active document as PDF
     On Error Resume Next
-    With CreateObject("Shell.Application")
-        .Windows.Find("PDF-XChange Editor").Document.ExportAsFixedFormat 0, savePath & "\" & fileName & ".pdf"
-    End With
-    On Error GoTo 0
     
-    ' Check if the save operation was successful
-    If Dir(savePath & "\" & fileName & ".pdf") <> "" Then
-        ' Display a success message
-        MsgBox "PDF tallennettu onnistuneesti.", vbInformation, "Tallennus"
-    Else
-        ' Display an error message
-        MsgBox "Virhe tallennettaessa PDF:ää.", vbExclamation, "Virhe"
-    End If
+    ' Save the active document as PDF
+    With CreateObject("Shell.Application")
+        Dim editorWindow As Object
+        Set editorWindow = .Windows.Find("PDF-XChange Editor")
+        
+        If Not editorWindow Is Nothing Then
+            Dim pdfDoc As Object
+            Set pdfDoc = editorWindow.Document
+            
+            If Not pdfDoc Is Nothing Then
+                pdfDoc.ExportAsFixedFormat 0, savePath & "\" & fileName & ".pdf"
+                
+                If Err.Number <> 0 Then
+                    MsgBox "Virhe tallennettaessa PDF:ää." & vbNewLine & Err.Description, vbExclamation, "Virhe"
+                Else
+                    ' Check if the PDF file was created
+                    If Dir(savePath & "\" & fileName & ".pdf") <> "" Then
+                        ' Display a success message
+                        MsgBox "PDF tallennettu onnistuneesti.", vbInformation, "Tallennus"
+                    Else
+                        ' Display an error message
+                        MsgBox "Virhe tallennettaessa PDF:ää.", vbExclamation, "Virhe"
+                    End If
+                End If
+                
+                ' Release the PDF document object
+                Set pdfDoc = Nothing
+            End If
+        Else
+            MsgBox "PDF-XChange Editor -ohjelmaa ei löytynyt.", vbExclamation, "Virhe"
+        End If
+        
+        ' Release the editor window object
+        Set editorWindow = Nothing
+    End With
+    
+    On Error GoTo 0
 End Sub
+
 
