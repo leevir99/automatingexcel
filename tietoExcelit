@@ -34,6 +34,7 @@ Sub tietoExcelit()
             Dim bankID As String
             Dim loanCount As Integer
             Dim copiedLoanCount As Integer
+            Dim destRange As Range
             
             ' Find the starting and ending points of the specific range
             Set startCell = infoExcel.Sheets("Yleinen").Range("B1")
@@ -58,10 +59,15 @@ Sub tietoExcelit()
                         
                         ' Copy the loan number to the specified range in "Main" sheet
                         If copiedLoanCount < 4 Then
-                            ThisWorkbook.Sheets("Main").Range("B53").Offset(copiedLoanCount, 0).Value = loanCell.Value
+                            ' Determine the destination range for loan numbers
+                            Set destRange = ThisWorkbook.Sheets("Main").Range("B53").Offset(copiedLoanCount, 0)
+                            
+                            ' Copy the loan number to the destination range
+                            destRange.Value = loanCell.Value
+                            
                             copiedLoanCount = copiedLoanCount + 1
                         Else
-                            MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista"
+                            MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
                             Exit For
                         End If
                     End If
@@ -73,7 +79,7 @@ Sub tietoExcelit()
                 ' Reset screen updating
                 Application.ScreenUpdating = True
                 
-                ' Show success message to the user
+                ' Show message indicating successful import
                 MsgBox "Tiedot tuotu onnistuneesti."
             Else
                 ' Close the info excel without saving changes
