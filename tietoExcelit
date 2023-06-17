@@ -26,7 +26,7 @@ Sub tietoExcelit()
             ThisWorkbook.Sheets("Main").Range("B146").Value = bankName
             ThisWorkbook.Sheets("Main").Range("C146").Value = bankName
             
-            ' Retrieve loan numbers from specific range in column B
+            ' Retrieve loan numbers from column B
             Dim startCell As Range
             Dim endCell As Range
             Dim loanRange As Range
@@ -51,7 +51,7 @@ Sub tietoExcelit()
                 loanCount = 0
                 copiedLoanCount = 0
                 
-                ' Loop through each cell in the loan range
+                ' Loop through each cell in column B
                 For Each loanCell In loanRange
                     ' Check if the cell value starts with the bank ID
                     If Left(loanCell.Value, Len(bankID)) = bankID Then
