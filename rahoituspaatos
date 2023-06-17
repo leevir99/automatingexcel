@@ -4,6 +4,7 @@ Sub UpdateDataFromPDF()
     Dim luototussuhdeValue As String
     Dim rpSheet As Worksheet
     Dim mainSheet As Worksheet
+    Dim startCell As Range
     
     ' Set the worksheet variables
     Set rpSheet = ThisWorkbook.Sheets("rp")
@@ -15,11 +16,17 @@ Sub UpdateDataFromPDF()
     ' Clear the entire "rp" sheet
     rpSheet.Cells.Clear
     
+    ' Prompt the user to indicate that the copying is complete
+    MsgBox "Please paste the copied text into the 'rp' tab starting from the desired cell and click OK."
+    
     ' Retrieve the copied text from the clipboard
     pdfText = GetClipboardText()
     
-    ' Insert the PDF text into the "rp" sheet starting from cell A1
-    rpSheet.Range("A1").Value = pdfText
+    ' Specify the starting cell for inserting the PDF text (change A1 to the desired cell reference)
+    Set startCell = rpSheet.Range("A1")
+    
+    ' Insert the PDF text into the "rp" sheet starting from the specified cell
+    startCell.Value = pdfText
     
     ' Find the luototussuhde value between "Ratkaisuehdotus" and "Vakuudet yhteensä"
     luototussuhde = FindTextBetween(pdfText, "Ratkaisuehdotus", "Vakuudet yhteensä")
