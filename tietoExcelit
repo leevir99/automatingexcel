@@ -47,7 +47,7 @@ Sub tietoExcelit()
                 ' Set the loan range to be scraped
                 Set loanRange = infoExcel.Sheets("Yleinen").Range(startCell, endCell.Offset(-1, 0))
                 
-                ' Initialize loan count
+                ' Initialize loan count and copied loan count
                 loanCount = 0
                 copiedLoanCount = 0
                 
@@ -76,12 +76,12 @@ Sub tietoExcelit()
                 ' Reset screen updating
                 Application.ScreenUpdating = True
                 
+                ' Show message indicating successful import
+                MsgBox "Tiedot tuotu onnistuneesti."
+                
                 ' Check the number of loan numbers found
-                If loanCount > 4 Then
+                If copiedLoanCount > 4 Then
                     MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
-                Else
-                    ' Show message indicating successful import
-                    MsgBox "Tiedot tuotu onnistuneesti."
                 End If
             Else
                 ' Close the info excel without saving changes
