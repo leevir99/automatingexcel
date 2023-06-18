@@ -1,0 +1,66 @@
+Sub muotoileNimetToimeksiantosopimukselle()
+    ' Määritä muuttujat
+    Dim inputNames As String
+    Dim formattedNames As String
+    Dim nameArray() As String
+    Dim formattedArray() As String
+    Dim i As Integer
+    
+    ' Hae syötenimet "Teksti35" kentästä Wordista
+    inputNames = ActiveDocument.FormFields("Teksti35").Result
+    
+    ' Jaa syötenimet taulukkoon
+    nameArray = Split(inputNames, ", ")
+    
+    ' Määritä muotoiltu taulukko vastaamaan syötenimien taulukon kokoa
+    ReDim formattedArray(0 To UBound(nameArray))
+    
+    ' Muotoile jokainen nimi taulukossa
+    For i = 0 To UBound(nameArray)
+        formattedArray(i) = formatName(nameArray(i))
+    Next i
+    
+    ' Yhdistä muotoillut nimet pilkulla erotettuna
+    formattedNames = Join(formattedArray, ", ")
+    
+    ' Täytä "Teksti6" kenttä Wordissa muotoilluilla nimillä
+    ActiveDocument.FormFields("Teksti6").Result = formattedNames
+End Sub
+
+Function formatName(fullName As String) As String
+    ' Määritä muuttujat
+    Dim firstName As String
+    Dim lastName As String
+    Dim nameArray() As String
+    Dim firstNameArray() As String
+    Dim lastNameArray() As String
+    Dim formattedFirstName As String
+    Dim formattedLastName As String
+    
+    ' Jaa koko nimi taulukoksi sanoiksi
+    nameArray = Split(fullName, " ")
+    
+    ' Käsittele sukunimi
+    lastNameArray = Split(nameArray(0), "-")
+    formattedLastName = UCase(Left(lastNameArray(0), 1)) & LCase(Mid(lastNameArray(0), 2))
+    
+    If UBound(lastNameArray) > 0 Then
+        formattedLastName = formattedLastName & "-" & UCase(Left(lastNameArray(1), 1)) & LCase(Mid(lastNameArray(1), 2))
+    End If
+    
+    ' Käsittele etunimi
+    If UBound(nameArray) > 0 Then
+        firstNameArray = Split(nameArray(1), "-")
+        formattedFirstName = UCase(Left(firstNameArray(0), 1)) & LCase(Mid(firstNameArray(0), 2))
+        
+        If UBound(firstNameArray) > 0 Then
+            formattedFirstName = formattedFirstName & "-" & UCase(Left(firstNameArray(1), 1)) & LCase(Mid(firstNameArray(1), 2))
+        End If
+    Else
+        ' Jos on vain yksi nimi, oletetaan, että se on sukunimi
+        formattedFirstName = ""
+    End If
+    
+    ' Yhdistä muotoiltu etunimi ja sukunimi
+    formatName = formattedFirstName & " " & formattedLastName
+End Function
