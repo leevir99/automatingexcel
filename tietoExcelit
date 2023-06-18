@@ -181,7 +181,7 @@ Sub tietoExcelit()
     
     Dim uniquePersonIDs As Collection
     Set uniquePersonIDs = New Collection
-    
+
     For Each lainaNro In lainaNumerotAlue
         If Left(lainaNro.Value, Len(pankkiID)) = pankkiID Then
             lainaNumerot.Cells(laskuri, 1).Value = lainaNro.Value
