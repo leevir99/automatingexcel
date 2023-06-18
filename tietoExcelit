@@ -171,10 +171,8 @@ Sub tietoExcelit()
     
     Dim personIDCell As Range
     Dim personNameCell As Range
-    Dim i As Integer
-    i = 1
     
-    For Each personIDCell In infoTiedosto.Sheets("Yleinen").Range("A2:A" & viimeinenRivi)
+    For Each personIDCell In infoTiedosto.Sheets("Yleinen").Range("B2:B" & viimeinenRivi)
         If Not personIDCell.Value Like "####-####" Then
             Exit For
         End If
@@ -184,7 +182,8 @@ Sub tietoExcelit()
         End If
         
         If Not personIDs.exists(personIDCell.Value) Then
-            personIDs(personIDCell.Value) = infoTiedosto.Sheets("Yleinen").Cells(personIDCell.Row, "C").Value
+            Set personNameCell = infoTiedosto.Sheets("Yleinen").Cells(personIDCell.Row, "C")
+            personIDs(personIDCell.Value) = personNameCell.Value
         End If
     Next personIDCell
     
@@ -197,14 +196,40 @@ Sub tietoExcelit()
     Dim destRange As Range
     Set destRange = ThisWorkbook.Sheets("Main").Range("B45")
     
-    For Each personIDCell In personIDs
+    For Each personIDCell In personIDs.keys
         destRange.Value = personIDCell
         destRange.Offset(-1, 0).Value = personIDs(personIDCell)
         Set destRange = destRange.Offset(3, 0)
     Next personIDCell
     
+    ' Etsitään "Vak_arvon vahvistaja" ja kopioidaan arvo
+    Dim vakArvonVahvistaja As Range
+    Set vakArvonVahvistaja = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Vak_arvon vahvistaja", LookAt:=xlWhole)
+    
+    If Not vakArvonVahvistaja Is Nothing Then
+        ThisWorkbook.Sheets("Main").Range("A120").Value = vakArvonVahvistaja.Offset(0, 1).Value
+    End If
+    
+    ' Etsitään "Päättäjät" ja kopioidaan arvo
+    Dim paattajat As Range
+    Set paattajat = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Päättäjät", LookAt:=xlWhole)
+    
+    If Not paattajat Is Nothing Then
+        ThisWorkbook.Sheets("Main").Range("A121").Value = paattajat.Offset(0, 1).Value
+    End If
+    
+    ' Etsitään "Päätös pvm" ja kopioidaan arvo
+    Dim paatosPvm As Range
+    Set paatosPvm = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Päätös pvm", LookAt:=xlWhole)
+    
+    If Not paatosPvm Is Nothing Then
+        ThisWorkbook.Sheets("Main").Range("A122").Value = paatosPvm.Offset(0, 1).Value
+    End If
+    
+    ' Suljetaan tietoexcel
     infoTiedosto.Close False
     
+    ' Näytetään viesti onnistuneesta tuonnista
     MsgBox "Tiedot tuotu onnistuneesti."
 End Sub
 
