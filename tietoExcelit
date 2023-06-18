@@ -115,41 +115,49 @@ End Sub
 
 UUSITTU:
 Sub tietoExcelit()
-    On Error GoTo ErrorHandler
+    ' Tarkistetaan, onko B40 tyhjä
+    If Range("B40").Value = "" Then
+        MsgBox "Tietoja ei onnistuttu tuomaan. Tarkista hankenumero solusta B40."
+        Exit Sub
+    End If
     
-    ' Define the file path
+    ' Määritellään kansio ja tiedostopolku
     Dim kansioPolku As String
     kansioPolku = "Z:\Lähetysohjeet\Asiakirjojen tietoexcelit\" & Range("B40").Value & ".xlsx"
     
-    ' Open the info excel file
+    ' Tarkistetaan, onko tiedostoa olemassa
+    If Dir(kansioPolku) = "" Then
+        MsgBox "Tietoja ei onnistuttu tuomaan. Tarkista hankenumero solusta B40."
+        Exit Sub
+    End If
+    
+    ' Avataan tietoexcel taustalla
     Dim infoTiedosto As Workbook
     Set infoTiedosto = Workbooks.Open(kansioPolku)
     
-    ' Find the last row of loan numbers
+    ' Etsitään lainanumeroiden alue
     Dim viimeinenRivi As Long
     On Error Resume Next
     viimeinenRivi = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("LISÄTIEDOT").Row - 1
     On Error GoTo 0
     
     If viimeinenRivi < 1 Then
-        MsgBox "LISÄTIEDOT-riviä ei löytynyt. Tarkista tuodut tiedot lainoista."
+        MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
         infoTiedosto.Close False
         Exit Sub
     End If
     
-    ' Find the bank ID
     Dim pankkiID As String
     On Error Resume Next
     pankkiID = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Konttorin numero").Offset(0, 1).Value
     On Error GoTo 0
     
     If pankkiID = "" Then
-        MsgBox "Konttorin numeroa ei löytynyt. Tarkista tuodut tiedot lainoista."
+        MsgBox "Konttorin numero ei löydy. Tarkista tuodut tiedot lainoista."
         infoTiedosto.Close False
         Exit Sub
     End If
     
-    ' Find loan numbers, loan amounts, and people involved
     Dim loanNumbers As Range
     Dim loanAmounts As Range
     Dim people As Range
@@ -174,24 +182,14 @@ Sub tietoExcelit()
                 endRow = startRow + 1
                 
                 Do While endRow <= viimeinenRivi
-                    ' Check if the next row is still a person row
+                    ' Check if the next row is still a people row
                     If Not IsEmpty(.Range("C" & endRow).Value) Then
-                        ' Increment the end row
                         endRow = endRow + 1
                     Else
-                        ' Exit the inner loop when encountering an empty row
+                        ' Exit the loop when encountering a non-people row
                         Exit Do
                     End If
                 Loop
-                
-                ' Check if the loop ended at the last loan or an empty row
-                If endRow > viimeinenRivi Then
-                    ' Set the end row as the last row of data
-                    endRow = viimeinenRivi
-                Else
-                    ' Decrement the end row to exclude the empty row
-                    endRow = endRow - 1
-                End If
                 
                 ' Copy the loan numbers to the "Main" sheet
                 ThisWorkbook.Sheets("Main").Range("A22").Resize(endRow - startRow + 1, 1).Value = loanNumbers.Rows(startRow - 1).Resize(endRow - startRow + 1, 1).Value
@@ -223,9 +221,5 @@ ErrorHandler:
     infoTiedosto.Close False
 End Sub
 
-ErrorHandler:
-    MsgBox "Virhe suorittaessa toimintoa: " & Err.Description
-    infoTiedosto.Close False
-End Sub
 
 
