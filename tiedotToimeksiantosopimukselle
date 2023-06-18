@@ -8,6 +8,7 @@ Sub tiedotToimeksiantosopimukselle()
     Dim person2Name As String
     Dim person1ID As String
     Dim person2ID As String
+    Dim fileName As String
     
     ' Check if an Excel instance is already open
     On Error Resume Next
@@ -20,7 +21,8 @@ Sub tiedotToimeksiantosopimukselle()
     End If
     
     ' Set the workbook and worksheet
-    Set excelWorkbook = excelApp.Workbooks("MML-kululaskuri.xlsm")
+    fileName = "MML-kululaskuri - " & excelApp.Workbooks("Hankkeet makroilla2.xls").Sheets(1).Range("B40").Value & ".xlsm"
+    Set excelWorkbook = excelApp.Workbooks(fileName)
     Set excelWorksheet = excelWorkbook.Worksheets(1)
     
     ' Get the values from cells G10 and G11 in Excel
