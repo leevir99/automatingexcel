@@ -115,111 +115,130 @@ End Sub
 
 UUSITTU:
 Sub tietoExcelit()
-    ' Tarkistetaan, onko B40 tyhjä
-    If Range("B40").Value = "" Then
-        MsgBox "Tietoja ei onnistuttu tuomaan. Tarkista hankenumero solusta B40."
-        Exit Sub
-    End If
+    On Error GoTo ErrorHandler
     
-    ' Määritellään kansio ja tiedostopolku
-    Dim kansioPolku As String
-    kansioPolku = "Z:\Lähetysohjeet\Asiakirjojen tietoexcelit\" & Range("B40").Value & ".xlsx"
-    
-    ' Tarkistetaan, onko tiedostoa olemassa
-    If Dir(kansioPolku) = "" Then
-        MsgBox "Tietoja ei onnistuttu tuomaan. Tarkista hankenumero solusta B40."
-        Exit Sub
-    End If
-    
-    ' Avataan tietoexcel taustalla
     Dim infoTiedosto As Workbook
-    Set infoTiedosto = Workbooks.Open(kansioPolku)
-    
-    ' Etsitään lainanumeroiden alue
+    Dim kansioPolku As String
+    Dim panosSolmu As Range
     Dim viimeinenRivi As Long
-    On Error Resume Next
-    viimeinenRivi = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("LISÄTIEDOT").Row - 1
-    On Error GoTo 0
-    
-    If viimeinenRivi < 1 Then
-        MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
-        infoTiedosto.Close False
-        Exit Sub
-    End If
-    
     Dim pankkiID As String
-    On Error Resume Next
-    pankkiID = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Konttorin numero").Offset(0, 1).Value
-    On Error GoTo 0
-    
-    If pankkiID = "" Then
-        MsgBox "Konttorin numero ei löydy. Tarkista tuodut tiedot lainoista."
-        infoTiedosto.Close False
-        Exit Sub
-    End If
-    
     Dim loanNumbers As Range
     Dim loanAmounts As Range
     Dim people As Range
+    Dim concatenatedPeople As String
+    Dim startRow As Long
+    Dim rowNum As Long
+    Dim uniquePeople As Collection
+    
+    ' Set the file path
+    kansioPolku = Sheets("Tiedot").Range("B40").Value
+    
+    ' Check if the file exists
+    If Dir(kansioPolku) = "" Then
+        MsgBox "Tiedostoa ei löytynyt!", vbCritical, "Virhe"
+        Exit Sub
+    End If
+    
+    ' Open the info excel file
+    Set infoTiedosto = Workbooks.Open(kansioPolku)
+    
+    ' Find the last row of loan numbers
+    viimeinenRivi = infoTiedosto.Sheets("Yleinen").Cells(Rows.Count, 1).End(xlUp).Row
+    
+    ' Check if "LISÄTIEDOT-rivi" exists
+    If viimeinenRivi < 1 Then
+        MsgBox "Lainarivejä ei löytynyt!", vbCritical, "Virhe"
+        infoTiedosto.Close SaveChanges:=False
+        Exit Sub
+    End If
+    
+    ' Find the bank ID
+    Set panosSolmu = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Konttorin numero")
+    If panosSolmu Is Nothing Or panosSolmu.Offset(0, 1).Value = "" Then
+        MsgBox "Pankki ID:tä ei löytynyt!", vbCritical, "Virhe"
+        infoTiedosto.Close SaveChanges:=False
+        Exit Sub
+    End If
+    pankkiID = panosSolmu.Offset(0, 1).Value
+    
+    ' Find loan numbers, loan amounts, and people involved
+    startRow = 2
+    rowNum = 53
+    Set uniquePeople = New Collection
     
     With infoTiedosto.Sheets("Yleinen")
-        ' Find loan numbers
-        Set loanNumbers = .Range("B1:B" & viimeinenRivi)
-        
-        ' Find loan amounts
-        Set loanAmounts = .Range("D1:D" & viimeinenRivi)
-        
-        ' Find people involved
-        Dim startRow As Long
-        Dim endRow As Long
-        
-        startRow = 2 ' Start from the second row
-        
         Do While startRow <= viimeinenRivi
-            ' Check if the current row is a loan row
-            If .Range("C" & startRow).Value Like "Asuntolaina" Or .Range("C" & startRow).Value Like "Laina" Or .Range("C" & startRow).Value Like "Väliaikaislaina" Then
-                ' Find the end row for people involved
-                endRow = startRow + 1
+            If .Cells(startRow, 3).Value Like "Asuntolaina*" Or _
+               .Cells(startRow, 3).Value Like "Laina*" Or _
+               .Cells(startRow, 3).Value Like "Väliaikaislaina*" Then
+               
+                ' Loan number
+                If loanNumbers Is Nothing Then
+                    Set loanNumbers = .Cells(startRow, 1)
+                Else
+                    Set loanNumbers = Union(loanNumbers, .Cells(startRow, 1))
+                End If
                 
-                Do While endRow <= viimeinenRivi
-                    ' Check if the next row is still a people row
-                    If Not IsEmpty(.Range("C" & endRow).Value) Then
-                        endRow = endRow + 1
-                    Else
-                        ' Exit the loop when encountering a non-people row
-                        Exit Do
-                    End If
+                ' Loan amount
+                If loanAmounts Is Nothing Then
+                    Set loanAmounts = .Cells(startRow, 2)
+                Else
+                    Set loanAmounts = Union(loanAmounts, .Cells(startRow, 2))
+                End If
+                
+                ' People involved
+                concatenatedPeople = ""
+                Do While .Cells(startRow, 4).Value <> ""
+                    concatenatedPeople = concatenatedPeople & .Cells(startRow, 4).Value & ", "
+                    uniquePeople.Add .Cells(startRow, 4).Value
+                    startRow = startRow + 1
                 Loop
                 
-                ' Copy the loan numbers to the "Main" sheet
-                ThisWorkbook.Sheets("Main").Range("A22").Resize(endRow - startRow + 1, 1).Value = loanNumbers.Rows(startRow - 1).Resize(endRow - startRow + 1, 1).Value
+                ' Remove the extra comma and space at the end
+                concatenatedPeople = Left(concatenatedPeople, Len(concatenatedPeople) - 2)
                 
-                ' Copy the loan amounts to the "Main" sheet
-                ThisWorkbook.Sheets("Main").Range("D22").Resize(endRow - startRow + 1, 1).Value = loanAmounts.Rows(startRow - 1).Resize(endRow - startRow + 1, 1).Value
+                ' Store the concatenated people in the "D" column
+                If people Is Nothing Then
+                    Set people = .Cells(startRow - 1, 4)
+                Else
+                    Set people = Union(people, .Cells(startRow - 1, 4))
+                End If
                 
-                ' Copy the people involved to the "Main" sheet
-                ThisWorkbook.Sheets("Main").Range("B22").Resize(endRow - startRow + 1, 1).Value = .Range("C" & startRow & ":C" & endRow).Value
-                
-                ' Set the start row for the next loan
-                startRow = endRow + 1
+                ' Write the loan number, loan amount, and concatenated people to the respective cells
+                Sheets("Tiedot").Range("B" & rowNum).Value = .Cells(startRow - 1, 1).Value
+                Sheets("Tiedot").Range("C" & rowNum).Value = .Cells(startRow - 1, 2).Value
+                Sheets("Tiedot").Range("D" & rowNum).Value = concatenatedPeople
+                rowNum = rowNum + 1
             Else
-                ' Increment the start row when encountering a non-loan row
                 startRow = startRow + 1
             End If
         Loop
     End With
     
-    ' Save and close the info excel file
+    ' Write unique person names and IDs to respective cells
+    If uniquePeople.Count > 0 Then
+        Sheets("Tiedot").Range("B44").Value = uniquePeople.Item(1) & " 1"
+        Sheets("Tiedot").Range("B45").Value = uniquePeople.Item(1) & " 1 " & pankkiID
+        
+        If uniquePeople.Count > 1 Then
+            Sheets("Tiedot").Range("B47").Value = uniquePeople.Item(2) & " 2"
+            Sheets("Tiedot").Range("B48").Value = uniquePeople.Item(2) & " 2 " & pankkiID
+            
+            If uniquePeople.Count > 2 Then
+                Sheets("Tiedot").Range("B50").Value = uniquePeople.Item(3) & " 3"
+                Sheets("Tiedot").Range("B51").Value = uniquePeople.Item(3) & " 3 " & pankkiID
+            End If
+        End If
+    End If
+    
     infoTiedosto.Close SaveChanges:=False
-    
-    MsgBox "Tiedot on kopioitu onnistuneesti!"
-    
     Exit Sub
     
 ErrorHandler:
-    MsgBox "Virhe suorittaessa toimintoa: " & Err.Description
-    infoTiedosto.Close False
+    MsgBox "Tapahtui virhe: " & Err.Description, vbCritical, "Virhe"
+    If Not infoTiedosto Is Nothing Then infoTiedosto.Close SaveChanges:=False
 End Sub
+
 
 
 
