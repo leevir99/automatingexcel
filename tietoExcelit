@@ -183,38 +183,27 @@ Sub tietoExcelit()
         If Left(lainaNro.Value, Len(pankkiID)) = pankkiID Then
             lainaNumerot.Cells(laskuri, 1).Value = lainaNro.Value
             lainaMaarat.Cells(laskuri, 1).Value = infoTiedosto.Sheets("Yleinen").Cells(lainaNro.Row, "D").Value
-            
+    
             ' Find the corresponding people involved in the loan
-            Dim peopleIDs As Range
-            Set peopleIDs = infoTiedosto.Sheets("Yleinen").Range("B1:B" & viimeinenRivi)
-            
-            Dim peopleNames As Range
-            Set peopleNames = infoTiedosto.Sheets("Yleinen").Range("C1:C" & viimeinenRivi)
-            
-            Dim peopleData As Range
-            Set peopleData = ThisWorkbook.Sheets("Main").Range("D53:D56")
-            
             Dim currentLoanRow As Range
-            Set currentLoanRow = Nothing
-            
-            Dim offsetRow As Integer
-            offsetRow = (laskuri - 1) * 3 + 8
-            
-            Set currentLoanRow = infoTiedosto.Sheets("Yleinen").Range("B" & lainaNro.Row + 1)
-            
-            For Each personID In peopleIDs
-                If personID.Row > currentLoanRow.Row Then
-                    Exit For
-                End If
-                If personID.Value <> "" Then
-                    ThisWorkbook.Sheets("Main").Cells(offsetRow, 4).Value = personID.Value
-                    ThisWorkbook.Sheets("Main").Cells(offsetRow, 5).Value = peopleNames.Cells(personID.Row, 1).Value
-                    offsetRow = offsetRow + 1
-                End If
-            Next personID
-            
+            Set currentLoanRow = infoTiedosto.Sheets("Yleinen").Range("B" & lainaNro.Row)
+    
+            Dim personID As Range
+            Set personID = currentLoanRow.Offset(1, 0)
+    
+            Dim personData As Range
+            Set personData = ThisWorkbook.Sheets("Main").Range("D" & offsetRow)
+    
+            Do Until personID.Value = "" Or personID.Value = "Asuntolaina" Or personID.Value = "Laina" Or personID.Value = "Väliaikaislaina"
+                personData.Value = personID.Value
+                personData.Offset(0, 1).Value = personID.Offset(0, 1).Value
+    
+                Set personID = personID.Offset(1, 0)
+                Set personData = personData.Offset(1, 0)
+            Loop
+    
             laskuri = laskuri + 1
-            
+    
             If laskuri > 4 Then
                 MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
                 infoTiedosto.Close False
@@ -222,6 +211,7 @@ Sub tietoExcelit()
             End If
         End If
     Next lainaNro
+
     
     ' Etsitään "Vak_arvon vahvistaja" ja kopioidaan arvo
     Dim vakArvonVahvistaja As Range
