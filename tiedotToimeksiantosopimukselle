@@ -6,7 +6,9 @@ Sub tiedotToimeksiantosopimukselle()
     Dim valueD30 As String
     Dim valueD48 As Variant ' Use Variant type for compatibility
     Dim valueD58 As Variant ' Use Variant type for compatibility
+    Dim valueD62 As String
     Dim modifiedValueD30 As String
+    Dim modifiedValueD62 As String
     Dim sumValue As Double
     Dim valueG12 As String
     Dim valueG24 As String
@@ -47,7 +49,7 @@ Sub tiedotToimeksiantosopimukselle()
     ' Fill the "Teksti45" field in Word with the modified value from D30
     ActiveDocument.FormFields("Teksti45").Result = modifiedValueD30
     
-    ' Get the values from cells D48 and D58 in Excel
+    ' Get the values from cells D48, D58, and D62 in Excel
     valueD48 = excelWorksheet.Range("D48").Value
     
     ' Convert valueD48 to Double explicitly
@@ -66,11 +68,25 @@ Sub tiedotToimeksiantosopimukselle()
         valueD58 = 0 ' Set default value if conversion fails
     End If
     
-    ' Calculate the sum of the two values
-    sumValue = valueD48 + valueD58
+    valueD62 = excelWorksheet.Range("D62").Value
+    
+    ' Trim the value from cell D62 and remove the Euro symbol
+    modifiedValueD62 = Trim(Replace(valueD62, "€", ""))
+    
+    ' Fill the "Teksti48" field in Word with the modified value from D62
+    ActiveDocument.FormFields("Teksti48").Result = modifiedValueD62
+    
+    ' Calculate the sum of the three values (D48, D58, D62)
+    sumValue = valueD48 + valueD58 + CDbl(valueD62)
     
     ' Fill the "Teksti46" field in Word with the calculated sum
     ActiveDocument.FormFields("Teksti46").Result = sumValue
+    
+    ' Check the value of cell G8 in Excel
+    If excelWorksheet.Range("G8").Value = "Sopimus allekirjoitettu SA" Then
+        ' Set the "Teksti5" field in Word to "Sähköinen allekirjoitus"
+        ActiveDocument.FormFields("Teksti5").Result = "Sähköinen allekirjoitus"
+    End If
     
     ' Get the values from cells G12, G24, G26, and G27 in Excel
     valueG12 = excelWorksheet.Range("G12").Value
