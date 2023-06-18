@@ -1,0 +1,37 @@
+Sub muotoileLisatiedotMyyntitehtavalle()
+    Dim ws As Worksheet
+    Dim searchRange As Range
+    Dim cell As Range
+    Dim splitText() As String
+    Dim newText() As String
+    Dim i As Long, j As Long
+    Dim newRow As Long
+    
+    Set ws = ThisWorkbook.Sheets("Main") ' Muokkaa välilehden nimi tarpeen mukaan
+    Set searchRange = ws.Range("A6:B39") ' Muokkaa etsintäalue tarpeen mukaan
+    
+    For Each cell In searchRange
+        If cell.Value Like "Lisätietoja Myyntitehtävälle*" Then
+            splitText = Split(cell.Value, " ")
+            
+            ReDim newText(1 To WorksheetFunction.Ceiling(Len(cell.Value) / 30, 1))
+            newRow = cell.Row
+            
+            For i = 1 To UBound(splitText)
+                If Len(newText(j)) + Len(splitText(i)) <= 30 Then
+                    newText(j) = newText(j) & " " & splitText(i)
+                Else
+                    j = j + 1
+                    newText(j) = splitText(i)
+                    newRow = newRow + 1
+                End If
+            Next i
+            
+            cell.Value = newText(1)
+            
+            For i = 2 To UBound(newText)
+                ws.Cells(newRow, cell.Column).Offset(i - 1).Value = newText(i)
+            Next i
+        End If
+    Next cell
+End Sub
