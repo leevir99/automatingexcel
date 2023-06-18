@@ -2,19 +2,12 @@ Sub tiedotToimeksiantosopimukselle()
     Dim excelApp As Object ' Excel.Application
     Dim excelWorkbook As Object ' Excel.Workbook
     Dim excelWorksheet As Object ' Excel.Worksheet
-    Dim destWorkbook As Object ' Destination workbook
-    Dim valueD30 As String
-    Dim valueD48 As Variant ' Use Variant type for compatibility
-    Dim valueD58 As Variant ' Use Variant type for compatibility
-    Dim valueD62 As String
-    Dim modifiedValueD30 As String
-    Dim modifiedValueD62 As String
-    Dim sumValue As Double
-    Dim valueG12 As String
-    Dim valueG24 As String
-    Dim valueG26 As String
-    Dim valueG27 As String
-    Dim teksti51Value As String
+    Dim valueG10 As String
+    Dim valueG11 As String
+    Dim person1Name As String
+    Dim person2Name As String
+    Dim person1ID As String
+    Dim person2ID As String
     
     ' Check if an Excel instance is already open
     On Error Resume Next
@@ -26,89 +19,44 @@ Sub tiedotToimeksiantosopimukselle()
         Set excelApp = CreateObject("Excel.Application")
     End If
     
-    ' Set the workbook and worksheet for "Hankkeet makroilla2.xls"
-    Set excelWorkbook = excelApp.Workbooks("Hankkeet makroilla2.xls")
+    ' Set the workbook and worksheet
+    Set excelWorkbook = excelApp.Workbooks("MML-kululaskuri.xlsm")
     Set excelWorksheet = excelWorkbook.Worksheets(1)
     
-    ' Get the value from cell B40 in "Hankkeet makroilla2.xls"
-    Dim fileName As String
-    fileName = "MML-kululaskuri - " & excelWorksheet.Range("B40").Value & ".xlsm"
+    ' Get the values from cells G10 and G11 in Excel
+    valueG10 = excelWorksheet.Range("G10").Value
+    valueG11 = excelWorksheet.Range("G11").Value
     
-    ' Set the destination workbook with a dynamic filename
-    Set destWorkbook = Workbooks(fileName)
+    ' Extract person 1 name and ID
+    Dim person1Details() As String
+    person1Details = Split(valueG10, ", ")
+    person1Name = Trim(person1Details(0))
+    person1ID = Trim(person1Details(1))
     
-    ' Set the worksheet for the destination workbook
-    Set excelWorksheet = destWorkbook.Worksheets(1)
+    ' Extract person 2 name and ID if G11 is not empty
+    If valueG11 <> "" Then
+        Dim person2Details() As String
+        person2Details = Split(valueG11, ", ")
+        person2Name = Trim(person2Details(0))
+        person2ID = Trim(person2Details(1))
+    End If
     
-    ' Get the value from cell D30 in Excel
-    valueD30 = excelWorksheet.Range("D30").Value
-    
-    ' Trim the value from cell D30 and remove the Euro symbol
-    modifiedValueD30 = Trim(Replace(valueD30, "€", ""))
-    
-    ' Fill the "Teksti45" field in Word with the modified value from D30
-    ActiveDocument.FormFields("Teksti45").Result = modifiedValueD30
-    
-    ' Get the values from cells D48, D58, and D62 in Excel
-    valueD48 = excelWorksheet.Range("D48").Value
-    
-    ' Convert valueD48 to Double explicitly
-    If IsNumeric(valueD48) Then
-        valueD48 = CDbl(valueD48)
+    ' Fill the "Teksti35" field in Word with person names
+    If valueG11 <> "" Then
+        ActiveDocument.FormFields("Teksti35").Result = person1Name & ", " & person2Name
     Else
-        valueD48 = 0 ' Set default value if conversion fails
+        ActiveDocument.FormFields("Teksti35").Result = person1Name
     End If
     
-    valueD58 = excelWorksheet.Range("D58").Value
-    
-    ' Convert valueD58 to Double explicitly
-    If IsNumeric(valueD58) Then
-        valueD58 = CDbl(valueD58)
+    ' Fill the "Teksti36" field in Word with person IDs
+    If valueG11 <> "" Then
+        ActiveDocument.FormFields("Teksti36").Result = person1ID & " / " & person2ID
     Else
-        valueD58 = 0 ' Set default value if conversion fails
+        ActiveDocument.FormFields("Teksti36").Result = person1ID
     End If
-    
-    valueD62 = excelWorksheet.Range("D62").Value
-    
-    ' Trim the value from cell D62 and remove the Euro symbol
-    modifiedValueD62 = Trim(Replace(valueD62, "€", ""))
-    
-    ' Fill the "Teksti48" field in Word with the modified value from D62
-    ActiveDocument.FormFields("Teksti48").Result = modifiedValueD62
-    
-    ' Calculate the sum of the three values (D48, D58, D62)
-    sumValue = valueD48 + valueD58 + CDbl(valueD62)
-    
-    ' Fill the "Teksti46" field in Word with the calculated sum
-    ActiveDocument.FormFields("Teksti46").Result = sumValue
-    
-    ' Check the value of cell G8 in Excel
-    If excelWorksheet.Range("G8").Value = "Sopimus allekirjoitettu SA" Then
-        ' Set the "Teksti5" field in Word to "Sähköinen allekirjoitus"
-        ActiveDocument.FormFields("Teksti5").Result = "Sähköinen allekirjoitus"
-    End If
-    
-    ' Get the values from cells G12, G24, G26, and G27 in Excel
-    valueG12 = excelWorksheet.Range("G12").Value
-    valueG24 = excelWorksheet.Range("G24").Value
-    valueG26 = excelWorksheet.Range("G26").Value
-    valueG27 = excelWorksheet.Range("G27").Value
-    
-    ' Check if any value in the range G24:G27 is empty
-    If valueG24 = "" Or valueG26 = "" Or valueG27 = "" Then
-        ' If any value is empty, set the "Teksti51" field in Word to the value of G12
-        teksti51Value = valueG12
-    Else
-        ' If all values are present, concatenate G24, ", osakkeet ", and G26
-        teksti51Value = valueG24 & ", osakkeet " & valueG26
-    End If
-    
-    ' Fill the "Teksti51" field in Word with the determined value
-    ActiveDocument.FormFields("Teksti51").Result = teksti51Value
     
     ' Clean up objects
     Set excelWorksheet = Nothing
-    Set destWorkbook = Nothing
     Set excelWorkbook = Nothing
     Set excelApp = Nothing
 End Sub
