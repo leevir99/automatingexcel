@@ -115,112 +115,106 @@ End Sub
 
 UUSITTU:
 Sub tietoExcelit()
-    ' Tarkistetaan, onko B40 tyhjä
-    If Range("B40").Value = "" Then
-        MsgBox "Tietoja ei onnistuttu tuomaan. Tarkista hankenumero solusta B40."
-        Exit Sub
-    End If
+    On Error GoTo ErrorHandler
     
-    ' Määritellään kansio ja tiedostopolku
-    Dim kansioPolku As String
-    kansioPolku = "Z:\Lähetysohjeet\Asiakirjojen tietoexcelit\" & Range("B40").Value & ".xlsx"
-    
-    ' Tarkistetaan, onko tiedostoa olemassa
-    If Dir(kansioPolku) = "" Then
-        MsgBox "Tietoja ei onnistuttu tuomaan. Tarkista hankenumero solusta B40."
-        Exit Sub
-    End If
-    
-    ' Avataan tietoexcel taustalla ja piilotetaan sovellusikkuna
+    ' Open the info excel file
     Dim infoTiedosto As Workbook
-    Set infoTiedosto = Workbooks.Open(Filename:=kansioPolku, UpdateLinks:=False)
-    infoTiedosto.Application.Visible = False
+    Set infoTiedosto = Workbooks.Open("C:\Path\To\InfoFile.xlsx")
     
-    ' Haetaan pankin nimi välilehdeltä "Yleinen"
-    Dim pankinNimi As String
-    pankinNimi = infoTiedosto.Sheets("Yleinen").Range("H1").Value
-    
-    ' Kopioidaan pankin nimi haluttuihin kohtiin "Main"-välilehdellä
-    ThisWorkbook.Sheets("Main").Range("D18").Value = pankinNimi
-    ThisWorkbook.Sheets("Main").Range("B146:C146").Value = pankinNimi
-    
-    ' Etsitään lainanumeroiden alue
+    ' Find the last row of loan numbers
     Dim viimeinenRivi As Long
     On Error Resume Next
     viimeinenRivi = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("LISÄTIEDOT").Row - 1
     On Error GoTo 0
     
     If viimeinenRivi < 1 Then
-        MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
+        MsgBox "LISÄTIEDOT-riviä ei löytynyt. Tarkista tuodut tiedot lainoista."
         infoTiedosto.Close False
         Exit Sub
     End If
     
+    ' Find the bank ID
     Dim pankkiID As String
     On Error Resume Next
     pankkiID = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Konttorin numero").Offset(0, 1).Value
     On Error GoTo 0
     
     If pankkiID = "" Then
-        MsgBox "Konttorin numero ei löydy. Tarkista tuodut tiedot lainoista."
+        MsgBox "Konttorin numeroa ei löytynyt. Tarkista tuodut tiedot lainoista."
         infoTiedosto.Close False
         Exit Sub
     End If
     
-    Dim lainaNumerotAlue As Range
-    Set lainaNumerotAlue = infoTiedosto.Sheets("Yleinen").Range("B1:B" & viimeinenRivi)
+    ' Find loan numbers, loan amounts, and people involved
+    Dim loanNumbers As Range
+    Dim loanAmounts As Range
+    Dim people As Range
     
-    Dim lainaNro As Range
-    Dim lainaNumerot As Range
-    Set lainaNumerot = ThisWorkbook.Sheets("Main").Range("B53:B56")
-    
-    Dim lainaMaarat As Range
-    Set lainaMaarat = ThisWorkbook.Sheets("Main").Range("C53:C56")
-    
-    Dim laskuri As Integer
-    laskuri = 1
-    
-    For Each lainaNro In lainaNumerotAlue
-        If Left(lainaNro.Value, Len(pankkiID)) = pankkiID Then
-            lainaNumerot.Cells(laskuri, 1).Value = lainaNro.Value
-            lainaMaarat.Cells(laskuri, 1).Value = infoTiedosto.Sheets("Yleinen").Cells(lainaNro.Row, "D").Value
-            laskuri = laskuri + 1
-            If laskuri > 4 Then
-                MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
-                infoTiedosto.Close False
-                Exit Sub
+    With infoTiedosto.Sheets("Yleinen")
+        ' Find loan numbers
+        Set loanNumbers = .Range("B1:B" & viimeinenRivi)
+        
+        ' Find loan amounts
+        Set loanAmounts = .Range("D1:D" & viimeinenRivi)
+        
+        ' Find people involved
+        Dim startRow As Long
+        Dim endRow As Long
+        
+        startRow = 2 ' Start from the second row
+        
+        Do While startRow <= viimeinenRivi
+            ' Check if the current row is a loan row
+            If .Range("C" & startRow).Value Like "Asuntolaina" Or .Range("C" & startRow).Value Like "Laina" Or .Range("C" & startRow).Value Like "Väliaikaislaina" Then
+                ' Find the end row for people involved
+                endRow = startRow + 1
+                
+                Do While endRow <= viimeinenRivi
+                    ' Check if the next row is still a person row
+                    If Not IsEmpty(.Range("C" & endRow).Value) Then
+                        ' Increment the end row
+                        endRow = endRow + 1
+                    Else
+                        ' Exit the inner loop when encountering an empty row
+                        Exit Do
+                    End If
+                Loop
+                
+                ' Check if the loop ended at the last loan or an empty row
+                If endRow > viimeinenRivi Then
+                    ' Set the end row as the last row of data
+                    endRow = viimeinenRivi
+                End If
+                
+                ' Copy the loan numbers to the "Main" sheet
+                ThisWorkbook.Sheets("Main").Range("C22").Resize(endRow - startRow, 1).Value = loanNumbers.Rows(startRow - 1).Resize(endRow - startRow, 1).Value
+                
+                ' Copy the loan amounts to the "Main" sheet
+                ThisWorkbook.Sheets("Main").Range("D22").Resize(endRow - startRow, 1).Value = loanAmounts.Rows(startRow - 1).Resize(endRow - startRow, 1).Value
+                
+                ' Copy the people involved to the "Main" sheet
+                ThisWorkbook.Sheets("Main").Range("A22").Resize(endRow - startRow, 1).Value = .Range("B" & startRow & ":B" & endRow).Value
+                ThisWorkbook.Sheets("Main").Range("B22").Resize(endRow - startRow, 1).Value = .Range("C" & startRow & ":C" & endRow).Value
+                
+                ' Set the start row for the next loan
+                startRow = endRow + 1
+            Else
+                ' Increment the start row when encountering a non-loan row
+                startRow = startRow + 1
             End If
-        End If
-    Next lainaNro
+        Loop
+    End With
     
-    ' Etsitään "Vak_arvon vahvistaja" ja kopioidaan arvo
-    Dim vakArvonVahvistaja As Range
-    Set vakArvonVahvistaja = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Vak_arvon vahvistaja", LookAt:=xlWhole)
+    ' Save and close the info excel file
+    infoTiedosto.Close SaveChanges:=False
     
-    If Not vakArvonVahvistaja Is Nothing Then
-        ThisWorkbook.Sheets("Main").Range("A120").Value = vakArvonVahvistaja.Offset(0, 1).Value
-    End If
+    MsgBox "Tiedot on kopioitu onnistuneesti!"
     
-    ' Etsitään "Päättäjät" ja kopioidaan arvo
-    Dim paattajat As Range
-    Set paattajat = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Päättäjät", LookAt:=xlWhole)
+    Exit Sub
     
-    If Not paattajat Is Nothing Then
-        ThisWorkbook.Sheets("Main").Range("A121").Value = paattajat.Offset(0, 1).Value
-    End If
-    
-    ' Etsitään "Päätös pvm" ja kopioidaan arvo
-    Dim paatosPvm As Range
-    Set paatosPvm = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Päätös pvm", LookAt:=xlWhole)
-    
-    If Not paatosPvm Is Nothing Then
-        ThisWorkbook.Sheets("Main").Range("A122").Value = paatosPvm.Offset(0, 1).Value
-    End If
-    
-    ' Suljetaan tietoexcel
+ErrorHandler:
+    MsgBox "Virhe suorittaessa toimintoa: " & Err.Description
     infoTiedosto.Close False
-    
-    ' Näytetään viesti onnistuneesta tuonnista
-    MsgBox "Tiedot tuotu onnistuneesti."
 End Sub
+
 
