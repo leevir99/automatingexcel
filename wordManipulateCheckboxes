@@ -1,0 +1,16 @@
+Sub CheckAllCheckboxes()
+    Dim doc As Document
+    Dim shape As Shape
+    
+    ' Set the document to the active document
+    Set doc = ActiveDocument
+    
+    ' Loop through all shapes in the document
+    For Each shape In doc.Shapes
+        ' Check if the shape is a checkbox
+        If shape.Type = msoFormControl And shape.FormControlType = wdCheckBox Then
+            ' Set the checkbox value to checked
+            shape.OLEFormat.Object.Value = True
+        End If
+    Next shape
+End Sub
