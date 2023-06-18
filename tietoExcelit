@@ -143,7 +143,7 @@ Sub tietoExcelit()
     ThisWorkbook.Sheets("Main").Range("D18").Value = pankinNimi
     ThisWorkbook.Sheets("Main").Range("B146:C146").Value = pankinNimi
     
-    ' Etsitään lainanumeroiden ja lainasummien alue
+    ' Etsitään lainanumeroiden alue
     Dim viimeinenRivi As Long
     On Error Resume Next
     viimeinenRivi = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("LISÄTIEDOT").Row - 1
@@ -155,10 +155,19 @@ Sub tietoExcelit()
         Exit Sub
     End If
     
+    Dim pankkiID As String
+    On Error Resume Next
+    pankkiID = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Konttorin numero").Offset(0, 1).Value
+    On Error GoTo 0
+    
+    If pankkiID = "" Then
+        MsgBox "Konttorin numero ei löydy. Tarkista tuodut tiedot lainoista."
+        infoTiedosto.Close False
+        Exit Sub
+    End If
+    
     Dim lainaNumerotAlue As Range
-    Dim lainaMaaratAlue As Range
     Set lainaNumerotAlue = infoTiedosto.Sheets("Yleinen").Range("B1:B" & viimeinenRivi)
-    Set lainaMaaratAlue = infoTiedosto.Sheets("Yleinen").Range("D1:D" & viimeinenRivi)
     
     Dim lainaNro As Range
     Dim lainaNumerot As Range
@@ -171,33 +180,38 @@ Sub tietoExcelit()
     laskuri = 1
     
     For Each lainaNro In lainaNumerotAlue
-        Dim lainaTeksti As String
-        lainaTeksti = infoTiedosto.Sheets("Yleinen").Cells(lainaNro.Row, "C").Value
-        
-        If lainaTeksti = "Asuntolaina" Or lainaTeksti = "Laina" Or lainaTeksti = "Väliaikaislaina" Then
+        If Left(lainaNro.Value, Len(pankkiID)) = pankkiID Then
             lainaNumerot.Cells(laskuri, 1).Value = lainaNro.Value
-            lainaMaarat.Cells(laskuri, 1).Value = lainaMaaratAlue.Cells(lainaNro.Row, 1).Value
+            lainaMaarat.Cells(laskuri, 1).Value = infoTiedosto.Sheets("Yleinen").Cells(lainaNro.Row, "D").Value
             
-            ' Etsitään henkilöt
-            Dim henkilotRivi As Range
-            Set henkilotRivi = lainaNro.Offset(1, 0)
+            ' Find the corresponding people involved in the loan
+            Dim peopleIDs As Range
+            Set peopleIDs = infoTiedosto.Sheets("Yleinen").Range("B1:B" & viimeinenRivi)
             
-            Dim henkilotAlue As Range
-            Dim henkilot As Range
-            Set henkilotAlue = infoTiedosto.Sheets("Yleinen").Range(henkilotRivi, henkilotRivi.End(xlDown))
-            Set henkilot = henkilotAlue.Offset(0, 1)
+            Dim peopleNames As Range
+            Set peopleNames = infoTiedosto.Sheets("Yleinen").Range("C1:C" & viimeinenRivi)
             
-            Dim henkilo As Range
+            Dim peopleData As Range
+            Set peopleData = ThisWorkbook.Sheets("Main").Range("D53:D56")
+            
+            Dim currentLoanRow As Range
+            Set currentLoanRow = Nothing
+            
             Dim offsetRow As Integer
             offsetRow = (laskuri - 1) * 3 + 8
             
-            For Each henkilo In henkilot
-                If henkilo.Value <> "" Then
-                    ThisWorkbook.Sheets("Main").Cells(offsetRow, 3).Value = henkilo.Value
-                    ThisWorkbook.Sheets("Main").Cells(offsetRow, 2).Value = henkilo.Offset(0, -1).Value
+            Set currentLoanRow = infoTiedosto.Sheets("Yleinen").Range("B" & lainaNro.Row + 1)
+            
+            For Each personID In peopleIDs
+                If personID.Row > currentLoanRow.Row Then
+                    Exit For
+                End If
+                If personID.Value <> "" Then
+                    ThisWorkbook.Sheets("Main").Cells(offsetRow, 4).Value = personID.Value
+                    ThisWorkbook.Sheets("Main").Cells(offsetRow, 5).Value = peopleNames.Cells(personID.Row, 1).Value
                     offsetRow = offsetRow + 1
                 End If
-            Next henkilo
+            Next personID
             
             laskuri = laskuri + 1
             
@@ -239,6 +253,7 @@ Sub tietoExcelit()
     ' Näytetään viesti onnistuneesta tuonnista
     MsgBox "Tiedot tuotu onnistuneesti."
 End Sub
+
 
 
 
