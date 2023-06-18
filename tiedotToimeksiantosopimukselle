@@ -1,0 +1,71 @@
+Sub tiedotToimeksiantosopimukselle()
+    Dim excelWorksheet As Object ' Excel.Worksheet
+    Dim valueD30 As String
+    Dim valueD48 As Variant ' Use Variant type for compatibility
+    Dim valueD58 As Variant ' Use Variant type for compatibility
+    Dim modifiedValueD30 As String
+    Dim sumValue As Double
+    Dim valueG12 As String
+    Dim valueG24 As String
+    Dim valueG26 As String
+    Dim valueG27 As String
+    Dim teksti51Value As String
+    
+    ' Set the worksheet
+    Set excelWorksheet = Workbooks("MML-kululaskuri.xlsm").Worksheets(1)
+    
+    ' Get the value from cell D30 in Excel
+    valueD30 = excelWorksheet.Range("D30").Value
+    
+    ' Trim the value from cell D30 and remove the Euro symbol
+    modifiedValueD30 = Trim(Replace(valueD30, "€", ""))
+    
+    ' Fill the "Teksti45" field in Word with the modified value from D30
+    ActiveDocument.FormFields("Teksti45").Result = modifiedValueD30
+    
+    ' Get the values from cells D48 and D58 in Excel
+    valueD48 = excelWorksheet.Range("D48").Value
+    
+    ' Convert valueD48 to Double explicitly
+    If IsNumeric(valueD48) Then
+        valueD48 = CDbl(valueD48)
+    Else
+        valueD48 = 0 ' Set default value if conversion fails
+    End If
+    
+    valueD58 = excelWorksheet.Range("D58").Value
+    
+    ' Convert valueD58 to Double explicitly
+    If IsNumeric(valueD58) Then
+        valueD58 = CDbl(valueD58)
+    Else
+        valueD58 = 0 ' Set default value if conversion fails
+    End If
+    
+    ' Calculate the sum of the two values
+    sumValue = valueD48 + valueD58
+    
+    ' Fill the "Teksti46" field in Word with the calculated sum
+    ActiveDocument.FormFields("Teksti46").Result = sumValue
+    
+    ' Get the values from cells G12, G24, G26, and G27 in Excel
+    valueG12 = excelWorksheet.Range("G12").Value
+    valueG24 = excelWorksheet.Range("G24").Value
+    valueG26 = excelWorksheet.Range("G26").Value
+    valueG27 = excelWorksheet.Range("G27").Value
+    
+    ' Check if any value in the range G24:G27 is empty
+    If valueG24 = "" Or valueG26 = "" Or valueG27 = "" Then
+        ' If any value is empty, set the "Teksti51" field in Word to the value of G12
+        teksti51Value = valueG12
+    Else
+        ' If all values are present, concatenate G24, ", osakkeet ", and G26
+        teksti51Value = valueG24 & ", osakkeet " & valueG26
+    End If
+    
+    ' Fill the "Teksti51" field in Word with the determined value
+    ActiveDocument.FormFields("Teksti51").Result = teksti51Value
+    
+    ' Clean up objects
+    Set excelWorksheet = Nothing
+End Sub
