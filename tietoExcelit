@@ -166,16 +166,6 @@ Sub tietoExcelit()
         Exit Sub
     End If
     
-    Dim lainaNumerotAlue As Range
-    Set lainaNumerotAlue = infoTiedosto.Sheets("Yleinen").Range("B1:B" & viimeinenRivi)
-    
-    Dim lainaNro As Range
-    Dim lainaNumerot As Range
-    Set lainaNumerot = ThisWorkbook.Sheets("Main").Range("B53:B56")
-    
-    Dim lastRow As Long
-    lastRow = infoTiedosto.Sheets("Yleinen").Cells(infoTiedosto.Sheets("Yleinen").Rows.Count, "A").End(xlUp).Row
-    
     Dim personIDs As Object
     Set personIDs = CreateObject("Scripting.Dictionary")
     
@@ -184,13 +174,7 @@ Sub tietoExcelit()
     Dim i As Integer
     i = 1
     
-    For Each personIDCell In infoTiedosto.Sheets("Yleinen").Range("A1:A" & lastRow)
-        If Not personIDCell.Offset(0, 1).Value = "" And Not personIDs.exists(personIDCell.Value) Then
-            personIDs(personIDCell.Value) = infoTiedosto.Sheets("Yleinen").Cells(personIDCell.Row, "C").Value
-        End If
-    Next personIDCell
-    
-    For Each personIDCell In infoTiedosto.Sheets("Yleinen").Range("B2:B" & lastRow)
+    For Each personIDCell In infoTiedosto.Sheets("Yleinen").Range("A2:A" & viimeinenRivi)
         If Not personIDCell.Value Like "####-####" Then
             Exit For
         End If
@@ -200,7 +184,7 @@ Sub tietoExcelit()
         End If
         
         If Not personIDs.exists(personIDCell.Value) Then
-            personIDs(personIDCell.Value) = infoTiedosto.Sheets("Yleinen").Cells(personIDCell.Row, "D").Value
+            personIDs(personIDCell.Value) = infoTiedosto.Sheets("Yleinen").Cells(personIDCell.Row, "C").Value
         End If
     Next personIDCell
     
@@ -210,24 +194,20 @@ Sub tietoExcelit()
         Exit Sub
     End If
     
+    Dim destRange As Range
+    Set destRange = ThisWorkbook.Sheets("Main").Range("B45")
+    
     For Each personIDCell In personIDs
-        If i = 1 Then
-            ThisWorkbook.Sheets("Main").Range("B45").Value = personIDCell
-            ThisWorkbook.Sheets("Main").Range("C3").Value = personIDs(personIDCell)
-        ElseIf i = 2 Then
-            ThisWorkbook.Sheets("Main").Range("B48").Value = personIDCell
-            ThisWorkbook.Sheets("Main").Range("C4").Value = personIDs(personIDCell)
-        ElseIf i = 3 Then
-            ThisWorkbook.Sheets("Main").Range("B51").Value = personIDCell
-            ThisWorkbook.Sheets("Main").Range("C5").Value = personIDs(personIDCell)
-        End If
-        i = i + 1
+        destRange.Value = personIDCell
+        destRange.Offset(-1, 0).Value = personIDs(personIDCell)
+        Set destRange = destRange.Offset(3, 0)
     Next personIDCell
     
     infoTiedosto.Close False
     
     MsgBox "Tiedot tuotu onnistuneesti."
 End Sub
+
 
 
 
