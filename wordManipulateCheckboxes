@@ -1,17 +1,19 @@
 Sub InsertTodaysDate()
     Dim doc As Document
-    Dim field As Field
+    Dim rng As Range
     
     ' Set the document to the active document
     Set doc = ActiveDocument
     
-    ' Loop through all fields in the document
-    For Each field In doc.Fields
-        ' Check if the field is a dropdown or text field
-        If field.Type = wdFieldFormDropDown Or field.Type = wdFieldFormTextInput Then
-            ' Set the value of the field to today's date
-            field.Code.Text = "DATE " & Chr(34) & Format(Date, "dd/MM/yyyy") & Chr(34)
-            Exit For  ' Exit the loop after updating the first field
-        End If
-    Next field
+    ' Set the range to the first protected field
+    Set rng = doc.ProtectionType(wdAllowOnlyFormFields).FormFields(1).Range
+    
+    ' Unlock the range to modify its content
+    rng.Editors.Add wdEditorEveryone
+    
+    ' Replace the field's content with today's date
+    rng.Text = Format(Date, "dd.mm.yyyy")
+    
+    ' Lock the range again
+    rng.Editors(wdEditorEveryone).Delete
 End Sub
