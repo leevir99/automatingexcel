@@ -181,7 +181,7 @@ Sub tietoExcelit()
     
     Dim uniquePersonIDs As Collection
     Set uniquePersonIDs = New Collection
-
+    
     For Each lainaNro In lainaNumerotAlue
         If Left(lainaNro.Value, Len(pankkiID)) = pankkiID Then
             lainaNumerot.Cells(laskuri, 1).Value = lainaNro.Value
@@ -201,6 +201,8 @@ Sub tietoExcelit()
             Dim uniquePersonName As String
             Dim isUniquePerson As Boolean
             isUniquePerson = False
+    
+            Dim loanPeople As String ' Concatenated string for loan people
     
             Do Until personID.Value = "" Or personID.Row > viimeinenRivi Or IsLoanType(personID.Value)
                 personData.Value = personID.Value
@@ -238,6 +240,12 @@ Sub tietoExcelit()
                             ThisWorkbook.Sheets("Main").Range("B50").Value = uniquePersonName
                             ThisWorkbook.Sheets("Main").Range("B51").Value = uniquePersonID
                     End Select
+    
+                    ' Concatenate the person ID and name to the loanPeople string
+                    If loanPeople <> "" Then
+                        loanPeople = loanPeople & " / "
+                    End If
+                    loanPeople = loanPeople & uniquePersonName & ", " & uniquePersonID
                 End If
                 On Error GoTo 0
     
@@ -245,13 +253,10 @@ Sub tietoExcelit()
                 Set personData = personData.Offset(1, 0)
             Loop
     
-            laskuri = laskuri + 1
+            ' Add the loan people to the designated cell
+            ThisWorkbook.Sheets("Main").Range("D" & laskuri + 52).Value = loanPeople
     
-            If laskuri > 4 Then
-                MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
-                infoTiedosto.Close False
-                Exit Sub
-            End If
+            laskuri = laskuri + 1
         End If
     Next lainaNro
     
