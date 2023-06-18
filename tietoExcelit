@@ -111,8 +111,6 @@ End Sub
 
 
 
-
-
 UUSITTU:
 Sub tietoExcelit()
     ' Tarkistetaan, onko B40 tyhjä
@@ -171,69 +169,47 @@ Sub tietoExcelit()
     
     Dim personIDCell As Range
     Dim personNameCell As Range
+    Dim i As Integer
+    i = 1
     
     For Each personIDCell In infoTiedosto.Sheets("Yleinen").Range("B2:B" & viimeinenRivi)
-        If Not personIDCell.Value Like "####-####" Then
-            Exit For
-        End If
-        
         If Not personIDCell.Offset(0, -1).Value Like "*" & pankkiID Then
             Exit For
         End If
         
-        If Not personIDs.exists(personIDCell.Value) Then
-            Set personNameCell = infoTiedosto.Sheets("Yleinen").Cells(personIDCell.Row, "C")
-            personIDs(personIDCell.Value) = personNameCell.Value
+        If Left(personIDCell.Value, Len(pankkiID) + 1) = pankkiID & "-" Then
+            ' This value is a loan ID
+            Dim loanID As String
+            loanID = Mid(personIDCell.Value, Len(pankkiID) + 2)
+            
+            ' Store the loan ID in a separate column
+            personIDCell.Offset(0, 1).Value = loanID
+        Else
+            ' This value is a person ID
+            If Not personIDs.Exists(personIDCell.Value) Then
+                personIDs.Add personIDCell.Value, personIDCell.Offset(0, 1).Value
+                i = i + 1
+            End If
         End If
     Next personIDCell
     
-    If personIDs.Count > 3 Then
-        MsgBox "Enemmän kuin kolme ainutlaatuista henkilöä löydetty. Tarkista tuodut tiedot henkilöistä."
-        infoTiedosto.Close False
-        Exit Sub
-    End If
-    
-    Dim destRange As Range
-    Set destRange = ThisWorkbook.Sheets("Main").Range("B45")
-    
-    Dim personID As Variant
-    For Each personID In personIDs.keys
-        destRange.Value = personID
-        destRange.Offset(-1, 0).Value = personIDs(personID)
-        Set destRange = destRange.Offset(3, 0)
-    Next personID
-
-    
-    ' Etsitään "Vak_arvon vahvistaja" ja kopioidaan arvo
-    Dim vakArvonVahvistaja As Range
-    Set vakArvonVahvistaja = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Vak_arvon vahvistaja", LookAt:=xlWhole)
-    
-    If Not vakArvonVahvistaja Is Nothing Then
-        ThisWorkbook.Sheets("Main").Range("A120").Value = vakArvonVahvistaja.Offset(0, 1).Value
-    End If
-    
-    ' Etsitään "Päättäjät" ja kopioidaan arvo
-    Dim paattajat As Range
-    Set paattajat = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Päättäjät", LookAt:=xlWhole)
-    
-    If Not paattajat Is Nothing Then
-        ThisWorkbook.Sheets("Main").Range("A121").Value = paattajat.Offset(0, 1).Value
-    End If
-    
-    ' Etsitään "Päätös pvm" ja kopioidaan arvo
-    Dim paatosPvm As Range
-    Set paatosPvm = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Päätös pvm", LookAt:=xlWhole)
-    
-    If Not paatosPvm Is Nothing Then
-        ThisWorkbook.Sheets("Main").Range("A122").Value = paatosPvm.Offset(0, 1).Value
-    End If
-    
-    ' Suljetaan tietoexcel
+    ' Cleanup
     infoTiedosto.Close False
     
-    ' Näytetään viesti onnistuneesta tuonnista
+    ' Output the person IDs to the "Main" sheet
+    Dim key As Variant
+    Dim rowIndex As Integer
+    rowIndex = 21
+    
+    For Each key In personIDs.Keys
+        ThisWorkbook.Sheets("Main").Cells(rowIndex, 3).Value = key
+        ThisWorkbook.Sheets("Main").Cells(rowIndex, 4).Value = personIDs(key)
+        rowIndex = rowIndex + 1
+    Next key
+    
     MsgBox "Tiedot tuotu onnistuneesti."
 End Sub
+
 
 
 
