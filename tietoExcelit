@@ -173,31 +173,11 @@ Sub tietoExcelit()
     Dim lainaNumerot As Range
     Set lainaNumerot = ThisWorkbook.Sheets("Main").Range("B53:B56")
     
-    Dim lainaMaarat As Range
-    Set lainaMaarat = ThisWorkbook.Sheets("Main").Range("C53:C56")
-    
-    Dim laskuri As Integer
-    laskuri = 1
-    
-    For Each lainaNro In lainaNumerotAlue
-        If Left(lainaNro.Value, Len(pankkiID)) = pankkiID Then
-            lainaNumerot.Cells(laskuri, 1).Value = lainaNro.Value
-            lainaMaarat.Cells(laskuri, 1).Value = infoTiedosto.Sheets("Yleinen").Cells(lainaNro.Row, "D").Value
-            laskuri = laskuri + 1
-            If laskuri > 4 Then
-                MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
-                infoTiedosto.Close False
-                Exit Sub
-            End If
-        End If
-    Next lainaNro
-    
-    ' Find unique/distinct person IDs and their names in order of occurrence
-    Dim personIDs As Object
-    Set personIDs = CreateObject("Scripting.Dictionary")
-    
     Dim lastRow As Long
     lastRow = infoTiedosto.Sheets("Yleinen").Cells(infoTiedosto.Sheets("Yleinen").Rows.Count, "A").End(xlUp).Row
+    
+    Dim personIDs As Object
+    Set personIDs = CreateObject("Scripting.Dictionary")
     
     Dim personIDCell As Range
     Dim personNameCell As Range
@@ -210,6 +190,20 @@ Sub tietoExcelit()
         End If
     Next personIDCell
     
+    For Each personIDCell In infoTiedosto.Sheets("Yleinen").Range("B2:B" & lastRow)
+        If Not personIDCell.Value Like "####-####" Then
+            Exit For
+        End If
+        
+        If Not personIDCell.Offset(0, -1).Value Like "*" & pankkiID Then
+            Exit For
+        End If
+        
+        If Not personIDs.exists(personIDCell.Value) Then
+            personIDs(personIDCell.Value) = infoTiedosto.Sheets("Yleinen").Cells(personIDCell.Row, "D").Value
+        End If
+    Next personIDCell
+    
     If personIDs.Count > 3 Then
         MsgBox "Enemmän kuin kolme ainutlaatuista henkilöä löydetty. Tarkista tuodut tiedot henkilöistä."
         infoTiedosto.Close False
@@ -218,24 +212,23 @@ Sub tietoExcelit()
     
     For Each personIDCell In personIDs
         If i = 1 Then
-            ThisWorkbook.Sheets("Main").Range("B44").Value = personIDCell
-            ThisWorkbook.Sheets("Main").Range("B45").Value = personIDs(personIDCell)
+            ThisWorkbook.Sheets("Main").Range("B45").Value = personIDCell
+            ThisWorkbook.Sheets("Main").Range("C3").Value = personIDs(personIDCell)
         ElseIf i = 2 Then
-            ThisWorkbook.Sheets("Main").Range("B47").Value = personIDCell
-            ThisWorkbook.Sheets("Main").Range("B48").Value = personIDs(personIDCell)
+            ThisWorkbook.Sheets("Main").Range("B48").Value = personIDCell
+            ThisWorkbook.Sheets("Main").Range("C4").Value = personIDs(personIDCell)
         ElseIf i = 3 Then
-            ThisWorkbook.Sheets("Main").Range("B50").Value = personIDCell
-            ThisWorkbook.Sheets("Main").Range("B51").Value = personIDs(personIDCell)
+            ThisWorkbook.Sheets("Main").Range("B51").Value = personIDCell
+            ThisWorkbook.Sheets("Main").Range("C5").Value = personIDs(personIDCell)
         End If
         i = i + 1
     Next personIDCell
     
-    ' Suljetaan tietoexcel
     infoTiedosto.Close False
     
-    ' Näytetään viesti onnistuneesta tuonnista
     MsgBox "Tiedot tuotu onnistuneesti."
 End Sub
+
 
 
 
