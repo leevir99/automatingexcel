@@ -1,16 +1,17 @@
-Sub ClickAllCheckboxes()
+Sub InsertTodaysDate()
     Dim doc As Document
-    Dim cb As ContentControl
+    Dim field As Field
     
-    ' Set the document variable to the active document
+    ' Set the document to the active document
     Set doc = ActiveDocument
     
-    ' Loop through each content control in the document
-    For Each cb In doc.ContentControls
-        ' Check if the content control is a checkbox
-        If cb.Type = wdContentControlCheckBox Then
-            ' Set the checkbox value to True (checked)
-            cb.Checked = True
+    ' Loop through all fields in the document
+    For Each field In doc.Fields
+        ' Check if the field is a dropdown or text field
+        If field.Type = wdFieldFormDropDown Or field.Type = wdFieldFormTextInput Then
+            ' Set the value of the field to today's date
+            field.Code.Text = "DATE " & Chr(34) & Format(Date, "dd/MM/yyyy") & Chr(34)
+            Exit For  ' Exit the loop after updating the first field
         End If
-    Next cb
+    Next field
 End Sub
