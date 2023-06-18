@@ -184,7 +184,6 @@ Sub tietoExcelit()
     
     For Each lainaNro In lainaNumerotAlue
         If Left(lainaNro.Value, Len(pankkiID)) = pankkiID Then
-            lainaNumerot.Cells(laskuri, 1).Value = lainaNro.Value
             lainaMaarat.Cells(laskuri, 1).Value = infoTiedosto.Sheets("Yleinen").Cells(lainaNro.Row, "D").Value
     
             ' Find the corresponding people involved in the loan
@@ -205,9 +204,6 @@ Sub tietoExcelit()
             Dim loanPeople As String ' Concatenated string for loan people
     
             Do Until personID.Value = "" Or personID.Row > viimeinenRivi Or IsLoanType(personID.Value)
-                personData.Value = personID.Value
-                personData.Offset(0, 1).Value = infoTiedosto.Sheets("Yleinen").Cells(personID.Row, "C").Value
-    
                 ' Check if the person ID is unique
                 uniquePersonID = personID.Value
                 uniquePersonName = infoTiedosto.Sheets("Yleinen").Cells(personID.Row, "C").Value
@@ -250,15 +246,15 @@ Sub tietoExcelit()
                 On Error GoTo 0
     
                 Set personID = personID.Offset(1, 0)
-                Set personData = personData.Offset(1, 0)
             Loop
     
-            ' Add the loan people to the designated cell
-            ThisWorkbook.Sheets("Main").Range("D" & laskuri + 52).Value = loanPeople
+            ' Add the loan people to the designated cell in column D
+            personData.Value = loanPeople
     
             laskuri = laskuri + 1
         End If
     Next lainaNro
+
     
     ' Etsitään "Vak_arvon vahvistaja" ja kopioidaan arvo
     Dim vakArvonVahvistaja As Range
