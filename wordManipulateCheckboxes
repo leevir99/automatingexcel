@@ -1,20 +1,16 @@
-Sub CheckAllCheckboxes()
+Sub ClickAllCheckboxes()
     Dim doc As Document
-    Dim shape As Shape
+    Dim cb As ContentControl
     
-    ' Set the document to the active document
+    ' Set the document variable to the active document
     Set doc = ActiveDocument
     
-    ' Loop through all shapes in the document
-    For Each shape In doc.Shapes
-        ' Check if the shape is a checkbox
-        If shape.Type = msoTextBox And shape.OLEFormat.ClassType = "Forms.CheckBox.1" Then
-            ' Toggle the checkbox by modifying the text content
-            If shape.TextFrame.TextRange.Text = "☐" Then
-                shape.TextFrame.TextRange.Text = "☒"
-            ElseIf shape.TextFrame.TextRange.Text = "☒" Then
-                shape.TextFrame.TextRange.Text = "☐"
-            End If
+    ' Loop through each content control in the document
+    For Each cb In doc.ContentControls
+        ' Check if the content control is a checkbox
+        If cb.Type = wdContentControlCheckBox Then
+            ' Set the checkbox value to True (checked)
+            cb.Checked = True
         End If
-    Next shape
+    Next cb
 End Sub
