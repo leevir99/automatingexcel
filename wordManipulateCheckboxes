@@ -1,28 +1,37 @@
 Sub InsertTodaysDate()
     Dim doc As Document
     Dim formField As FormField
+    Dim isFirstProtectedField As Boolean
     
     ' Set the document to the active document
     Set doc = ActiveDocument
     
+    ' Initialize the flag variable
+    isFirstProtectedField = True
+    
     ' Loop through all form fields in the document
     For Each formField In doc.FormFields
         ' Check if the form field is protected
-        If formField.Type <> wdFieldFormTextInput Or formField.StatusText <> "Protected" Then
-            ' Skip non-protected form fields
-            Continue For
+        If formField.Type = wdFieldFormTextInput And formField.StatusText = "Protected" Then
+            ' Unlock the form field to modify its content
+            formField.Range.FormFields(1).Locked = False
+            
+            ' Replace the field's content with today's date
+            formField.Result = Format(Date, "dd.mm.yyyy")
+            
+            ' Lock the form field again
+            formField.Range.FormFields(1).Locked = True
+            
+            ' Set the flag to indicate the first protected field has been updated
+            isFirstProtectedField = False
+            
+            ' Exit the loop after updating the first protected field
+            Exit For
         End If
-        
-        ' Unlock the form field to modify its content
-        formField.Range.FormFields(1).Locked = False
-        
-        ' Replace the field's content with today's date
-        formField.Result = Format(Date, "dd.mm.yyyy")
-        
-        ' Lock the form field again
-        formField.Range.FormFields(1).Locked = True
-        
-        ' Exit the loop after updating the first protected field
-        Exit For
     Next formField
+    
+    ' Check if no protected fields were found
+    If isFirstProtectedField Then
+        MsgBox "No protected form fields found."
+    End If
 End Sub
