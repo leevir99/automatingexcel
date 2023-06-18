@@ -2,6 +2,7 @@ Sub tiedotToimeksiantosopimukselle()
     Dim excelApp As Object ' Excel.Application
     Dim excelWorkbook As Object ' Excel.Workbook
     Dim excelWorksheet As Object ' Excel.Worksheet
+    Dim destWorkbook As Object ' Destination workbook
     Dim valueD30 As String
     Dim valueD48 As Variant ' Use Variant type for compatibility
     Dim valueD58 As Variant ' Use Variant type for compatibility
@@ -23,7 +24,7 @@ Sub tiedotToimeksiantosopimukselle()
         Set excelApp = CreateObject("Excel.Application")
     End If
     
-    ' Set the workbook and worksheet
+    ' Set the workbook and worksheet for "Hankkeet makroilla2.xls"
     Set excelWorkbook = excelApp.Workbooks("Hankkeet makroilla2.xls")
     Set excelWorksheet = excelWorkbook.Worksheets(1)
     
@@ -31,9 +32,11 @@ Sub tiedotToimeksiantosopimukselle()
     Dim fileName As String
     fileName = "MML-kululaskuri - " & excelWorksheet.Range("B40").Value & ".xlsm"
     
-    ' Set the workbook and worksheet for "MML-kululaskuri"
-    Set excelWorkbook = excelApp.Workbooks(fileName)
-    Set excelWorksheet = excelWorkbook.Worksheets(1)
+    ' Set the destination workbook with a dynamic filename
+    Set destWorkbook = Workbooks(fileName)
+    
+    ' Set the worksheet for the destination workbook
+    Set excelWorksheet = destWorkbook.Worksheets(1)
     
     ' Get the value from cell D30 in Excel
     valueD30 = excelWorksheet.Range("D30").Value
@@ -89,6 +92,7 @@ Sub tiedotToimeksiantosopimukselle()
     
     ' Clean up objects
     Set excelWorksheet = Nothing
+    Set destWorkbook = Nothing
     Set excelWorkbook = Nothing
     Set excelApp = Nothing
 End Sub
