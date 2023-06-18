@@ -223,4 +223,9 @@ ErrorHandler:
     infoTiedosto.Close False
 End Sub
 
+ErrorHandler:
+    MsgBox "Virhe suorittaessa toimintoa: " & Err.Description
+    infoTiedosto.Close False
+End Sub
+
 
