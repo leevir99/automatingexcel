@@ -179,6 +179,9 @@ Sub tietoExcelit()
     Dim laskuri As Integer
     laskuri = 1
     
+    Dim uniquePersonIDs As Collection
+    Set uniquePersonIDs = New Collection
+    
     For Each lainaNro In lainaNumerotAlue
         If Left(lainaNro.Value, Len(pankkiID)) = pankkiID Then
             lainaNumerot.Cells(laskuri, 1).Value = lainaNro.Value
@@ -194,9 +197,49 @@ Sub tietoExcelit()
             Dim personData As Range
             Set personData = ThisWorkbook.Sheets("Main").Range("D" & laskuri + 52)
     
+            Dim uniquePersonID As String
+            Dim uniquePersonName As String
+            Dim isUniquePerson As Boolean
+            isUniquePerson = False
+    
             Do Until personID.Value = "" Or personID.Row > viimeinenRivi Or IsLoanType(personID.Value)
                 personData.Value = personID.Value
                 personData.Offset(0, 1).Value = infoTiedosto.Sheets("Yleinen").Cells(personID.Row, "C").Value
+    
+                ' Check if the person ID is unique
+                uniquePersonID = personID.Value
+                uniquePersonName = infoTiedosto.Sheets("Yleinen").Cells(personID.Row, "C").Value
+    
+                On Error Resume Next
+                uniquePersonIDs.Add uniquePersonID, CStr(uniquePersonID)
+                If Err.Number <> 0 Then
+                    ' Duplicate person ID found, reset the flag
+                    isUniquePerson = False
+                Else
+                    ' Unique person ID found, set the flag
+                    isUniquePerson = True
+    
+                    ' Check if the maximum number of unique person IDs has been reached
+                    If uniquePersonIDs.Count > 3 Then
+                        MsgBox "Enemmän kuin kolme ainutlaatuista henkilöä löydetty. Tarkista tuodut tiedot henkilöistä."
+                        infoTiedosto.Close False
+                        Exit Sub
+                    End If
+    
+                    ' Add the unique person ID and name to the designated cells
+                    Select Case uniquePersonIDs.Count
+                        Case 1
+                            ThisWorkbook.Sheets("Main").Range("B44").Value = uniquePersonName
+                            ThisWorkbook.Sheets("Main").Range("B45").Value = uniquePersonID
+                        Case 2
+                            ThisWorkbook.Sheets("Main").Range("B47").Value = uniquePersonName
+                            ThisWorkbook.Sheets("Main").Range("B48").Value = uniquePersonID
+                        Case 3
+                            ThisWorkbook.Sheets("Main").Range("B50").Value = uniquePersonName
+                            ThisWorkbook.Sheets("Main").Range("B51").Value = uniquePersonID
+                    End Select
+                End If
+                On Error GoTo 0
     
                 Set personID = personID.Offset(1, 0)
                 Set personData = personData.Offset(1, 0)
@@ -211,16 +254,6 @@ Sub tietoExcelit()
             End If
         End If
     Next lainaNro
-    
-    Function IsLoanType(value As Variant) As Boolean
-        If value = "Asuntolaina" Or value = "Laina" Or value = "Väliaikaislaina" Then
-            IsLoanType = True
-        Else
-            IsLoanType = False
-        End If
-    End Function
-
-
     
     ' Etsitään "Vak_arvon vahvistaja" ja kopioidaan arvo
     Dim vakArvonVahvistaja As Range
@@ -253,6 +286,13 @@ Sub tietoExcelit()
     MsgBox "Tiedot tuotu onnistuneesti."
 End Sub
 
+Function IsLoanType(value As Variant) As Boolean
+        If value = "Asuntolaina" Or value = "Laina" Or value = "Väliaikaislaina" Then
+            IsLoanType = True
+        Else
+            IsLoanType = False
+        End If
+    End Function
 
 
 
