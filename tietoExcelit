@@ -142,41 +142,6 @@ Sub tietoExcelit()
     ThisWorkbook.Sheets("Main").Range("D18").Value = pankinNimi
     ThisWorkbook.Sheets("Main").Range("B146:C146").Value = pankinNimi
     
-    ' Etsitään henkilöiden alue
-    Dim lastRow As Long
-    lastRow = infoTiedosto.Sheets("Yleinen").Cells(infoTiedosto.Sheets("Yleinen").Rows.Count, "B").End(xlUp).Row
-    
-    Dim personIDs As Object
-    Set personIDs = CreateObject("Scripting.Dictionary")
-    
-    Dim personIDCell As Range
-    For Each personIDCell In infoTiedosto.Sheets("Yleinen").Range("B2:B" & lastRow)
-        Dim cellValue As String
-        cellValue = Trim(personIDCell.Value)
-        
-        If Len(cellValue) = 0 Then
-            Exit For
-        ElseIf Not personIDs.Exists(cellValue) And Not IsLoanID(cellValue) Then
-            personIDs(cellValue) = personIDCell.Offset(0, 1).Value
-        End If
-    Next personIDCell
-    
-    If personIDs.Count = 0 Then
-        MsgBox "Ei ainutlaatuisia henkilöitä löydetty. Tarkista tuodut tiedot henkilöistä."
-        infoTiedosto.Close False
-        Exit Sub
-    End If
-    
-    Dim destRange As Range
-    Set destRange = ThisWorkbook.Sheets("Main").Range("B45")
-    
-    Dim personID As Variant
-    For Each personID In personIDs.keys
-        destRange.Value = personID
-        destRange.Offset(-1, 0).Value = personIDs(personID)
-        Set destRange = destRange.Offset(3, 0)
-    Next personID
-    
     ' Etsitään lainanumeroiden alue
     Dim viimeinenRivi As Long
     On Error Resume Next
@@ -200,31 +165,40 @@ Sub tietoExcelit()
         Exit Sub
     End If
     
-    Dim lainaNumerotAlue As Range
-    Set lainaNumerotAlue = infoTiedosto.Sheets("Yleinen").Range("B1:B" & viimeinenRivi)
+    Dim personIDs As Range
+    Set personIDs = infoTiedosto.Sheets("Yleinen").Range("B2:B" & viimeinenRivi)
     
-    Dim lainaNro As Range
-    Dim lainaNumerot As Range
-    Set lainaNumerot = ThisWorkbook.Sheets("Main").Range("B53:B56")
+    Dim loanNumbers As Range
+    Set loanNumbers = ThisWorkbook.Sheets("Main").Range("B53:B56")
     
-    Dim lainaMaarat As Range
-    Set lainaMaarat = ThisWorkbook.Sheets("Main").Range("C53:C56")
+    Dim loanAmounts As Range
+    Set loanAmounts = ThisWorkbook.Sheets("Main").Range("C53:C56")
     
-    Dim laskuri As Integer
-    laskuri = 1
+    Dim counter As Integer
+    counter = 1
     
-    For Each lainaNro In lainaNumerotAlue
-        If Left(lainaNro.Value, Len(pankkiID)) = pankkiID Then
-            lainaNumerot.Cells(laskuri, 1).Value = lainaNro.Value
-            lainaMaarat.Cells(laskuri, 1).Value = infoTiedosto.Sheets("Yleinen").Cells(lainaNro.Row, "D").Value
-            laskuri = laskuri + 1
-            If laskuri > 4 Then
+    Dim personID As Range
+    For Each personID In personIDs
+        If Not personID.Value Like pankkiID & "-" Then
+            ' This value is a person ID
+            ThisWorkbook.Sheets("Main").Range("C18").Offset(counter - 1).Value = personID.Value
+            ThisWorkbook.Sheets("Main").Range("B18").Offset(counter - 1).Value = infoTiedosto.Sheets("Yleinen").Cells(personID.Row, "C").Value
+            counter = counter + 1
+            
+            If counter > 4 Then
                 MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
                 infoTiedosto.Close False
                 Exit Sub
             End If
+        Else
+            ' This value is a loan ID
+            Dim loanID As String
+            loanID = Mid(personID.Value, Len(pankkiID) + 2)
+            
+            loanNumbers.Cells(counter, 1).Value = loanID
+            loanAmounts.Cells(counter, 1).Value = infoTiedosto.Sheets("Yleinen").Cells(personID.Row, "D").Value
         End If
-    Next lainaNro
+    Next personID
     
     ' Etsitään "Vak_arvon vahvistaja" ja kopioidaan arvo
     Dim vakArvonVahvistaja As Range
@@ -257,23 +231,6 @@ Sub tietoExcelit()
     MsgBox "Tiedot tuotu onnistuneesti."
 End Sub
 
-Function IsLoanID(ByVal value As String) As Boolean
-    ' Tarkistetaan, onko annettu arvo lainan ID
-    ' Lainan ID:n tunniste on kaksi kirjainta ja seuraavaksi neljä numeroa
-    
-    If Len(value) <> 6 Then
-        IsLoanID = False
-    Else
-        Dim letters As String
-        letters = Left(value, 2)
-        
-        If IsNumeric(Right(value, 4)) And letters Like "[A-Z][A-Z]" Then
-            IsLoanID = True
-        Else
-            IsLoanID = False
-        End If
-    End If
-End Function
 
 
 
