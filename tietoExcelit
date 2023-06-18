@@ -196,11 +196,13 @@ Sub tietoExcelit()
     Dim destRange As Range
     Set destRange = ThisWorkbook.Sheets("Main").Range("B45")
     
-    For Each personIDCell In personIDs.keys
-        destRange.Value = personIDCell
-        destRange.Offset(-1, 0).Value = personIDs(personIDCell)
+    Dim personID As Variant
+    For Each personID In personIDs.keys
+        destRange.Value = personID
+        destRange.Offset(-1, 0).Value = personIDs(personID)
         Set destRange = destRange.Offset(3, 0)
-    Next personIDCell
+    Next personID
+
     
     ' Etsitään "Vak_arvon vahvistaja" ja kopioidaan arvo
     Dim vakArvonVahvistaja As Range
