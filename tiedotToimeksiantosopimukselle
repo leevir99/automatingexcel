@@ -1,4 +1,6 @@
 Sub tiedotToimeksiantosopimukselle()
+    Dim excelApp As Object ' Excel.Application
+    Dim excelWorkbook As Object ' Excel.Workbook
     Dim excelWorksheet As Object ' Excel.Worksheet
     Dim valueD30 As String
     Dim valueD48 As Variant ' Use Variant type for compatibility
@@ -11,8 +13,27 @@ Sub tiedotToimeksiantosopimukselle()
     Dim valueG27 As String
     Dim teksti51Value As String
     
-    ' Set the worksheet
-    Set excelWorksheet = Workbooks("MML-kululaskuri.xlsm").Worksheets(1)
+    ' Check if an Excel instance is already open
+    On Error Resume Next
+    Set excelApp = GetObject(, "Excel.Application")
+    On Error GoTo 0
+    
+    ' If no open instance is found, create a new one
+    If excelApp Is Nothing Then
+        Set excelApp = CreateObject("Excel.Application")
+    End If
+    
+    ' Set the workbook and worksheet
+    Set excelWorkbook = excelApp.Workbooks("Hankkeet makroilla2.xls")
+    Set excelWorksheet = excelWorkbook.Worksheets(1)
+    
+    ' Get the value from cell B40 in "Hankkeet makroilla2.xls"
+    Dim fileName As String
+    fileName = "MML-kululaskuri - " & excelWorksheet.Range("B40").Value & ".xlsm"
+    
+    ' Set the workbook and worksheet for "MML-kululaskuri"
+    Set excelWorkbook = excelApp.Workbooks(fileName)
+    Set excelWorksheet = excelWorkbook.Worksheets(1)
     
     ' Get the value from cell D30 in Excel
     valueD30 = excelWorksheet.Range("D30").Value
@@ -68,4 +89,6 @@ Sub tiedotToimeksiantosopimukselle()
     
     ' Clean up objects
     Set excelWorksheet = Nothing
+    Set excelWorkbook = Nothing
+    Set excelApp = Nothing
 End Sub
