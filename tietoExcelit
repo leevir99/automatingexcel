@@ -192,11 +192,11 @@ Sub tietoExcelit()
             Set personID = currentLoanRow.Offset(1, 0)
     
             Dim personData As Range
-            Set personData = ThisWorkbook.Sheets("Main").Range("D" & offsetRow)
+            Set personData = ThisWorkbook.Sheets("Main").Range("D" & laskuri + 52)
     
-            Do Until personID.Value = "" Or personID.Value = "Asuntolaina" Or personID.Value = "Laina" Or personID.Value = "Väliaikaislaina"
+            Do Until personID.Value = "" Or personID.Row > viimeinenRivi Or IsLoanType(personID.Value)
                 personData.Value = personID.Value
-                personData.Offset(0, 1).Value = personID.Offset(0, 1).Value
+                personData.Offset(0, 1).Value = infoTiedosto.Sheets("Yleinen").Cells(personID.Row, "C").Value
     
                 Set personID = personID.Offset(1, 0)
                 Set personData = personData.Offset(1, 0)
@@ -211,6 +211,15 @@ Sub tietoExcelit()
             End If
         End If
     Next lainaNro
+    
+    Function IsLoanType(value As Variant) As Boolean
+        If value = "Asuntolaina" Or value = "Laina" Or value = "Väliaikaislaina" Then
+            IsLoanType = True
+        Else
+            IsLoanType = False
+        End If
+    End Function
+
 
     
     ' Etsitään "Vak_arvon vahvistaja" ja kopioidaan arvo
