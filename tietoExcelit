@@ -143,7 +143,7 @@ Sub tietoExcelit()
     ThisWorkbook.Sheets("Main").Range("D18").Value = pankinNimi
     ThisWorkbook.Sheets("Main").Range("B146:C146").Value = pankinNimi
     
-    ' Etsitään lainanumeroiden alue
+    ' Etsitään lainanumeroiden ja lainasummien alue
     Dim viimeinenRivi As Long
     On Error Resume Next
     viimeinenRivi = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("LISÄTIEDOT").Row - 1
@@ -155,22 +155,10 @@ Sub tietoExcelit()
         Exit Sub
     End If
     
-    Dim pankkiID As String
-    On Error Resume Next
-    pankkiID = infoTiedosto.Sheets("Yleinen").Range("A:A").Find("Konttorin numero").Offset(0, 1).Value
-    On Error GoTo 0
-    
-    If pankkiID = "" Then
-        MsgBox "Konttorin numero ei löydy. Tarkista tuodut tiedot lainoista."
-        infoTiedosto.Close False
-        Exit Sub
-    End If
-    
-    ' Kopioidaan pankkiID soluun C40
-    ThisWorkbook.Sheets("Main").Range("C40").Value = pankkiID
-    
     Dim lainaNumerotAlue As Range
+    Dim lainaMaaratAlue As Range
     Set lainaNumerotAlue = infoTiedosto.Sheets("Yleinen").Range("B1:B" & viimeinenRivi)
+    Set lainaMaaratAlue = infoTiedosto.Sheets("Yleinen").Range("D1:D" & viimeinenRivi)
     
     Dim lainaNro As Range
     Dim lainaNumerot As Range
@@ -183,10 +171,36 @@ Sub tietoExcelit()
     laskuri = 1
     
     For Each lainaNro In lainaNumerotAlue
-        If Left(lainaNro.Value, Len(pankkiID)) = pankkiID Then
+        Dim lainaTeksti As String
+        lainaTeksti = infoTiedosto.Sheets("Yleinen").Cells(lainaNro.Row, "C").Value
+        
+        If lainaTeksti = "Asuntolaina" Or lainaTeksti = "Laina" Or lainaTeksti = "Väliaikaislaina" Then
             lainaNumerot.Cells(laskuri, 1).Value = lainaNro.Value
-            lainaMaarat.Cells(laskuri, 1).Value = infoTiedosto.Sheets("Yleinen").Cells(lainaNro.Row, "D").Value
+            lainaMaarat.Cells(laskuri, 1).Value = lainaMaaratAlue.Cells(lainaNro.Row, 1).Value
+            
+            ' Etsitään henkilöt
+            Dim henkilotRivi As Range
+            Set henkilotRivi = lainaNro.Offset(1, 0)
+            
+            Dim henkilotAlue As Range
+            Dim henkilot As Range
+            Set henkilotAlue = infoTiedosto.Sheets("Yleinen").Range(henkilotRivi, henkilotRivi.End(xlDown))
+            Set henkilot = henkilotAlue.Offset(0, 1)
+            
+            Dim henkilo As Range
+            Dim offsetRow As Integer
+            offsetRow = (laskuri - 1) * 3 + 8
+            
+            For Each henkilo In henkilot
+                If henkilo.Value <> "" Then
+                    ThisWorkbook.Sheets("Main").Cells(offsetRow, 3).Value = henkilo.Value
+                    ThisWorkbook.Sheets("Main").Cells(offsetRow, 2).Value = henkilo.Offset(0, -1).Value
+                    offsetRow = offsetRow + 1
+                End If
+            Next henkilo
+            
             laskuri = laskuri + 1
+            
             If laskuri > 4 Then
                 MsgBox "Enemmän kuin neljä lainaa löydetty. Tarkista tuodut tiedot lainoista."
                 infoTiedosto.Close False
@@ -225,6 +239,7 @@ Sub tietoExcelit()
     ' Näytetään viesti onnistuneesta tuonnista
     MsgBox "Tiedot tuotu onnistuneesti."
 End Sub
+
 
 
 
