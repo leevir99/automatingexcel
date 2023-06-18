@@ -117,9 +117,13 @@ UUSITTU:
 Sub tietoExcelit()
     On Error GoTo ErrorHandler
     
+    ' Define the file path
+    Dim kansioPolku As String
+    kansioPolku = "Z:\Lähetysohjeet\Asiakirjojen tietoexcelit\" & Range("B40").Value & ".xlsx"
+    
     ' Open the info excel file
     Dim infoTiedosto As Workbook
-    Set infoTiedosto = Workbooks.Open("C:\Path\To\InfoFile.xlsx")
+    Set infoTiedosto = Workbooks.Open(kansioPolku)
     
     ' Find the last row of loan numbers
     Dim viimeinenRivi As Long
@@ -184,17 +188,19 @@ Sub tietoExcelit()
                 If endRow > viimeinenRivi Then
                     ' Set the end row as the last row of data
                     endRow = viimeinenRivi
+                Else
+                    ' Decrement the end row to exclude the empty row
+                    endRow = endRow - 1
                 End If
                 
                 ' Copy the loan numbers to the "Main" sheet
-                ThisWorkbook.Sheets("Main").Range("C22").Resize(endRow - startRow, 1).Value = loanNumbers.Rows(startRow - 1).Resize(endRow - startRow, 1).Value
+                ThisWorkbook.Sheets("Main").Range("A22").Resize(endRow - startRow + 1, 1).Value = loanNumbers.Rows(startRow - 1).Resize(endRow - startRow + 1, 1).Value
                 
                 ' Copy the loan amounts to the "Main" sheet
-                ThisWorkbook.Sheets("Main").Range("D22").Resize(endRow - startRow, 1).Value = loanAmounts.Rows(startRow - 1).Resize(endRow - startRow, 1).Value
+                ThisWorkbook.Sheets("Main").Range("D22").Resize(endRow - startRow + 1, 1).Value = loanAmounts.Rows(startRow - 1).Resize(endRow - startRow + 1, 1).Value
                 
                 ' Copy the people involved to the "Main" sheet
-                ThisWorkbook.Sheets("Main").Range("A22").Resize(endRow - startRow, 1).Value = .Range("B" & startRow & ":B" & endRow).Value
-                ThisWorkbook.Sheets("Main").Range("B22").Resize(endRow - startRow, 1).Value = .Range("C" & startRow & ":C" & endRow).Value
+                ThisWorkbook.Sheets("Main").Range("B22").Resize(endRow - startRow + 1, 1).Value = .Range("C" & startRow & ":C" & endRow).Value
                 
                 ' Set the start row for the next loan
                 startRow = endRow + 1
