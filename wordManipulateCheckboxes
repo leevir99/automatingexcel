@@ -8,9 +8,13 @@ Sub CheckAllCheckboxes()
     ' Loop through all shapes in the document
     For Each shape In doc.Shapes
         ' Check if the shape is a checkbox
-        If shape.Type = msoFormControl And shape.FormControlType = wdCheckBox Then
-            ' Set the checkbox value to checked
-            shape.OLEFormat.Object.Value = True
+        If shape.Type = msoTextBox And shape.OLEFormat.ClassType = "Forms.CheckBox.1" Then
+            ' Toggle the checkbox by modifying the text content
+            If shape.TextFrame.TextRange.Text = "☐" Then
+                shape.TextFrame.TextRange.Text = "☒"
+            ElseIf shape.TextFrame.TextRange.Text = "☒" Then
+                shape.TextFrame.TextRange.Text = "☐"
+            End If
         End If
     Next shape
 End Sub
