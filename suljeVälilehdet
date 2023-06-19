@@ -1,0 +1,27 @@
+// Määritellään suljettavat linkkiformaatit
+const linkFormats = [
+  'intrath.tuotanto.op.fi',
+  'intrath14.tuotanto.op.fi'
+];
+
+// Funktio suljettavien välilehtien sulkemiseen
+function suljeVälilehdetLinkkienPerusteella() {
+  const välilehdet = Array.from(window.top.document.querySelectorAll('a'));
+  
+  for (const välilehti of välilehdet) {
+    const href = välilehti.getAttribute('href');
+    
+    if (href) {
+      for (const formaatti of linkFormats) {
+        if (href.includes(formaatti)) {
+          // Suljetaan välilehti
+          window.top.close();
+          break;
+        }
+      }
+    }
+  }
+}
+
+// Kutsutaan funktiota välilehtien sulkemiseksi
+suljeVälilehdetLinkkienPerusteella();
