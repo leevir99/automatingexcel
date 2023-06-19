@@ -15,7 +15,7 @@ function suljeVälilehdetLinkkienPerusteella() {
       for (const formaatti of linkFormats) {
         if (href.includes(formaatti)) {
           // Suljetaan välilehti
-          window.top.close();
+          window.open(href, '_self').close();
           break;
         }
       }
