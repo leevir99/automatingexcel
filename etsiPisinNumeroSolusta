@@ -2,6 +2,7 @@ Sub etsiPisinNumeroSolusta()
     Dim solu As Range
     Dim maksimimerkit As Integer
     Dim pisinNumero As String
+    Dim numeroLoydetty As Boolean
     
     ' Aseta syöterange
     Set solu = Range("A5")
@@ -12,6 +13,7 @@ Sub etsiPisinNumeroSolusta()
     ' Alusta muuttujat
     maksimimerkit = 0
     pisinNumero = ""
+    numeroLoydetty = False
     
     ' Etsi pisin numero solussa
     Dim sanat() As String
@@ -23,10 +25,13 @@ Sub etsiPisinNumeroSolusta()
             If Len(sanat(i)) > maksimimerkit Then
                 maksimimerkit = Len(sanat(i))
                 pisinNumero = sanat(i)
+                numeroLoydetty = True
             End If
         End If
     Next i
     
-    ' Kirjoita pisin numero soluun B40
-    Range("B40").Value = pisinNumero
+    ' Kirjoita pisin numero soluun B40, jos numero on löydetty
+    If numeroLoydetty Then
+        Range("B40").Value = pisinNumero
+    End If
 End Sub
