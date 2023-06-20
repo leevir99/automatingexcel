@@ -4,7 +4,6 @@ Sub avaaEnsimmainenVelkakirja()
     Dim tiedostoPolku As String
     Dim fso As Object
     Dim kansio As Object
-    Dim alikansio As Object
     Dim tiedosto As Object
     
     ' Aseta kansion polku solun B40 arvon perusteella
@@ -15,7 +14,7 @@ Sub avaaEnsimmainenVelkakirja()
     
     ' Tarkista, onko kansio olemassa
     If fso.FolderExists(kansioPolku) Then
-        ' Etsi rekursiivisesti ensimmäinen PDF-tiedosto, joka alkaa "Velkakirja"-sanalla
+        ' Etsi ensimmäinen PDF-tiedosto, joka alkaa "Velkakirja"-sanalla
         Set kansio = fso.GetFolder(kansioPolku)
         Set tiedosto = EtsiEnsimmainenVelkakirja(kansio, "Velkakirja")
         
@@ -62,3 +61,4 @@ Function EtsiEnsimmainenVelkakirja(kansio As Object, etuliite As String) As Obje
     ' Vastaavaa PDF-tiedostoa ei löytynyt
     Set EtsiEnsimmainenVelkakirja = Nothing
 End Function
+
