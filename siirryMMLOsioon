@@ -1,0 +1,9 @@
+Sub siirryMMLOsioon()
+    Application.ScreenUpdating = False
+    Application.EnableEvents = False
+    
+    Application.Goto Reference:="A160", Scroll:=True
+    
+    Application.ScreenUpdating = True
+    Application.EnableEvents = True
+End Sub
