@@ -1,4 +1,4 @@
-Sub etsiPisinNumero()
+Sub etsiPisinNumeroSolusta()
     Dim solu As Range
     Dim maksimimerkit As Integer
     Dim pisinNumero As String
@@ -13,17 +13,19 @@ Sub etsiPisinNumero()
     maksimimerkit = 0
     pisinNumero = ""
     
-    ' Käy läpi jokainen solu syöterangessa
-    For Each solu In solu
-        ' Tarkista, onko solussa numero
-        If IsNumeric(solu.Value) Then
-            ' Tarkista, onko nykyisessä numerossa enemmän merkkejä kuin aiemmassa maksimissa
-            If Len(CStr(solu.Value)) > maksimimerkit Then
-                maksimimerkit = Len(CStr(solu.Value))
-                pisinNumero = solu.Value
+    ' Etsi pisin numero solussa
+    Dim sanat() As String
+    sanat = Split(solu.Value, " ")
+    
+    Dim i As Integer
+    For i = LBound(sanat) To UBound(sanat)
+        If IsNumeric(sanat(i)) Then
+            If Len(sanat(i)) > maksimimerkit Then
+                maksimimerkit = Len(sanat(i))
+                pisinNumero = sanat(i)
             End If
         End If
-    Next solu
+    Next i
     
     ' Kirjoita pisin numero soluun B40
     Range("B40").Value = pisinNumero
