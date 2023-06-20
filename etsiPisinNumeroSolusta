@@ -21,13 +21,27 @@ Sub etsiPisinNumeroSolusta()
     
     Dim i As Integer
     For i = LBound(sanat) To UBound(sanat)
-        If IsNumeric(sanat(i)) Then
-            If Len(sanat(i)) > maksimimerkit Then
-                maksimimerkit = Len(sanat(i))
-                pisinNumero = sanat(i)
-                numeroLoydetty = True
+        Dim sana As String
+        sana = sanat(i)
+        
+        Dim j As Integer
+        For j = 1 To Len(sana)
+            Dim merkki As String
+            merkki = Mid(sana, j, 1)
+            
+            If IsNumeric(merkki) Then
+                Dim numeronPituus As Integer
+                numeronPituus = LaskeNumeronPituus(sana, j)
+                
+                If numeronPituus > maksimimerkit Then
+                    maksimimerkit = numeronPituus
+                    pisinNumero = Mid(sana, j, numeronPituus)
+                    numeroLoydetty = True
+                End If
+                
+                j = j + numeronPituus - 1
             End If
-        End If
+        Next j
     Next i
     
     ' Kirjoita pisin numero soluun B40, jos numero on löydetty
@@ -35,3 +49,22 @@ Sub etsiPisinNumeroSolusta()
         Range("B40").Value = pisinNumero
     End If
 End Sub
+
+Function LaskeNumeronPituus(ByRef sana As String, ByVal aloitusIndeksi As Integer) As Integer
+    Dim pituus As Integer
+    pituus = 0
+    
+    Dim i As Integer
+    For i = aloitusIndeksi To Len(sana)
+        Dim merkki As String
+        merkki = Mid(sana, i, 1)
+        
+        If IsNumeric(merkki) Then
+            pituus = pituus + 1
+        Else
+            Exit For
+        End If
+    Next i
+    
+    LaskeNumeronPituus = pituus
+End Function
