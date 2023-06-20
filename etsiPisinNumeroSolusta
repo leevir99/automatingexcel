@@ -1,0 +1,30 @@
+Sub etsiPisinNumero()
+    Dim solu As Range
+    Dim maksimimerkit As Integer
+    Dim pisinNumero As String
+    
+    ' Aseta syöterange
+    Set solu = Range("A5")
+    
+    ' Tarkista, onko solussa mitään numeroita
+    If WorksheetFunction.Count(solu) = 0 Then Exit Sub
+    
+    ' Alusta muuttujat
+    maksimimerkit = 0
+    pisinNumero = ""
+    
+    ' Käy läpi jokainen solu syöterangessa
+    For Each solu In solu
+        ' Tarkista, onko solussa numero
+        If IsNumeric(solu.Value) Then
+            ' Tarkista, onko nykyisessä numerossa enemmän merkkejä kuin aiemmassa maksimissa
+            If Len(CStr(solu.Value)) > maksimimerkit Then
+                maksimimerkit = Len(CStr(solu.Value))
+                pisinNumero = solu.Value
+            End If
+        End If
+    Next solu
+    
+    ' Kirjoita pisin numero soluun B40
+    Range("B40").Value = pisinNumero
+End Sub
