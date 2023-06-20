@@ -1,8 +1,13 @@
 Sub siirryMMLOsioon()
+    Dim rng As Range
+    Set rng = Range("A160")
+    
     Application.ScreenUpdating = False
     Application.EnableEvents = False
     
-    Application.Goto Reference:="A160", Scroll:=True
+    rng.Select
+    rng.Activate
+    Application.Goto rng, Scroll:=True
     
     Application.ScreenUpdating = True
     Application.EnableEvents = True
