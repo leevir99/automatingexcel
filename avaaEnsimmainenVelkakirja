@@ -1,0 +1,64 @@
+Sub avaaEnsimmainenVelkakirja()
+    Dim kansioPolku As String
+    Dim tiedostoNimi As String
+    Dim tiedostoPolku As String
+    Dim fso As Object
+    Dim kansio As Object
+    Dim alikansio As Object
+    Dim tiedosto As Object
+    
+    ' Aseta kansion polku solun B40 arvon perusteella
+    kansioPolku = "Z:\1. ASIAKIRJALAADINTA\" & Range("B40").Value
+    
+    ' Luo FileSystemObject tiedostojärjestelmään pääsemistä varten
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    ' Tarkista, onko kansio olemassa
+    If fso.FolderExists(kansioPolku) Then
+        ' Etsi rekursiivisesti ensimmäinen PDF-tiedosto, joka alkaa "Velkakirja"-sanalla
+        Set kansio = fso.GetFolder(kansioPolku)
+        Set tiedosto = EtsiEnsimmainenVelkakirja(kansio, "Velkakirja")
+        
+        ' Tarkista, onko vastaava PDF-tiedosto löytynyt
+        If Not tiedosto Is Nothing Then
+            tiedostoPolku = tiedosto.Path
+            
+            ' Avaa PDF-tiedosto oletussovelluksessasi
+            Shell "rundll32.exe url.dll,FileProtocolHandler" & " " & tiedostoPolku, vbNormalFocus
+        Else
+            MsgBox "Kansiosta ei löytynyt PDF-tiedostoa, joka alkaisi 'Velkakirja'-sanalla."
+        End If
+    Else
+        MsgBox "Kansiota ei löytynyt."
+    End If
+End Sub
+
+Function EtsiEnsimmainenVelkakirja(kansio As Object, etuliite As String) As Object
+    Dim tiedosto As Object
+    Dim alikansio As Object
+    
+    ' Käy läpi kaikki kansiossa olevat tiedostot
+    For Each tiedosto In kansio.Files
+        ' Tarkista, onko tiedosto PDF-tiedosto ja alkaako se annetulla etuliitteellä
+        If LCase(Right(tiedosto.Name, 4)) = ".pdf" And LCase(Left(tiedosto.Name, Len(etuliite))) = LCase(etuliite) Then
+            ' Palauta vastaava PDF-tiedosto
+            Set EtsiEnsimmainenVelkakirja = tiedosto
+            Exit Function
+        End If
+    Next tiedosto
+    
+    ' Käy läpi kaikki alikansiot ja kutsu rekursiivisesti funktiota
+    For Each alikansio In kansio.Subfolders
+        Set tiedosto = EtsiEnsimmainenVelkakirja(alikansio, etuliite)
+        
+        ' Tarkista, onko vastaava PDF-tiedosto löytynyt alikansiosta
+        If Not tiedosto Is Nothing Then
+            ' Palauta vastaava PDF-tiedosto
+            Set EtsiEnsimmainenVelkakirja = tiedosto
+            Exit Function
+        End If
+    Next alikansio
+    
+    ' Vastaavaa PDF-tiedostoa ei löytynyt
+    Set EtsiEnsimmainenVelkakirja = Nothing
+End Function
