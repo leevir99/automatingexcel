@@ -1,70 +1,45 @@
-Sub etsiPisinNumeroSolusta()
+Sub etsiNumeroSolusta()
     Dim solu As Range
-    Dim maksimimerkit As Integer
-    Dim pisinNumero As String
-    Dim numeroLoydetty As Boolean
+    Dim numero As String
     
     ' Aseta syöterange
     Set solu = Range("A5")
     
-    ' Tarkista, onko solussa mitään numeroita
-    If WorksheetFunction.Count(solu) = 0 Then Exit Sub
+    ' Hae numero solusta A5
+    Dim s As String
+    s = solu.Value
     
-    ' Alusta muuttujat
-    maksimimerkit = 0
-    pisinNumero = ""
-    numeroLoydetty = False
-    
-    ' Etsi pisin numero solussa
-    Dim sanat() As String
-    sanat = Split(solu.Value, " ")
-    
+    ' Etsi ensimmäinen numero, jossa on yli 3 numeroa
     Dim i As Integer
-    For i = LBound(sanat) To UBound(sanat)
-        Dim sana As String
-        sana = sanat(i)
-        
-        Dim j As Integer
-        For j = 1 To Len(sana)
-            Dim merkki As String
-            merkki = Mid(sana, j, 1)
-            
-            If IsNumeric(merkki) Then
-                Dim numeronPituus As Integer
-                numeronPituus = LaskeNumeronPituus(sana, j)
-                
-                If numeronPituus > maksimimerkit Then
-                    maksimimerkit = numeronPituus
-                    pisinNumero = Mid(sana, j, numeronPituus)
-                    numeroLoydetty = True
-                End If
-                
-                j = j + numeronPituus - 1
-            End If
-        Next j
-    Next i
-    
-    ' Kirjoita pisin numero soluun B40, jos numero on löydetty
-    If numeroLoydetty Then
-        Range("B40").Value = pisinNumero
-    End If
-End Sub
-
-Function LaskeNumeronPituus(ByRef sana As String, ByVal aloitusIndeksi As Integer) As Integer
-    Dim pituus As Integer
-    pituus = 0
-    
-    Dim i As Integer
-    For i = aloitusIndeksi To Len(sana)
+    For i = 1 To Len(s)
         Dim merkki As String
-        merkki = Mid(sana, i, 1)
+        merkki = Mid(s, i, 1)
         
         If IsNumeric(merkki) Then
-            pituus = pituus + 1
-        Else
-            Exit For
+            Dim j As Integer
+            Dim foundNumber As String
+            foundNumber = merkki
+            
+            For j = i + 1 To Len(s)
+                Dim seuraavaMerkki As String
+                seuraavaMerkki = Mid(s, j, 1)
+                
+                If IsNumeric(seuraavaMerkki) Then
+                    foundNumber = foundNumber & seuraavaMerkki
+                Else
+                    Exit For
+                End If
+            Next j
+            
+            If Len(foundNumber) > 3 Then
+                numero = foundNumber
+                Exit For
+            End If
+            
+            i = j - 1
         End If
     Next i
     
-    LaskeNumeronPituus = pituus
-End Function
+    ' Kirjoita numero soluun B40
+    Range("B40").Value = numero
+End Sub
