@@ -1,0 +1,23 @@
+Sub CreateFolderInZDrive()
+    Dim folderPath As String
+    Dim folderName As String
+    
+    ' Get the folder name from cell B40
+    folderName = Range("B40").Value
+    
+    ' Check if folder already exists
+    folderPath = "Z:\1. ASIAKIRJALAADINTA\" & folderName
+    If Dir(folderPath, vbDirectory) <> "" Then
+        MsgBox "Folder already exists!", vbExclamation
+        Exit Sub
+    End If
+    
+    ' Create the new folder
+    On Error GoTo ErrorHandler
+    MkDir folderPath
+    MsgBox "Folder created successfully!", vbInformation
+    Exit Sub
+    
+ErrorHandler:
+    MsgBox "An error occurred while creating the folder!", vbCritical
+End Sub
