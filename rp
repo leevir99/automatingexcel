@@ -1,35 +1,28 @@
-Sub TuontiTiedotPDFista()
-    Dim pdfData As String
+Sub LRrahoituspaatos()
     Dim peopleInvolved As String
     Dim ratkaisuehdotus As String
     
-    ' Kysy käyttäjältä kopioitavat henkilötiedot PDF:stä ja napsauta OK.
-    MsgBox "Kopioi ensin henkilötietoihin liittyvät tiedot PDF:stä ja napsauta OK."
+    ' Retrieve people involved data from clipboard
+    peopleInvolved = Application.CommandBars("Clipboard").Controls(2).List(1)
     
-    ' Hae kopioitu data leikepöydältä
-    peopleInvolved = Application.InputBox("Liitä kopioitu data tähän:", "Henkilötiedot")
-    
-    ' Tarkista, onko dataa annettu
+    ' Check if data was provided
     If peopleInvolved <> "" Then
-        ' Liitä tiedot "Hakijat"-välilehteen
+        ' Paste the data into the "Hakijat" sheet
         Sheets("Hakijat").Range("A1").Value = peopleInvolved
-        MsgBox "Henkilötietojen tiedot on tuotu onnistuneesti."
+        MsgBox "People involved data has been imported successfully."
     Else
-        MsgBox "Dataa ei annettu."
+        MsgBox "No data was provided."
     End If
     
-    ' Kysy käyttäjältä kopioitavaa ratkaisuehdotusta PDF:stä ja napsauta OK.
-    MsgBox "Kopioi ratkaisuehdotus PDF:stä ja napsauta OK."
+    ' Retrieve ratkaisuehdotus data from clipboard
+    ratkaisuehdotus = Application.CommandBars("Clipboard").Controls(2).List(1)
     
-    ' Hae kopioitu data leikepöydältä
-    ratkaisuehdotus = Application.InputBox("Liitä kopioitu data tähän:", "Ratkaisuehdotus")
-    
-    ' Tarkista, onko dataa annettu
+    ' Check if data was provided
     If ratkaisuehdotus <> "" Then
-        ' Liitä tiedot "Ratkaisuehdotus"-välilehteen
+        ' Paste the data into the "Ratkaisuehdotus" sheet
         Sheets("Ratkaisuehdotus").Range("A1").Value = ratkaisuehdotus
-        MsgBox "Ratkaisuehdotuksen tiedot on tuotu onnistuneesti."
+        MsgBox "Ratkaisuehdotus data has been imported successfully."
     Else
-        MsgBox "Dataa ei annettu."
+        MsgBox "No data was provided."
     End If
 End Sub
