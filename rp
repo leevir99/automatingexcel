@@ -1,9 +1,13 @@
 Sub LRrahoituspaatos()
     Dim peopleInvolved As String
     Dim ratkaisuehdotus As String
+    Dim clipboardData As MSForms.DataObject
+    
+    Set clipboardData = New MSForms.DataObject
     
     ' Retrieve people involved data from clipboard
-    peopleInvolved = Application.CommandBars("Clipboard").Controls(2).List(1)
+    clipboardData.GetFromClipboard
+    peopleInvolved = clipboardData.GetText
     
     ' Check if data was provided
     If peopleInvolved <> "" Then
@@ -15,7 +19,8 @@ Sub LRrahoituspaatos()
     End If
     
     ' Retrieve ratkaisuehdotus data from clipboard
-    ratkaisuehdotus = Application.CommandBars("Clipboard").Controls(2).List(1)
+    clipboardData.GetFromClipboard
+    ratkaisuehdotus = clipboardData.GetText
     
     ' Check if data was provided
     If ratkaisuehdotus <> "" Then
