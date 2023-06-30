@@ -1,0 +1,35 @@
+Sub TuontiTiedotPDFista()
+    Dim pdfData As String
+    Dim peopleInvolved As String
+    Dim ratkaisuehdotus As String
+    
+    ' Kysy käyttäjältä kopioitavat henkilötiedot PDF:stä ja napsauta OK.
+    MsgBox "Kopioi ensin henkilötietoihin liittyvät tiedot PDF:stä ja napsauta OK."
+    
+    ' Hae kopioitu data leikepöydältä
+    peopleInvolved = Application.InputBox("Liitä kopioitu data tähän:", "Henkilötiedot")
+    
+    ' Tarkista, onko dataa annettu
+    If peopleInvolved <> "" Then
+        ' Liitä tiedot "Hakijat"-välilehteen
+        Sheets("Hakijat").Range("A1").Value = peopleInvolved
+        MsgBox "Henkilötietojen tiedot on tuotu onnistuneesti."
+    Else
+        MsgBox "Dataa ei annettu."
+    End If
+    
+    ' Kysy käyttäjältä kopioitavaa ratkaisuehdotusta PDF:stä ja napsauta OK.
+    MsgBox "Kopioi ratkaisuehdotus PDF:stä ja napsauta OK."
+    
+    ' Hae kopioitu data leikepöydältä
+    ratkaisuehdotus = Application.InputBox("Liitä kopioitu data tähän:", "Ratkaisuehdotus")
+    
+    ' Tarkista, onko dataa annettu
+    If ratkaisuehdotus <> "" Then
+        ' Liitä tiedot "Ratkaisuehdotus"-välilehteen
+        Sheets("Ratkaisuehdotus").Range("A1").Value = ratkaisuehdotus
+        MsgBox "Ratkaisuehdotuksen tiedot on tuotu onnistuneesti."
+    Else
+        MsgBox "Dataa ei annettu."
+    End If
+End Sub
