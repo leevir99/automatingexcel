@@ -2,6 +2,7 @@ Sub CheckCheckboxByText()
     Dim doc As Document
     Dim fld As FormField
     Dim rngNext As Range
+    Dim inlineShape As InlineShape
     
     ' Set the document variable to the active document
     Set doc = ActiveDocument
@@ -12,14 +13,19 @@ Sub CheckCheckboxByText()
         If fld.Type = wdFieldFormCheckBox Or fld.Type = wdFieldFormTextInput Then
             ' Set the next range after the form field
             Set rngNext = fld.Range.Next
-    
-            ' Check if the next range is a text range and has the desired text
-            If rngNext.ContentControls.Count > 0 And rngNext.ContentControls(1).Type = wdContentControlText Then
-                If rngNext.ContentControls(1).Range.Text = "Vakuuden arviointi" Then
-                    ' Check the checkbox/box
-                    fld.CheckBox.Value = True
-                    ' Exit the loop after finding the checkbox/box
-                    Exit For
+            
+            ' Check if the next range contains an InlineShape
+            If rngNext.InlineShapes.Count > 0 Then
+                Set inlineShape = rngNext.InlineShapes(1)
+                
+                ' Check if the InlineShape is a text content control and has the desired text
+                If inlineShape.Type = wdInlineShapeOLEControlObject And inlineShape.OLEFormat.ClassType = "Forms.TextBox.1" Then
+                    If inlineShape.OLEFormat.Object.Text = "Vakuuden arviointi" Then
+                        ' Check the checkbox/box
+                        fld.CheckBox.Value = True
+                        ' Exit the loop after finding the checkbox/box
+                        Exit For
+                    End If
                 End If
             End If
         End If
