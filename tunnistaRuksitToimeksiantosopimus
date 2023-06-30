@@ -7,6 +7,11 @@ Sub CheckCheckboxByText()
     ' Set the document variable to the active document
     Set doc = ActiveDocument
     
+    ' Unprotect the document if it is protected
+    If doc.ProtectionType <> wdNoProtection Then
+        doc.Unprotect
+    End If
+    
     ' Set the range variable to search within the document
     Set rng = doc.Content
     
@@ -25,5 +30,10 @@ Sub CheckCheckboxByText()
     Else
         ' If the text is not found, display a message
         MsgBox "Text 'Vakuuden arviointi' not found.", vbExclamation, "Text Not Found"
+    End If
+    
+    ' Protect the document again if it was previously protected
+    If doc.ProtectionType <> wdNoProtection Then
+        doc.Protect Type:=wdAllowOnlyFormFields, NoReset:=True
     End If
 End Sub
