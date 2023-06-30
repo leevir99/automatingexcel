@@ -1,6 +1,7 @@
 Sub CheckCheckboxByText()
     Dim doc As Document
     Dim fld As FormField
+    Dim rngNext As Range
     
     ' Set the document variable to the active document
     Set doc = ActiveDocument
@@ -9,10 +10,12 @@ Sub CheckCheckboxByText()
     For Each fld In doc.FormFields
         ' Check if the form field is a checkbox/box
         If fld.Type = wdFieldFormCheckBox Or fld.Type = wdFieldFormTextInput Then
-            ' Check if the next content control is a text content control
-            If fld.Next.contentcontrols.Count > 0 And fld.Next.contentcontrols(1).Type = wdContentControlText Then
-                ' Check if the text content control has the desired text
-                If fld.Next.contentcontrols(1).Range.Text = "Vakuuden arviointi" Then
+            ' Set the next range after the form field
+            Set rngNext = fld.Range.Next
+    
+            ' Check if the next range is a text range and has the desired text
+            If rngNext.ContentControls.Count > 0 And rngNext.ContentControls(1).Type = wdContentControlText Then
+                If rngNext.ContentControls(1).Range.Text = "Vakuuden arviointi" Then
                     ' Check the checkbox/box
                     fld.CheckBox.Value = True
                     ' Exit the loop after finding the checkbox/box
