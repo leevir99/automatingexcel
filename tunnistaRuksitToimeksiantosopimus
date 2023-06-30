@@ -15,9 +15,9 @@ Sub CheckCheckboxByText()
     
     ' If the text is found, check the checkbox/box next to it
     If foundText Then
-        ' Check if the next content control is a checkbox/box
-        If rng.Next.ContentControls.Count > 0 Then
-            Set fld = rng.Next.ContentControls(1).Range.FormField
+        ' Check if the next InlineShape is a checkbox/box
+        If rng.Next.InlineShapes.Count > 0 Then
+            Set fld = rng.Next.InlineShapes(1).OLEFormat.Object.FormFields(1)
             ' Check the checkbox/box
             fld.CheckBox.Value = True
             MsgBox "Checkbox/Box ID/Name: " & fld.Name & vbNewLine & "The checkbox/box has been checked.", vbInformation, "Checkbox/Box Checked"
