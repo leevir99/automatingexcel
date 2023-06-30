@@ -1,18 +1,18 @@
-Sub InsertCurrentDate()
+Sub LisääNykyinenPäivä()
     Dim doc As Document
     Dim dtPicker As ContentControl
     
-    ' Set the document variable to the active document
+    ' Aseta dokumenttimuuttuja aktiiviseen dokumenttiin
     Set doc = ActiveDocument
     
-    ' Loop through all content controls in the document
+    ' Käy läpi kaikki sisältöelementit dokumentissa
     For Each dtPicker In doc.ContentControls
-        ' Check if the content control is a Date Picker
+        ' Tarkista, onko sisältöelementti päivämäärän valintaelementti
         If dtPicker.Type = wdContentControlDate Then
-            ' Set the date format to "dd.mm.yyyy"
+            ' Aseta päivämäärän näyttömuoto "dd.mm.yyyy"
             dtPicker.DateDisplayFormat = "dd.MM.yyyy"
             
-            ' Insert the current date into the content control
+            ' Lisää nykyinen päivämäärä sisältöelementtiin
             dtPicker.Range.Text = Format(Date, "dd.MM.yyyy")
         End If
     Next dtPicker
