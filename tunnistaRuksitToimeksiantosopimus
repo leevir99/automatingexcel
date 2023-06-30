@@ -1,35 +1,34 @@
-Sub CheckFifthCheckbox()
+Sub CheckSpecificCheckboxByIndex()
     Dim doc As Document
     Dim fld As FormField
-    Dim checkboxCount As Integer
-    Dim targetCheckbox As FormField
+    Dim targetIndex As Integer
+    Dim currentIndex As Integer
     
     ' Set the document variable to the active document
     Set doc = ActiveDocument
     
-    ' Initialize counters
-    checkboxCount = 0
+    ' Specify the index of the checkbox you want to check
+    targetIndex = 5
+    
+    ' Initialize the current index counter
+    currentIndex = 0
     
     ' Loop through all form fields in the document
     For Each fld In doc.FormFields
         ' Check if the form field is a checkbox
         If fld.Type = wdFieldFormCheckBox Then
-            checkboxCount = checkboxCount + 1
+            ' Increment the current index counter
+            currentIndex = currentIndex + 1
             
-            ' Check if it is the fifth checkbox
-            If checkboxCount = 5 Then
-                ' Store the checkbox and its ID/name
-                Set targetCheckbox = fld
-                Exit For
+            ' Check the checkbox if it matches the target index
+            If currentIndex = targetIndex Then
+                fld.CheckBox.Value = True
+                MsgBox "Checkbox ID/Name: " & fld.Name & vbNewLine & "The checkbox has been checked.", vbInformation, "Checkbox Checked"
+                Exit Sub
             End If
         End If
     Next fld
     
-    ' Check the target checkbox if found
-    If Not targetCheckbox Is Nothing Then
-        targetCheckbox.CheckBox.Value = True
-        MsgBox "Checkbox ID/Name: " & targetCheckbox.Name & vbNewLine & "The checkbox has been checked.", vbInformation, "Checkbox Checked"
-    Else
-        MsgBox "Fifth checkbox not found.", vbExclamation, "Checkbox Not Found"
-    End If
+    ' If the target index is not found
+    MsgBox "Checkbox not found.", vbExclamation, "Checkbox Not Found"
 End Sub
