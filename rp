@@ -3,6 +3,9 @@ Sub LRrahoituspaatos()
     Dim hakijatSheet As Worksheet
     Dim ratkaisuehdotusSheet As Worksheet
     Dim pdfTeksti As String
+    Dim lines As Variant
+    Dim startCell As Range
+    Dim i As Long
     
     ' Määritä taulukkomuuttujat
     Set luontiSheet = ThisWorkbook.Sheets("LUO LIITTEET")
@@ -17,7 +20,11 @@ Sub LRrahoituspaatos()
     
     ' Tyhjennä "Hakijat" taulukko ja liitä kopioitu teksti
     hakijatSheet.Cells.Clear
-    hakijatSheet.Range("A1").Value = pdfTeksti
+    lines = Split(pdfTeksti, vbCrLf)
+    Set startCell = hakijatSheet.Range("A1")
+    For i = LBound(lines) To UBound(lines)
+        startCell.Offset(i).Value = lines(i)
+    Next i
     
     ' Pyydä käyttäjää kopioimaan ratkaisuehdotuksen PDF-tiedostosta
     MsgBox "Kopioi ratkaisuehdotus PDF-tiedostosta ja napsauta OK."
@@ -27,7 +34,11 @@ Sub LRrahoituspaatos()
     
     ' Tyhjennä "Ratkaisuehdotus" taulukko ja liitä kopioitu teksti
     ratkaisuehdotusSheet.Cells.Clear
-    ratkaisuehdotusSheet.Range("A1").Value = pdfTeksti
+    lines = Split(pdfTeksti, vbCrLf)
+    Set startCell = ratkaisuehdotusSheet.Range("A1")
+    For i = LBound(lines) To UBound(lines)
+        startCell.Offset(i).Value = lines(i)
+    Next i
 End Sub
 
 Function HaeLeikepöydänTeksti() As String
