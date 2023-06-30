@@ -1,34 +1,24 @@
-Sub CheckSpecificCheckboxByIndex()
+Sub CheckCheckboxByText()
     Dim doc As Document
     Dim fld As FormField
-    Dim targetIndex As Integer
-    Dim currentIndex As Integer
     
     ' Set the document variable to the active document
     Set doc = ActiveDocument
     
-    ' Specify the index of the checkbox you want to check
-    targetIndex = 5
-    
-    ' Initialize the current index counter
-    currentIndex = 0
-    
     ' Loop through all form fields in the document
     For Each fld In doc.FormFields
-        ' Check if the form field is a checkbox
-        If fld.Type = wdFieldFormCheckBox Then
-            ' Increment the current index counter
-            currentIndex = currentIndex + 1
-            
-            ' Check the checkbox if it matches the target index
-            If currentIndex = targetIndex Then
-                fld.CheckBox.Value = True
-                MsgBox "Checkbox ID/Name: " & fld.Name & vbNewLine & "The checkbox has been checked.", vbInformation, "Checkbox Checked"
-                Exit Sub
+        ' Check if the form field is a checkbox/box
+        If fld.Type = wdFieldFormCheckBox Or fld.Type = wdFieldFormTextInput Then
+            ' Check if the next content control is a text content control
+            If fld.Next.contentcontrols.Count > 0 And fld.Next.contentcontrols(1).Type = wdContentControlText Then
+                ' Check if the text content control has the desired text
+                If fld.Next.contentcontrols(1).Range.Text = "Vakuuden arviointi" Then
+                    ' Check the checkbox/box
+                    fld.CheckBox.Value = True
+                    ' Exit the loop after finding the checkbox/box
+                    Exit For
+                End If
             End If
         End If
     Next fld
-    
-    ' If the target index is not found
-    MsgBox "Checkbox not found.", vbExclamation, "Checkbox Not Found"
 End Sub
