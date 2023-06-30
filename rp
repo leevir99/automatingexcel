@@ -1,33 +1,28 @@
 Sub LRrahoituspaatos()
-    Dim peopleInvolved As String
-    Dim ratkaisuehdotus As String
-    Dim clipboardData As MSForms.DataObject
+    Dim rpTaulukko As Worksheet
+    Dim hakijatTaulukko As Worksheet
+    Dim ratkaisuehdotusTaulukko As Worksheet
     
-    Set clipboardData = New MSForms.DataObject
+    ' Määritä taulukkomuuttujat
+    Set rpTaulukko = ThisWorkbook.Sheets("rp")
+    Set hakijatTaulukko = ThisWorkbook.Sheets("Hakijat")
+    Set ratkaisuehdotusTaulukko = ThisWorkbook.Sheets("Ratkaisuehdotus")
     
-    ' Retrieve people involved data from clipboard
-    clipboardData.GetFromClipboard
-    peopleInvolved = clipboardData.GetText
+    ' Pyydä käyttäjää kopioimaan hakijoiden tiedot PDF-tiedostosta
+    MsgBox "Kopioi hakijoiden tiedot PDF-tiedostosta ja napsauta OK."
     
-    ' Check if data was provided
-    If peopleInvolved <> "" Then
-        ' Paste the data into the "Hakijat" sheet
-        Sheets("Hakijat").Range("A1").Value = peopleInvolved
-        MsgBox "People involved data has been imported successfully."
-    Else
-        MsgBox "No data was provided."
-    End If
+    ' Tyhjennä "Hakijat" taulukko
+    hakijatTaulukko.Cells.Clear
     
-    ' Retrieve ratkaisuehdotus data from clipboard
-    clipboardData.GetFromClipboard
-    ratkaisuehdotus = clipboardData.GetText
+    ' Pyydä käyttäjää liittämään hakijoiden tiedot "Hakijat" taulukkoon
+    MsgBox "Liitä hakijoiden tiedot taulukkoon ja napsauta OK."
     
-    ' Check if data was provided
-    If ratkaisuehdotus <> "" Then
-        ' Paste the data into the "Ratkaisuehdotus" sheet
-        Sheets("Ratkaisuehdotus").Range("A1").Value = ratkaisuehdotus
-        MsgBox "Ratkaisuehdotus data has been imported successfully."
-    Else
-        MsgBox "No data was provided."
-    End If
+    ' Pyydä käyttäjää kopioimaan ratkaisuehdotuksen PDF-tiedostosta
+    MsgBox "Kopioi ratkaisuehdotus PDF-tiedostosta ja napsauta OK."
+    
+    ' Tyhjennä "Ratkaisuehdotus" taulukko
+    ratkaisuehdotusTaulukko.Cells.Clear
+    
+    ' Pyydä käyttäjää liittämään ratkaisuehdotus "Ratkaisuehdotus" taulukkoon
+    MsgBox "Liitä ratkaisuehdotus taulukkoon ja napsauta OK."
 End Sub
