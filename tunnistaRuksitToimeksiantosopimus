@@ -7,8 +7,12 @@ Sub IdentifyFormFields()
     
     ' Loop through all form fields in the document
     For Each fld In doc.FormFields
-        ' Display the type of the form field
-        MsgBox "Field Type: " & GetFieldType(fld.Type), vbInformation, "Form Field Type"
+        ' Identify the type of the form field
+        Dim fieldType As String
+        fieldType = GetFieldType(fld.Type)
+        
+        ' Display the type and ID/name of the form field
+        MsgBox "Field Type: " & fieldType & vbNewLine & "ID/Name: " & fld.Name, vbInformation, "Form Field Info"
     Next fld
 End Sub
 
