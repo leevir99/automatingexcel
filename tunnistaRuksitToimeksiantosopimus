@@ -2,14 +2,13 @@ Sub CheckFifthCheckbox()
     Dim doc As Document
     Dim fld As FormField
     Dim checkboxCount As Integer
-    Dim checkedCount As Integer
+    Dim targetCheckbox As FormField
     
     ' Set the document variable to the active document
     Set doc = ActiveDocument
     
     ' Initialize counters
     checkboxCount = 0
-    checkedCount = 0
     
     ' Loop through all form fields in the document
     For Each fld In doc.FormFields
@@ -17,18 +16,19 @@ Sub CheckFifthCheckbox()
         If fld.Type = wdFieldFormCheckBox Then
             checkboxCount = checkboxCount + 1
             
-            ' Check the fifth checkbox
+            ' Check if it is the fifth checkbox
             If checkboxCount = 5 Then
-                fld.CheckBox.Value = True
-                checkedCount = checkedCount + 1
+                ' Store the checkbox and its ID/name
+                Set targetCheckbox = fld
                 Exit For
             End If
         End If
     Next fld
     
-    ' Verify if the fifth checkbox was checked
-    If checkedCount = 1 Then
-        MsgBox "Fifth checkbox has been checked.", vbInformation, "Checkbox Checked"
+    ' Check the target checkbox if found
+    If Not targetCheckbox Is Nothing Then
+        targetCheckbox.CheckBox.Value = True
+        MsgBox "Checkbox ID/Name: " & targetCheckbox.Name & vbNewLine & "The checkbox has been checked.", vbInformation, "Checkbox Checked"
     Else
         MsgBox "Fifth checkbox not found.", vbExclamation, "Checkbox Not Found"
     End If
