@@ -5,15 +5,20 @@ Sub LisääNykyinenPäivä()
     ' Aseta dokumenttimuuttuja aktiiviseen dokumenttiin
     Set doc = ActiveDocument
     
-    ' Käy läpi kaikki sisältöelementit dokumentissa
-    For Each dtPicker In doc.ContentControls
-        ' Tarkista, onko sisältöelementti päivämäärän valintaelementti
-        If dtPicker.Type = wdContentControlDate Then
-            ' Aseta päivämäärän näyttömuoto "dd.mm.yyyy"
-            dtPicker.DateDisplayFormat = "dd.MM.yyyy"
-            
-            ' Lisää nykyinen päivämäärä sisältöelementtiin
-            dtPicker.Range.Text = Format(Date, "dd.MM.yyyy")
-        End If
-    Next dtPicker
+    ' Etsi ensimmäinen päivämäärän valintaelementti
+    On Error Resume Next
+    Set dtPicker = doc.ContentControls(1)
+    On Error GoTo 0
+    
+    ' Tarkista, onko päivämäärän valintaelementti olemassa
+    If Not dtPicker Is Nothing And dtPicker.Type = wdContentControlDate Then
+        ' Aseta päivämäärän näyttömuoto "dd.mm.yyyy"
+        dtPicker.DateDisplayFormat = "dd.MM.yyyy"
+        
+        ' Lisää nykyinen päivämäärä sisältöelementtiin
+        dtPicker.Range.Text = Format(Date, "dd.MM.yyyy")
+    Else
+        ' Jos päivämäärän valintaelementtiä ei löytynyt, näytä virheilmoitus
+        MsgBox "Päivämäärän valintaelementtiä ei löydy.", vbExclamation, "Virhe"
+    End If
 End Sub
