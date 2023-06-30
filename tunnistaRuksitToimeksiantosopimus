@@ -1,18 +1,35 @@
-Sub CheckSpecificCheckbox()
+Sub CheckFifthCheckbox()
     Dim doc As Document
     Dim fld As FormField
+    Dim checkboxCount As Integer
+    Dim checkedCount As Integer
     
     ' Set the document variable to the active document
     Set doc = ActiveDocument
     
+    ' Initialize counters
+    checkboxCount = 0
+    checkedCount = 0
+    
     ' Loop through all form fields in the document
     For Each fld In doc.FormFields
-        ' Check if the form field is a checkbox and its title is "Osakekirjan sähköistäminen"
-        If fld.Type = wdFieldFormCheckBox And fld.Name = "Osakekirjan sähköistäminen" Then
-            ' Check the checkbox
-            fld.CheckBox.Value = True
-            ' Exit the loop after finding the specific checkbox
-            Exit For
+        ' Check if the form field is a checkbox
+        If fld.Type = wdFieldFormCheckBox Then
+            checkboxCount = checkboxCount + 1
+            
+            ' Check the fifth checkbox
+            If checkboxCount = 5 Then
+                fld.CheckBox.Value = True
+                checkedCount = checkedCount + 1
+                Exit For
+            End If
         End If
     Next fld
+    
+    ' Verify if the fifth checkbox was checked
+    If checkedCount = 1 Then
+        MsgBox "Fifth checkbox has been checked.", vbInformation, "Checkbox Checked"
+    Else
+        MsgBox "Fifth checkbox not found.", vbExclamation, "Checkbox Not Found"
+    End If
 End Sub
