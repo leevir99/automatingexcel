@@ -1,4 +1,4 @@
-Sub IdentifyFormFields()
+Sub CheckSpecificCheckbox()
     Dim doc As Document
     Dim fld As FormField
     
@@ -7,28 +7,12 @@ Sub IdentifyFormFields()
     
     ' Loop through all form fields in the document
     For Each fld In doc.FormFields
-        ' Identify the type of the form field
-        Dim fieldType As String
-        fieldType = GetFieldType(fld.Type)
-        
-        ' Display the type and ID/name of the form field
-        MsgBox "Field Type: " & fieldType & vbNewLine & "ID/Name: " & fld.Name, vbInformation, "Form Field Info"
+        ' Check if the form field is a checkbox and its title is "Osakekirjan sähköistäminen"
+        If fld.Type = wdFieldFormCheckBox And fld.Name = "Osakekirjan sähköistäminen" Then
+            ' Check the checkbox
+            fld.CheckBox.Value = True
+            ' Exit the loop after finding the specific checkbox
+            Exit For
+        End If
     Next fld
 End Sub
-
-Function GetFieldType(ByVal fieldType As WdFieldType) As String
-    Select Case fieldType
-        Case wdFieldFormCheckBox
-            GetFieldType = "Checkbox"
-        Case wdFieldFormTextInput
-            GetFieldType = "Text Input"
-        Case wdFieldFormDropDown
-            GetFieldType = "Drop-down List"
-        Case wdFieldCheckBox
-            GetFieldType = "Checkbox (Legacy)"
-        Case wdFieldTextFormTextInput
-            GetFieldType = "Text Input (Legacy)"
-        Case Else
-            GetFieldType = "Unknown"
-    End Select
-End Function
