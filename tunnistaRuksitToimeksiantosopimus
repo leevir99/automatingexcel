@@ -1,33 +1,29 @@
 Sub CheckCheckboxByText()
     Dim doc As Document
+    Dim rng As Range
+    Dim foundText As Boolean
     Dim fld As FormField
-    Dim rngNext As Range
-    Dim inlineShape As InlineShape
     
     ' Set the document variable to the active document
     Set doc = ActiveDocument
     
-    ' Loop through all form fields in the document
-    For Each fld In doc.FormFields
-        ' Check if the form field is a checkbox/box
-        If fld.Type = wdFieldFormCheckBox Or fld.Type = wdFieldFormTextInput Then
-            ' Set the next range after the form field
-            Set rngNext = fld.Range.Next
-            
-            ' Check if the next range contains an InlineShape
-            If rngNext.InlineShapes.Count > 0 Then
-                Set inlineShape = rngNext.InlineShapes(1)
-                
-                ' Check if the InlineShape is a text content control and has the desired text
-                If inlineShape.Type = wdInlineShapeOLEControlObject And inlineShape.OLEFormat.ClassType = "Forms.TextBox.1" Then
-                    If inlineShape.OLEFormat.Object.Text = "Vakuuden arviointi" Then
-                        ' Check the checkbox/box
-                        fld.CheckBox.Value = True
-                        ' Exit the loop after finding the checkbox/box
-                        Exit For
-                    End If
-                End If
-            End If
+    ' Set the range variable to search within the document
+    Set rng = doc.Content
+    
+    ' Find the text "Vakuuden arviointi" within the document
+    foundText = rng.Find.Execute(FindText:="Vakuuden arviointi", Forward:=True)
+    
+    ' If the text is found, check the checkbox/box next to it
+    If foundText Then
+        ' Check if the next content control is a checkbox/box
+        If rng.Next.ContentControls.Count > 0 Then
+            Set fld = rng.Next.ContentControls(1).Range.FormField
+            ' Check the checkbox/box
+            fld.CheckBox.Value = True
+            MsgBox "Checkbox/Box ID/Name: " & fld.Name & vbNewLine & "The checkbox/box has been checked.", vbInformation, "Checkbox/Box Checked"
         End If
-    Next fld
+    Else
+        ' If the text is not found, display a message
+        MsgBox "Text 'Vakuuden arviointi' not found.", vbExclamation, "Text Not Found"
+    End If
 End Sub
