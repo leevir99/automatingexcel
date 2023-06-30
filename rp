@@ -1,28 +1,31 @@
 Sub LRrahoituspaatos()
-    Dim rpTaulukko As Worksheet
-    Dim hakijatTaulukko As Worksheet
-    Dim ratkaisuehdotusTaulukko As Worksheet
+    Dim luontiSheet As Worksheet
+    Dim hakijatSheet As Worksheet
+    Dim ratkaisuehdotusSheet As Worksheet
+    Dim pdfTeksti As String
     
     ' Määritä taulukkomuuttujat
-    Set rpTaulukko = ThisWorkbook.Sheets("rp")
-    Set hakijatTaulukko = ThisWorkbook.Sheets("Hakijat")
-    Set ratkaisuehdotusTaulukko = ThisWorkbook.Sheets("Ratkaisuehdotus")
+    Set luontiSheet = ThisWorkbook.Sheets("LUO LIITTEET")
+    Set hakijatSheet = ThisWorkbook.Sheets("Hakijat")
+    Set ratkaisuehdotusSheet = ThisWorkbook.Sheets("Ratkaisuehdotus")
     
     ' Pyydä käyttäjää kopioimaan hakijoiden tiedot PDF-tiedostosta
     MsgBox "Kopioi hakijoiden tiedot PDF-tiedostosta ja napsauta OK."
     
-    ' Tyhjennä "Hakijat" taulukko
-    hakijatTaulukko.Cells.Clear
+    ' Hae kopioitu teksti leikepöydältä
+    pdfTeksti = Application.CommandBars("Clipboard").Controls(2).List(1)
     
-    ' Pyydä käyttäjää liittämään hakijoiden tiedot "Hakijat" taulukkoon
-    MsgBox "Liitä hakijoiden tiedot taulukkoon ja napsauta OK."
+    ' Tyhjennä "Hakijat" taulukko ja liitä kopioitu teksti
+    hakijatSheet.Cells.Clear
+    hakijatSheet.Range("A1").Value = pdfTeksti
     
     ' Pyydä käyttäjää kopioimaan ratkaisuehdotuksen PDF-tiedostosta
     MsgBox "Kopioi ratkaisuehdotus PDF-tiedostosta ja napsauta OK."
     
-    ' Tyhjennä "Ratkaisuehdotus" taulukko
-    ratkaisuehdotusTaulukko.Cells.Clear
+    ' Hae kopioitu teksti leikepöydältä
+    pdfTeksti = Application.CommandBars("Clipboard").Controls(2).List(1)
     
-    ' Pyydä käyttäjää liittämään ratkaisuehdotus "Ratkaisuehdotus" taulukkoon
-    MsgBox "Liitä ratkaisuehdotus taulukkoon ja napsauta OK."
+    ' Tyhjennä "Ratkaisuehdotus" taulukko ja liitä kopioitu teksti
+    ratkaisuehdotusSheet.Cells.Clear
+    ratkaisuehdotusSheet.Range("A1").Value = pdfTeksti
 End Sub
