@@ -1,39 +1,19 @@
-Sub CheckCheckboxByText()
+Sub InsertCurrentDate()
     Dim doc As Document
-    Dim rng As Range
-    Dim foundText As Boolean
-    Dim fld As FormField
+    Dim dtPicker As ContentControl
     
     ' Set the document variable to the active document
     Set doc = ActiveDocument
     
-    ' Unprotect the document if it is protected
-    If doc.ProtectionType <> wdNoProtection Then
-        doc.Unprotect
-    End If
-    
-    ' Set the range variable to search within the document
-    Set rng = doc.Content
-    
-    ' Find the text "Vakuuden arviointi" within the document
-    foundText = rng.Find.Execute(FindText:="Vakuuden arviointi", Forward:=True)
-    
-    ' If the text is found, check the checkbox/box next to it
-    If foundText Then
-        ' Check if the next InlineShape is a checkbox/box
-        If rng.Next.InlineShapes.Count > 0 Then
-            Set fld = rng.Next.InlineShapes(1).OLEFormat.Object.FormFields(1)
-            ' Check the checkbox/box
-            fld.CheckBox.Value = True
-            MsgBox "Checkbox/Box ID/Name: " & fld.Name & vbNewLine & "The checkbox/box has been checked.", vbInformation, "Checkbox/Box Checked"
+    ' Loop through all content controls in the document
+    For Each dtPicker In doc.ContentControls
+        ' Check if the content control is a Date Picker
+        If dtPicker.Type = wdContentControlDate Then
+            ' Set the date format to "dd.mm.yyyy"
+            dtPicker.DateDisplayFormat = "dd.MM.yyyy"
+            
+            ' Insert the current date into the content control
+            dtPicker.Range.Text = Format(Date, "dd.MM.yyyy")
         End If
-    Else
-        ' If the text is not found, display a message
-        MsgBox "Text 'Vakuuden arviointi' not found.", vbExclamation, "Text Not Found"
-    End If
-    
-    ' Protect the document again if it was previously protected
-    If doc.ProtectionType <> wdNoProtection Then
-        doc.Protect Type:=wdAllowOnlyFormFields, NoReset:=True
-    End If
+    Next dtPicker
 End Sub
