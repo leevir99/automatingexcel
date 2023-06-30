@@ -1,4 +1,4 @@
-Sub CheckAndClickFormFields()
+Sub IdentifyFormFields()
     Dim doc As Document
     Dim fld As FormField
     
@@ -7,34 +7,24 @@ Sub CheckAndClickFormFields()
     
     ' Loop through all form fields in the document
     For Each fld In doc.FormFields
-        ' Check if the form field is a checkbox
-        If fld.Type = wdFieldFormCheckBox Then
-            ' Toggle the checkbox value
-            fld.CheckBox.Value = Not fld.CheckBox.Value
-        End If
-        
-        ' Check if the form field is a text input field
-        If fld.Type = wdFieldFormTextInput Then
-            ' Insert a sample value into the text input field
-            fld.TextInput.Default = "Sample Text"
-        End If
-        
-        ' Check if the form field is a drop-down list
-        If fld.Type = wdFieldFormDropDown Then
-            ' Set the selected item in the drop-down list
-            fld.DropDown.Value = 2 ' Change the value as needed
-        End If
-        
-        ' Check if the form field is a check box (legacy form field)
-        If fld.Type = wdFieldCheckBox Then
-            ' Toggle the checkbox value
-            fld.CheckBox.Value = Not fld.CheckBox.Value
-        End If
-        
-        ' Check if the form field is a text input field (legacy form field)
-        If fld.Type = wdFieldTextFormTextInput Then
-            ' Insert a sample value into the text input field
-            fld.Result = "Sample Text"
-        End If
+        ' Display the type of the form field
+        MsgBox "Field Type: " & GetFieldType(fld.Type), vbInformation, "Form Field Type"
     Next fld
 End Sub
+
+Function GetFieldType(ByVal fieldType As WdFieldType) As String
+    Select Case fieldType
+        Case wdFieldFormCheckBox
+            GetFieldType = "Checkbox"
+        Case wdFieldFormTextInput
+            GetFieldType = "Text Input"
+        Case wdFieldFormDropDown
+            GetFieldType = "Drop-down List"
+        Case wdFieldCheckBox
+            GetFieldType = "Checkbox (Legacy)"
+        Case wdFieldTextFormTextInput
+            GetFieldType = "Text Input (Legacy)"
+        Case Else
+            GetFieldType = "Unknown"
+    End Select
+End Function
