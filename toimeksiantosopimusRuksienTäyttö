@@ -1,0 +1,11 @@
+Sub CheckKiinnityshakemus()
+    ' Check if any of the cells G13, G15, G17, or G19 start with "Kiinnityshakemus"
+    If Left(excelWorksheet.Range("G13").Value, Len("Kiinnityshakemus")) = "Kiinnityshakemus" _
+        Or Left(excelWorksheet.Range("G15").Value, Len("Kiinnityshakemus")) = "Kiinnityshakemus" _
+        Or Left(excelWorksheet.Range("G17").Value, Len("Kiinnityshakemus")) = "Kiinnityshakemus" _
+        Or Left(excelWorksheet.Range("G19").Value, Len("Kiinnityshakemus")) = "Kiinnityshakemus" Then
+       
+        ' Check the first checkbox in your Word document
+        ActiveDocument.FormFields("Checkbox1").CheckBox.Value = True
+    End If
+End Sub
