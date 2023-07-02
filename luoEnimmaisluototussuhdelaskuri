@@ -1,3 +1,81 @@
+'VERSIO 02.07.2023 - LEEVI RUUHIKORPI
+Sub luoEnimmaisluototussuhdelaskuri()
+    ' Määritä SharePoint URL ja kansiorakenne
+    Dim sharePointURL As String
+    Dim folderAddress As String
+    Dim newFileName As String
+   
+    sharePointURL = "https://oppalveluto365.sharepoint.com/sites/intra-apuna_arjessa/Jaetut%20asiakirjat/Laskurit/Enimmaisluototussuhdelaskuri.xlsx"
+    folderAddress = "Z:\1. ASIAKIRJANLAADINTA" & "\" & Range("B40").Value
+   
+    ' Tarkista, onko solu B40 tyhjä
+    If IsEmpty(Range("B40").Value) Then
+        MsgBox "Solu B40 on tyhjä. Syötä arvo soluun B40.", vbCritical
+        Exit Sub
+    End If
+   
+    ' Hae haluttu tiedostonimi solusta B40
+    newFileName = "Enimmaisluototussuhdelaskuri - " & Range("B40").Value & ".xlsx"
+   
+    ' Tarkista, onko samanniminen tiedosto jo kansiossa
+    Dim filePath As String
+    filePath = folderAddress & "\" & newFileName
+   
+    ' Tarkista, onko tiedosto jo kansiossa
+    If Dir(filePath) <> "" Then
+        ' Tiedosto samanniminen tiedosto on jo kansiossa, avaa olemassa oleva tiedosto
+        Workbooks.Open filePath
+       
+        ' Ilmoita käyttäjälle
+        MsgBox "Olemassa oleva tiedosto on avattu.", vbInformation
+    Else
+        ' Samannimistä tiedostoa ei löydy, luo uusi kopio
+        ' Luo uusi Excel-sovelluksen instanssi
+        Dim xlApp As Object
+        Set xlApp = CreateObject("Excel.Application")
+       
+        ' Poista hälytykset ja näytön päivitys paremman suorituskyvyn saavuttamiseksi
+        xlApp.DisplayAlerts = False
+        xlApp.ScreenUpdating = False
+       
+        ' Avaa lähde-tiedosto SharePointista
+        Dim sourceWorkbook As Object
+        Set sourceWorkbook = xlApp.Workbooks.Open(sharePointURL)
+       
+        ' Tallenna kopio määritettyyn kansioon
+        sourceWorkbook.SaveCopyAs filePath
+       
+        ' Tallenna uuden tiedoston viittaus
+        Dim newWorkbook As Workbook
+        Set newWorkbook = Workbooks.Open(filePath)
+       
+        ' Suorita uudet ominaisuudet
+        With newWorkbook.Sheets(1)
+            ' Tyhjennä tiettyjen solujen sisällöt
+            .Range("G17:G20,N17:N20,U17:U20,AB17:AB20").ClearContents
+            .Range("G22:G23,N22:N23,U22:U23,AB22:AB23").ClearContents
+            .Range("G37:G42,N37:N42,U37:U42,AB37:AB42").ClearContents
+            .Range("G44:G47,N44:N47,U44:U47,AB44:AB47").ClearContents
+           
+            ' Kopioi solujen sisällöt toisesta tiedostosta
+            .Range("G17").Value = ThisWorkbook.Sheets("Hankkeet makroilla2").Range("D53").Value
+            .Range("N17").Value = ThisWorkbook.Sheets("Hankkeet makroilla2").Range("D54").Value
+            .Range("U17").Value = ThisWorkbook.Sheets("Hankkeet makroilla2").Range("D55").Value
+            .Range("AB17").Value = ThisWorkbook.Sheets("Hankkeet makroilla2").Range("D56").Value
+           
+            ' Aseta "Ei" soluihin G13, N13, U13 ja AB13
+            .Range("G13, N13, U13, AB13").Value = "Ei"
+        End With
+       
+        ' Näytä uuden tiedoston viittaus
+        newWorkbook.Activate
+       
+        ' Ilmoita käyttäjälle
+        MsgBox "Uusi tiedosto on luotu ja avattu.", vbInformation
+    End If
+End Sub
+'VERSIO 02.07.2023 - LEEVI RUUHIKORPI
+
 Sub luoEnimmaisluototussuhdelaskuri()
     ' Define the SharePoint URL and folder address
     Dim sharePointURL As String
