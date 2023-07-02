@@ -29,7 +29,7 @@ Sub luoEnimmaisluototussuhdelaskuri()
         ' Ilmoita käyttäjälle
         MsgBox "Olemassa oleva tiedosto on avattu.", vbInformation
     Else
-        ' Samannimistä tiedostoa ei löydy, luo uusi kopio
+        ' Samannimistä tiedostoa ei löydy, luo uusi kopio taustalla
         ' Luo uusi Excel-sovelluksen instanssi
         Dim xlApp As Object
         Set xlApp = CreateObject("Excel.Application")
@@ -45,11 +45,14 @@ Sub luoEnimmaisluototussuhdelaskuri()
         ' Tallenna kopio määritettyyn kansioon
         sourceWorkbook.SaveCopyAs filePath
        
-        ' Tallenna uuden tiedoston viittaus
+        ' Sulje lähde-tiedosto
+        sourceWorkbook.Close False
+       
+        ' Avaa uusi tiedosto
         Dim newWorkbook As Workbook
         Set newWorkbook = Workbooks.Open(filePath)
        
-        ' Suorita uudet ominaisuudet
+        ' Tee halutut muutokset
         With newWorkbook.Sheets(1)
             ' Tyhjennä tiettyjen solujen sisällöt
             .Range("G17:G20,N17:N20,U17:U20,AB17:AB20").ClearContents
@@ -57,14 +60,14 @@ Sub luoEnimmaisluototussuhdelaskuri()
             .Range("G37:G42,N37:N42,U37:U42,AB37:AB42").ClearContents
             .Range("G44:G47,N44:N47,U44:U47,AB44:AB47").ClearContents
            
-            ' Kopioi solujen sisällöt toisesta tiedostosta
+            ' Aseta arvot soluihin G17, N17, U17 ja AB17
             .Range("G17").Value = ThisWorkbook.Sheets("Hankkeet makroilla2").Range("D53").Value
             .Range("N17").Value = ThisWorkbook.Sheets("Hankkeet makroilla2").Range("D54").Value
             .Range("U17").Value = ThisWorkbook.Sheets("Hankkeet makroilla2").Range("D55").Value
             .Range("AB17").Value = ThisWorkbook.Sheets("Hankkeet makroilla2").Range("D56").Value
            
             ' Aseta "Ei" soluihin G13, N13, U13 ja AB13
-            .Range("G13, N13, U13, AB13").Value = "Ei"
+            .Range("G13,N13,U13,AB13").Value = "Ei"
         End With
        
         ' Näytä uuden tiedoston viittaus
