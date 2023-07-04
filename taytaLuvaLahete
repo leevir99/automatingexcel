@@ -30,12 +30,13 @@ Sub taytaLuvaLahete()
     Dim nimiCell As Range
     For Each nimiCell In nimiRange
         If nimiCell.Value <> "" Then
-            If nimiValue <> "" Then
-                nimiValue = nimiValue & vbCrLf
-            End If
-            nimiValue = nimiValue & nimiCell.Value
+            nimiValue = nimiValue & nimiCell.Value & vbCrLf
         End If
     Next nimiCell
+    ' Remove the trailing line break from the last value
+    If nimiValue <> "" Then
+        nimiValue = Left(nimiValue, Len(nimiValue) - 2)
+    End If
     wordDoc.FormFields("Nimi1").Result = nimiValue
     
     ' Fill the "Sotu1" field in Word with concatenated values from specified cells in Excel
@@ -46,20 +47,20 @@ Sub taytaLuvaLahete()
     Dim sotuCell As Range
     For Each sotuCell In sotuRange
         If sotuCell.Value <> "" Then
-            If sotuValue <> "" Then
-                sotuValue = sotuValue & vbCrLf
-            End If
-            sotuValue = sotuValue & sotuCell.Value
+            sotuValue = sotuValue & sotuCell.Value & vbCrLf
         End If
     Next sotuCell
+    ' Remove the trailing line break from the last value
+    If sotuValue <> "" Then
+        sotuValue = Left(sotuValue, Len(sotuValue) - 2)
+    End If
     wordDoc.FormFields("Sotu1").Result = sotuValue
     
     ' Find the cell starting with "Lisätietoja Myyntitehtävälle:" in Excel
     Dim additionalInfoCell As Object
-    Set additionalInfoCell = excelSheet.Range("A7:B39").Find("Lisätietoja Myyntitehtävälle:", LookIn:=xlValues)
-    
-    ' If the cell is found, fill the corresponding field in Word
+    Set additionalInfoCell = excelSheet.Range("A7:B39").Find("Lisätietoja Myyntitehtävälle:")
     If Not additionalInfoCell Is Nothing Then
+        ' Get the additional information from the following cells
         Dim additionalInfo As String
         additionalInfo = ""
         Dim Cell As Object
@@ -80,12 +81,13 @@ Sub taytaLuvaLahete()
     Dim lainaCell As Range
     For Each lainaCell In lainaRange
         If lainaCell.Value <> "" Then
-            If lainaValue <> "" Then
-                lainaValue = lainaValue & vbCrLf
-            End If
-            lainaValue = lainaValue & lainaCell.Value
+            lainaValue = lainaValue & lainaCell.Value & vbCrLf
         End If
     Next lainaCell
+    ' Remove the trailing line break from the last value
+    If lainaValue <> "" Then
+        lainaValue = Left(lainaValue, Len(lainaValue) - 2)
+    End If
     wordDoc.FormFields("Laina1").Result = lainaValue
     
     ' Fill the "Teksti13" field in Word with concatenated values from Excel
@@ -96,12 +98,13 @@ Sub taytaLuvaLahete()
     Dim teksti13Cell As Range
     For Each teksti13Cell In teksti13Range
         If teksti13Cell.Value <> "" Then
-            If teksti13Value <> "" Then
-                teksti13Value = teksti13Value & vbCrLf
-            End If
-            teksti13Value = teksti13Value & teksti13Cell.Value
+            teksti13Value = teksti13Value & teksti13Cell.Value & vbCrLf
         End If
     Next teksti13Cell
+    ' Remove the trailing line break from the last value
+    If teksti13Value <> "" Then
+        teksti13Value = Left(teksti13Value, Len(teksti13Value) - 2)
+    End If
     wordDoc.FormFields("Teksti13").Result = teksti13Value
     
     ' Error handling
