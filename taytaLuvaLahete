@@ -1,75 +1,65 @@
 Sub taytaLuvaLahete()
-    Dim excelApp As Object
-    Dim excelWorkbook As Object
-    Dim excelSheet As Object
-    Dim wordApp As Object
-    Dim wordDoc As Object
-    
     On Error GoTo ErrorHandler
+    
+    Dim excelApp As Object ' Excel.Application
+    Dim excelWorkbook As Object ' Excel.Workbook
+    Dim excelSheet As Object ' Excel.Worksheet
+    Dim wordApp As Object ' Word.Application
+    Dim wordDoc As Object ' Word.Document
     
     ' Set the Excel application and workbook
     Set excelApp = GetObject(, "Excel.Application")
     Set excelWorkbook = excelApp.Workbooks("Hankkeet makroilla2.xls")
-    
-    ' Set the Excel sheet
-    Set excelSheet = excelWorkbook.Worksheets("Main")
+    Set excelSheet = excelWorkbook.Sheets("Main")
     
     ' Set the Word application and document
     Set wordApp = GetObject(, "Word.Application")
     Set wordDoc = wordApp.Documents("Luva-lähete Skannaukseen.docm")
     
-    ' Activate the Word document
-    wordDoc.Activate
+    ' Fill the Word document fields with Excel cell values
+    wordDoc.FormFields("Teksti3").Result = excelSheet.Range("C6").Value
+    wordDoc.FormFields("Text2").Result = excelSheet.Range("D13").Value
+    wordDoc.FormFields("Teksti5").Result = excelSheet.Range("F2").Value
+    wordDoc.FormFields("Hankenumero").Result = excelSheet.Range("B40").Value
+    wordDoc.FormFields("Nimi1").Result = excelSheet.Range("B44").Value & vbCrLf & excelSheet.Range("B47").Value & vbCrLf & excelSheet.Range("B50").Value
+    wordDoc.FormFields("Sotu1").Result = excelSheet.Range("B45").Value & vbCrLf & excelSheet.Range("B48").Value & vbCrLf & excelSheet.Range("B51").Value
     
-    ' Fill the Word form fields with Excel cell values
-    wordDoc.FormFields("Teksti31").Result = excelSheet.Range("C6").Value
-    wordDoc.FormFields("Teksti42").Result = excelSheet.Range("D13").Value
-    wordDoc.FormFields("Teksti53").Result = excelSheet.Range("F2").Value
-    wordDoc.FormFields("Hankenumero10").Result = excelSheet.Range("B40").Value
+    ' Find the cell starting with "Lisätietoja Myyntitehtävälle:" in Excel
+    Dim additionalInfoCell As Object
+    Set additionalInfoCell = excelSheet.Range("A7:B39").Find("Lisätietoja Myyntitehtävälle:", LookIn:=xlValues)
     
-    ' Fill the multiple values in Word form fields
-    wordDoc.FormFields("Nimi111").Result = excelSheet.Range("B44").Value & vbCrLf & _
-                                           excelSheet.Range("B47").Value & vbCrLf & _
-                                           excelSheet.Range("B50").Value
+    ' If the cell is found, fill the corresponding field in Word
+    If Not additionalInfoCell Is Nothing Then
+        Dim additionalInfo As String
+        additionalInfo = additionalInfoCell.Offset(1).Value
+        Do Until additionalInfoCell.Offset(1).Row = 40 Or additionalInfoCell.Offset(1).Value = ""
+            Set additionalInfoCell = additionalInfoCell.Offset(1)
+            additionalInfo = additionalInfo & vbCrLf & additionalInfoCell.Value
+        Loop
+        wordDoc.FormFields("Teksti8").Result = additionalInfo
+    End If
     
-    wordDoc.FormFields("Sotu112").Result = excelSheet.Range("B45").Value & vbCrLf & _
-                                           excelSheet.Range("B48").Value & vbCrLf & _
-                                           excelSheet.Range("B51").Value
-    
-    ' Fill the "Teksti823" field in Word with cell values and "pura" values
-    Dim teksti823 As String
-    Dim cell As Object
+    ' Find the cells starting with "pura" in Excel
     Dim puraRange As Object
-    Dim puraCell As Object
-    
-    Set puraRange = excelSheet.Range("A7:B39")
-    
-    For Each cell In puraRange
-        If Left(cell.Value, 24) = "Lisätietoja Myyntitehtävälle:" Then
-            teksti823 = cell.Value & vbCrLf
-            
-            ' Append cells in column A until A40
-            For Each puraCell In excelSheet.Range(cell.Offset(1, 0), excelSheet.Range("A40"))
-                If Not IsEmpty(puraCell) Then ' Check if the cell is not empty
-                    teksti823 = teksti823 & puraCell.Value & vbCrLf
-                End If
-            Next puraCell
-            
-            Exit For
-        End If
-    Next cell
-    
-    ' Append "pura" values from A89:C125
     Set puraRange = excelSheet.Range("A89:C125")
     
+    ' Iterate through the cells and fill the corresponding field in Word
+    Dim puraCell As Object
+    Dim puraInfo As String
+    puraInfo = ""
     For Each puraCell In puraRange
-        If Not IsEmpty(puraCell) And Left(puraCell.Value, 4) = "pura" Then
-            teksti823 = teksti823 & puraCell.Value & vbCrLf
+        If Left(puraCell.Value, 4) = "pura" Then
+            puraInfo = puraInfo & puraCell.Value & vbCrLf
         End If
     Next puraCell
     
-    ' Set the value of "Teksti823" field in Word
-    wordDoc.FormFields("Teksti823").Result = teksti823
+    ' If there is any "pura" info, fill the corresponding field in Word
+    If puraInfo <> "" Then
+        wordDoc.FormFields("Teksti8").Result = wordDoc.FormFields("Teksti8").Result & vbCrLf & puraInfo
+    End If
+    
+    ' Display a message indicating successful filling of fields
+    MsgBox "Kentät täytetty onnistuneesti.", vbInformation, "Tiedot täytetty"
     
     Exit Sub
     
