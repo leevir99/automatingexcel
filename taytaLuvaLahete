@@ -1,4 +1,6 @@
 Sub taytaLuvaLahete()
+    On Error GoTo ErrorHandler
+    
     ' Määritä Word-dokumentin ja Excel-taulukon objektit
     Dim wordApp As Object
     Dim wordDoc As Object
@@ -62,4 +64,9 @@ Sub taytaLuvaLahete()
     Set wordApp = Nothing
     Set excelSheet = Nothing
     Set excelApp = Nothing
+    
+    Exit Sub
+    
+ErrorHandler:
+    MsgBox "Virhe: " & Err.Description, vbCritical, "Virhe täytettäessä Word-dokumenttia"
 End Sub
