@@ -1,9 +1,9 @@
 Sub taytaLuvaLahete()
-    Dim excelApp As Object ' Excel.Application
-    Dim excelWorkbook As Object ' Excel.Workbook
-    Dim excelSheet As Object ' Excel.Worksheet
-    Dim wordApp As Object ' Word.Application
-    Dim wordDoc As Object ' Word.Document
+    Dim excelApp As Object
+    Dim excelWorkbook As Object
+    Dim excelSheet As Object
+    Dim wordApp As Object
+    Dim wordDoc As Object
     
     On Error GoTo ErrorHandler
     
@@ -17,6 +17,9 @@ Sub taytaLuvaLahete()
     ' Set the Word application and document
     Set wordApp = GetObject(, "Word.Application")
     Set wordDoc = wordApp.Documents("Luva-lähete Skannaukseen.docm")
+    
+    ' Activate the Word document
+    wordDoc.Activate
     
     ' Fill the Word form fields with Excel cell values
     wordDoc.FormFields("Teksti31").Result = excelSheet.Range("C6").Value
@@ -47,7 +50,9 @@ Sub taytaLuvaLahete()
             
             ' Append cells in column A until A40
             For Each puraCell In excelSheet.Range(cell.Offset(1, 0), excelSheet.Range("A40"))
-                teksti823 = teksti823 & puraCell.Value & vbCrLf
+                If Not IsEmpty(puraCell) Then ' Check if the cell is not empty
+                    teksti823 = teksti823 & puraCell.Value & vbCrLf
+                End If
             Next puraCell
             
             Exit For
@@ -58,7 +63,7 @@ Sub taytaLuvaLahete()
     Set puraRange = excelSheet.Range("A89:C125")
     
     For Each puraCell In puraRange
-        If Left(puraCell.Value, 4) = "pura" Then
+        If Not IsEmpty(puraCell) And Left(puraCell.Value, 4) = "pura" Then
             teksti823 = teksti823 & puraCell.Value & vbCrLf
         End If
     Next puraCell
