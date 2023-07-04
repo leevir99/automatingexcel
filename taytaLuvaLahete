@@ -1,0 +1,65 @@
+Sub taytaLuvaLahete()
+    ' Määritä Word-dokumentin ja Excel-taulukon objektit
+    Dim wordApp As Object
+    Dim wordDoc As Object
+    Dim excelApp As Object
+    Dim excelSheet As Object
+    
+    ' Aseta Word-dokumentin objekti
+    Set wordApp = GetObject(, "Word.Application")
+    Set wordDoc = wordApp.Documents("Luva-lähete Skannaukseen.docm")
+    
+    ' Aseta Excel-taulukon objekti
+    Set excelApp = GetObject(, "Excel.Application")
+    Set excelSheet = excelApp.Workbooks("Hankkeet makroilla2.xls").Sheets("Main")
+    
+    ' Täytä Word-dokumentin kentät
+    wordDoc.FormFields("Teksti31").Result = excelSheet.Range("C6").Value
+    wordDoc.FormFields("Teksti42").Result = excelSheet.Range("D13").Value
+    wordDoc.FormFields("Teksti53").Result = excelSheet.Range("F2").Value
+    wordDoc.FormFields("Hankenumero10").Result = excelSheet.Range("B40").Value
+    
+    ' Täytä Word-dokumentin tekstikentät rivinvaihdoilla
+    wordDoc.FormFields("Nimi111").Result = excelSheet.Range("B44").Value & vbCrLf & _
+                                           excelSheet.Range("B47").Value & vbCrLf & _
+                                           excelSheet.Range("B50").Value
+    wordDoc.FormFields("Sotu112").Result = excelSheet.Range("B45").Value & vbCrLf & _
+                                           excelSheet.Range("B48").Value & vbCrLf & _
+                                           excelSheet.Range("B51").Value
+    
+    ' Täytä "Teksti823" -kenttä Excelin soluarvoilla
+    Dim solu As Object
+    Dim alueA As Object
+    Dim viimeinenRivi As Long
+    
+    viimeinenRivi = excelSheet.Range("B40").End(-4162).Row ' -4162 edustaa xlUp
+    
+    Set alueA = excelSheet.Range("A7:B" & viimeinenRivi)
+    For Each solu In alueA
+        If Left(solu.Value, 24) = "Lisätietoja Myyntitehtävälle" Then
+            wordDoc.FormFields("Teksti823").Result = solu.Value
+            Exit For
+        End If
+    Next solu
+    
+    ' Täytä "Teksti823" -kenttä soluilla, jotka alkavat "pura" merkkijonolla A89:C125
+    Dim puraAlue As Object
+    Dim puraSolu As Object
+    Set puraAlue = excelSheet.Range("A89:C125")
+    
+    For Each puraSolu In puraAlue
+        If Left(puraSolu.Value, 4) = "pura" Then
+            wordDoc.FormFields("Teksti823").Result = wordDoc.FormFields("Teksti823").Result & vbCrLf & puraSolu.Value
+        End If
+    Next puraSolu
+    
+    ' Tallenna ja sulje Word-dokumentti
+    wordDoc.Save
+    wordDoc.Close
+    
+    ' Vapauta objektit
+    Set wordDoc = Nothing
+    Set wordApp = Nothing
+    Set excelSheet = Nothing
+    Set excelApp = Nothing
+End Sub
