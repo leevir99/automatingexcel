@@ -66,17 +66,6 @@ Sub taytaLuvaLahete()
     ' Set the value of "Teksti823" field in Word
     wordDoc.FormFields("Teksti823").Result = teksti823
     
-    ' Save and close the Word document
-    wordDoc.Save
-    wordDoc.Close
-    
-    ' Release the objects
-    Set wordDoc = Nothing
-    Set wordApp = Nothing
-    Set excelSheet = Nothing
-    Set excelWorkbook = Nothing
-    Set excelApp = Nothing
-    
     Exit Sub
     
 ErrorHandler:
