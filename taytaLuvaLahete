@@ -21,8 +21,38 @@ Sub taytaLuvaLahete()
     wordDoc.FormFields("Text2").Result = excelSheet.Range("D13").Value
     wordDoc.FormFields("Teksti5").Result = excelSheet.Range("F2").Value
     wordDoc.FormFields("Hankenumero").Result = excelSheet.Range("B40").Value
-    wordDoc.FormFields("Nimi1").Result = excelSheet.Range("B44").Value & vbCrLf & excelSheet.Range("B47").Value & vbCrLf & excelSheet.Range("B50").Value
-    wordDoc.FormFields("Sotu1").Result = excelSheet.Range("B45").Value & vbCrLf & excelSheet.Range("B48").Value & vbCrLf & excelSheet.Range("B51").Value
+    
+    ' Fill the "Nimi1" field in Word with concatenated values from Excel
+    Dim nimiRange As Range
+    Set nimiRange = excelSheet.Range("B44:B50")
+    Dim nimiValue As String
+    nimiValue = ""
+    Dim nimiCell As Range
+    For Each nimiCell In nimiRange
+        If nimiCell.Value <> "" Then
+            If nimiValue <> "" Then
+                nimiValue = nimiValue & vbCrLf
+            End If
+            nimiValue = nimiValue & nimiCell.Value
+        End If
+    Next nimiCell
+    wordDoc.FormFields("Nimi1").Result = nimiValue
+    
+    ' Fill the "Sotu1" field in Word with concatenated values from Excel
+    Dim sotuRange As Range
+    Set sotuRange = excelSheet.Range("B45:B51")
+    Dim sotuValue As String
+    sotuValue = ""
+    Dim sotuCell As Range
+    For Each sotuCell In sotuRange
+        If sotuCell.Value <> "" Then
+            If sotuValue <> "" Then
+                sotuValue = sotuValue & vbCrLf
+            End If
+            sotuValue = sotuValue & sotuCell.Value
+        End If
+    Next sotuCell
+    wordDoc.FormFields("Sotu1").Result = sotuValue
     
     ' Find the cell starting with "Lisätietoja Myyntitehtävälle:" in Excel
     Dim additionalInfoCell As Object
@@ -39,30 +69,39 @@ Sub taytaLuvaLahete()
         wordDoc.FormFields("Teksti8").Result = additionalInfo
     End If
     
-    ' Find the cells starting with "pura" in Excel
-    Dim puraRange As Object
-    Set puraRange = excelSheet.Range("A89:C125")
-    
-    ' Iterate through the cells and fill the corresponding field in Word
-    Dim puraCell As Object
-    Dim puraInfo As String
-    puraInfo = ""
-    For Each puraCell In puraRange
-        If Left(puraCell.Value, 4) = "pura" Then
-            puraInfo = puraInfo & puraCell.Value & vbCrLf
+    ' Fill the "Laina1" field in Word with concatenated values from Excel
+    Dim lainaRange As Range
+    Set lainaRange = excelSheet.Range("B53:B56")
+    Dim lainaValue As String
+    lainaValue = ""
+    Dim lainaCell As Range
+    For Each lainaCell In lainaRange
+        If lainaCell.Value <> "" Then
+            If lainaValue <> "" Then
+                lainaValue = lainaValue & vbCrLf
+            End If
+            lainaValue = lainaValue & lainaCell.Value
         End If
-    Next puraCell
+    Next lainaCell
+    wordDoc.FormFields("Laina1").Result = lainaValue
     
-    ' If there is any "pura" info, fill the corresponding field in Word
-    If puraInfo <> "" Then
-        wordDoc.FormFields("Teksti8").Result = wordDoc.FormFields("Teksti8").Result & vbCrLf & puraInfo
-    End If
+    ' Fill the "Teksti13" field in Word with concatenated values from Excel
+    Dim teksti13Range As Range
+    Set teksti13Range = excelSheet.Range("B58:B62")
+    Dim teksti13Value As String
+    teksti13Value = ""
+    Dim teksti13Cell As Range
+    For Each teksti13Cell In teksti13Range
+        If teksti13Cell.Value <> "" Then
+            If teksti13Value <> "" Then
+                teksti13Value = teksti13Value & vbCrLf
+            End If
+            teksti13Value = teksti13Value & teksti13Cell.Value
+        End If
+    Next teksti13Cell
+    wordDoc.FormFields("Teksti13").Result = teksti13Value
     
-    ' Display a message indicating successful filling of fields
-    MsgBox "Kentät täytetty onnistuneesti.", vbInformation, "Tiedot täytetty"
-    
-    Exit Sub
-    
-ErrorHandler:
+    ' Error handling
+    ErrorHandler:
     MsgBox "Virhe: " & Err.Description, vbCritical, "Virhe täytettäessä Word-dokumenttia"
 End Sub
