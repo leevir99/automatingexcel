@@ -30,7 +30,7 @@ Sub taytaLuvaLahete()
     Dim nimiCell As Range
     For Each nimiCell In nimiRange
         If nimiCell.Value <> "" Then
-            nimiValue = nimiValue & nimiCell.Value & vbCrLf
+            nimiValue = nimiValue & Trim(nimiCell.Value) & vbCrLf
         End If
     Next nimiCell
     ' Remove the trailing line break from the last value
@@ -47,7 +47,7 @@ Sub taytaLuvaLahete()
     Dim sotuCell As Range
     For Each sotuCell In sotuRange
         If sotuCell.Value <> "" Then
-            sotuValue = sotuValue & sotuCell.Value & vbCrLf
+            sotuValue = sotuValue & Trim(sotuCell.Value) & vbCrLf
         End If
     Next sotuCell
     ' Remove the trailing line break from the last value
@@ -58,7 +58,7 @@ Sub taytaLuvaLahete()
     
     ' Find the cell starting with "Lisätietoja Myyntitehtävälle:" in Excel
     Dim additionalInfoCell As Object
-    Set additionalInfoCell = excelSheet.Range("A7:B39").Find("Lisätietoja Myyntitehtävälle:")
+    Set additionalInfoCell = excelSheet.Range("A7:B39").Find("Lisätietoja Myyntitehtävälle:", LookIn:=xlValues)
     If Not additionalInfoCell Is Nothing Then
         ' Get the additional information from the following cells
         Dim additionalInfo As String
