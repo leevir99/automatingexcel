@@ -1,89 +1,84 @@
 Sub taytaLuvaLahete()
+    Dim excelApp As Object ' Excel.Application
+    Dim excelWorkbook As Object ' Excel.Workbook
+    Dim excelSheet As Object ' Excel.Worksheet
+    Dim wordApp As Object ' Word.Application
+    Dim wordDoc As Object ' Word.Document
+    
     On Error GoTo ErrorHandler
     
-    ' Määritä Word-dokumentin ja Excel-taulukon objektit
-    Dim wordApp As Object
-    Dim wordDoc As Object
-    Dim excelApp As Object
-    Dim excelSheet As Object
+    ' Set the Excel application and workbook
+    Set excelApp = GetObject(, "Excel.Application")
+    Set excelWorkbook = excelApp.Workbooks("Hankkeet makroilla2.xls")
     
-    ' Aseta Word-dokumentin objekti
+    ' Set the Excel sheet
+    Set excelSheet = excelWorkbook.Worksheets("Main")
+    
+    ' Set the Word application and document
     Set wordApp = GetObject(, "Word.Application")
     Set wordDoc = wordApp.Documents("Luva-lähete Skannaukseen.docm")
     
-    ' Aseta Excel-taulukon objekti
-    Set excelApp = GetObject(, "Excel.Application")
-    Set excelSheet = excelApp.Workbooks("Hankkeet makroilla2.xls").Sheets("Main")
-    
-    ' Täytä Word-dokumentin kentät
+    ' Fill the Word form fields with Excel cell values
     wordDoc.FormFields("Teksti31").Result = excelSheet.Range("C6").Value
     wordDoc.FormFields("Teksti42").Result = excelSheet.Range("D13").Value
     wordDoc.FormFields("Teksti53").Result = excelSheet.Range("F2").Value
     wordDoc.FormFields("Hankenumero10").Result = excelSheet.Range("B40").Value
     
-    ' Täytä Word-dokumentin tekstikentät rivinvaihdoilla
+    ' Fill the multiple values in Word form fields
     wordDoc.FormFields("Nimi111").Result = excelSheet.Range("B44").Value & vbCrLf & _
                                            excelSheet.Range("B47").Value & vbCrLf & _
                                            excelSheet.Range("B50").Value
+    
     wordDoc.FormFields("Sotu112").Result = excelSheet.Range("B45").Value & vbCrLf & _
                                            excelSheet.Range("B48").Value & vbCrLf & _
                                            excelSheet.Range("B51").Value
     
-    ' Täytä "Teksti823" -kenttä Excelin soluarvoilla
-    Dim solu As Object
-    Dim alueA As Object
-    Dim viimeinenRivi As Long
+    ' Fill the "Teksti823" field in Word with cell values and "pura" values
     Dim teksti823 As String
+    Dim cell As Object
+    Dim puraRange As Object
+    Dim puraCell As Object
     
-    viimeinenRivi = excelSheet.Range("B40").End(-4162).Row ' -4162 edustaa xlUp
+    Set puraRange = excelSheet.Range("A7:B39")
     
-    Set alueA = excelSheet.Range("A7:B" & viimeinenRivi)
-    For Each solu In alueA
-        If Left(solu.Value, 24) = "Lisätietoja Myyntitehtävälle" Then
-            teksti823 = solu.Value
+    For Each cell In puraRange
+        If Left(cell.Value, 24) = "Lisätietoja Myyntitehtävälle:" Then
+            teksti823 = cell.Value & vbCrLf
+            
+            ' Append cells in column A until A40
+            For Each puraCell In excelSheet.Range(cell.Offset(1, 0), excelSheet.Range("A40"))
+                teksti823 = teksti823 & puraCell.Value & vbCrLf
+            Next puraCell
+            
             Exit For
         End If
-    Next solu
+    Next cell
     
-    ' Lisää solut "Lisätietoja Myyntitehtävälle" jälkeen
-    Dim lisatietoSol As Object
-    Dim lisatietoalue As Object
+    ' Append "pura" values from A89:C125
+    Set puraRange = excelSheet.Range("A89:C125")
     
-    Set lisatietoalue = excelSheet.Range("A" & solu.Row + 1 & ":B" & viimeinenRivi)
-    For Each lisatietoSol In lisatietoalue
-        If lisatietoSol.Value <> "" Then
-            teksti823 = teksti823 & vbCrLf & lisatietoSol.Value
-        Else
-            Exit For
+    For Each puraCell In puraRange
+        If Left(puraCell.Value, 4) = "pura" Then
+            teksti823 = teksti823 & puraCell.Value & vbCrLf
         End If
-    Next lisatietoSol
+    Next puraCell
     
-    ' Täytä "Teksti823" -kenttä soluilla, jotka alkavat "pura" merkkijonolla A89:C125
-    Dim puraAlue As Object
-    Dim puraSolu As Object
-    
-    Set puraAlue = excelSheet.Range("A89:C125")
-    For Each puraSolu In puraAlue
-        If Left(puraSolu.Value, 4) = "pura" Then
-            teksti823 = teksti823 & vbCrLf & puraSolu.Value
-        End If
-    Next puraSolu
-    
-    ' Aseta "Teksti823" -kentän arvo Word-dokumentissa
+    ' Set the value of "Teksti823" field in Word
     wordDoc.FormFields("Teksti823").Result = teksti823
     
-    ' Tallenna ja sulje Word-dokumentti
+    ' Save and close the Word document
     wordDoc.Save
     wordDoc.Close
     
-    ' Vapauta objektit
+    ' Release the objects
     Set wordDoc = Nothing
     Set wordApp = Nothing
     Set excelSheet = Nothing
+    Set excelWorkbook = Nothing
     Set excelApp = Nothing
     
     Exit Sub
     
 ErrorHandler:
-    MsgBox "Virhe: " & Err.Description & vbCrLf & vbCrLf & "Virhekoodi: " & Err.Number, vbCritical, "Virhe täytettäessä Word-dokumenttia"
+    MsgBox "Virhe: " & Err.Description, vbCritical, "Virhe täytettäessä Word-dokumenttia"
 End Sub
