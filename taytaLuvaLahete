@@ -22,9 +22,9 @@ Sub taytaLuvaLahete()
     wordDoc.FormFields("Teksti5").Result = excelSheet.Range("F2").Value
     wordDoc.FormFields("Hankenumero").Result = excelSheet.Range("B40").Value
     
-    ' Fill the "Nimi1" field in Word with concatenated values from Excel
+    ' Fill the "Nimi1" field in Word with concatenated values from specified cells in Excel
     Dim nimiRange As Range
-    Set nimiRange = excelSheet.Range("B44:B50")
+    Set nimiRange = Union(excelSheet.Range("B44"), excelSheet.Range("B47"), excelSheet.Range("B50"))
     Dim nimiValue As String
     nimiValue = ""
     Dim nimiCell As Range
@@ -38,9 +38,9 @@ Sub taytaLuvaLahete()
     Next nimiCell
     wordDoc.FormFields("Nimi1").Result = nimiValue
     
-    ' Fill the "Sotu1" field in Word with concatenated values from Excel
+    ' Fill the "Sotu1" field in Word with concatenated values from specified cells in Excel
     Dim sotuRange As Range
-    Set sotuRange = excelSheet.Range("B45:B51")
+    Set sotuRange = Union(excelSheet.Range("B45"), excelSheet.Range("B48"), excelSheet.Range("B51"))
     Dim sotuValue As String
     sotuValue = ""
     Dim sotuCell As Range
@@ -61,10 +61,13 @@ Sub taytaLuvaLahete()
     ' If the cell is found, fill the corresponding field in Word
     If Not additionalInfoCell Is Nothing Then
         Dim additionalInfo As String
+        additionalInfo = ""
+        Dim Cell As Object
+        Set Cell = additionalInfoCell.Offset(1)
         additionalInfo = additionalInfoCell.Offset(1).Value
-        Do Until additionalInfoCell.Offset(1).Row = 40 Or additionalInfoCell.Offset(1).Value = ""
-            Set additionalInfoCell = additionalInfoCell.Offset(1)
-            additionalInfo = additionalInfo & vbCrLf & additionalInfoCell.Value
+        Do Until Cell.Offset(1) = ""
+            Set Cell = Cell.Offset(1)
+            additionalInfo = additionalInfo & vbCrLf & Cell.Value
         Loop
         wordDoc.FormFields("Teksti8").Result = additionalInfo
     End If
