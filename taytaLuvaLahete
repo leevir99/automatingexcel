@@ -33,27 +33,44 @@ Sub taytaLuvaLahete()
     Dim solu As Object
     Dim alueA As Object
     Dim viimeinenRivi As Long
+    Dim teksti823 As String
     
     viimeinenRivi = excelSheet.Range("B40").End(-4162).Row ' -4162 edustaa xlUp
     
     Set alueA = excelSheet.Range("A7:B" & viimeinenRivi)
     For Each solu In alueA
         If Left(solu.Value, 24) = "Lisätietoja Myyntitehtävälle" Then
-            wordDoc.FormFields("Teksti823").Result = solu.Value
+            teksti823 = solu.Value
             Exit For
         End If
     Next solu
     
+    ' Lisää solut "Lisätietoja Myyntitehtävälle" jälkeen
+    Dim lisatietoSol As Object
+    Dim lisatietoalue As Object
+    
+    Set lisatietoalue = excelSheet.Range("A" & solu.Row + 1 & ":B" & viimeinenRivi)
+    For Each lisatietoSol In lisatietoalue
+        If lisatietoSol.Value <> "" Then
+            teksti823 = teksti823 & vbCrLf & lisatietoSol.Value
+        Else
+            Exit For
+        End If
+    Next lisatietoSol
+    
     ' Täytä "Teksti823" -kenttä soluilla, jotka alkavat "pura" merkkijonolla A89:C125
     Dim puraAlue As Object
     Dim puraSolu As Object
-    Set puraAlue = excelSheet.Range("A89:C125")
     
+    Set puraAlue = excelSheet.Range("A89:C125")
     For Each puraSolu In puraAlue
         If Left(puraSolu.Value, 4) = "pura" Then
-            wordDoc.FormFields("Teksti823").Result = wordDoc.FormFields("Teksti823").Result & vbCrLf & puraSolu.Value
+            teksti823 = teksti823 & vbCrLf & puraSolu.Value
         End If
     Next puraSolu
+    
+    ' Aseta "Teksti823" -kentän arvo Word-dokumentissa
+    wordDoc.FormFields("Teksti823").Result = teksti823
     
     ' Tallenna ja sulje Word-dokumentti
     wordDoc.Save
@@ -68,5 +85,5 @@ Sub taytaLuvaLahete()
     Exit Sub
     
 ErrorHandler:
-    MsgBox "Virhe: " & Err.Description, vbCritical, "Virhe täytettäessä Word-dokumenttia"
+    MsgBox "Virhe: " & Err.Description & vbCrLf & vbCrLf & "Virhekoodi: " & Err.Number, vbCritical, "Virhe täytettäessä Word-dokumenttia"
 End Sub
