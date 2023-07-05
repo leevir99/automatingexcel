@@ -5,29 +5,35 @@ Sub identifioiTakaisinmaksuturva()
     Dim kohdeTaulukko As Worksheet
     Dim etsiSanaTyty As String
     Dim etsiSanaHenki As String
+    Dim i As Long
     
     ' Aseta tiedostopolut ja taulukoiden nimet
     Set lähdeTyökirja = ThisWorkbook
     Set kohdeTyökirja = Workbooks("Copy of Liitteiden esitäyttöBAW.xlsm")
     Set lähdeTaulukko = lähdeTyökirja.Sheets("Ratkaisuehdotus")
-    Set kohdeTaulukko = kohdeTyökirja.Sheets("Main")
+    Set kohdeTaulukko = kohdeTyökirja.Sheets("LUO LIITTEET")
     
     ' Aseta etsittävät sanat
     etsiSanaTyty = "Tyty"
     etsiSanaHenki = "Henki"
     
-    ' Tarkista, löytyvätkö molemmat etsittävät sanat
-    If InStr(1, lähdeTaulukko.Cells(1, 1).Value, etsiSanaTyty) > 0 And InStr(1, lähdeTaulukko.Cells(1, 1).Value, etsiSanaHenki) > 0 Then
-        kohdeTaulukko.Range("G16").Value = "X"
-        kohdeTaulukko.Range("G22").Value = "X"
-    ElseIf InStr(1, lähdeTaulukko.Cells(1, 1).Value, etsiSanaTyty) > 0 Then
-        kohdeTaulukko.Range("G16").Value = "X"
-        kohdeTaulukko.Range("G18").Value = "X"
-    ElseIf InStr(1, lähdeTaulukko.Cells(1, 1).Value, etsiSanaHenki) > 0 Then
-        kohdeTaulukko.Range("G16").Value = "X"
-        kohdeTaulukko.Range("G20").Value = "X"
-    Else
-        ' Tyhjennä mahdolliset aiemmat X-merkit
-        kohdeTaulukko.Range("G16:G22").Value = ""
-    End If
+    ' Tyhjennä mahdolliset aiemmat X-merkit
+    kohdeTaulukko.Range("G16:G22").Value = ""
+    
+    ' Tarkista, löytyvätkö etsittävät sanat
+    For i = 1 To 200
+        If InStr(1, lähdeTaulukko.Range("A" & i).Value, etsiSanaTyty) > 0 Then
+            kohdeTaulukko.Range("G16").Value = "X"
+            If InStr(1, lähdeTaulukko.Range("A" & i).Value, etsiSanaHenki) > 0 Then
+                kohdeTaulukko.Range("G22").Value = "X"
+            Else
+                kohdeTaulukko.Range("G18").Value = "X"
+            End If
+            Exit For
+        ElseIf InStr(1, lähdeTaulukko.Range("A" & i).Value, etsiSanaHenki) > 0 Then
+            kohdeTaulukko.Range("G16").Value = "X"
+            kohdeTaulukko.Range("G20").Value = "X"
+            Exit For
+        End If
+    Next i
 End Sub
