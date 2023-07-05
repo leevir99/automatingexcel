@@ -5,14 +5,38 @@ Sub liitteidenEsitayttoFill()
     Dim resetLiitteet As Variant
    
     On Error Resume Next
-    Set wb = Workbooks("Hankkeet makroilla2.xls")
+    Set wb = Workbooks("Copy of Liitteiden esitäyttöBAW.xlsm")
     On Error GoTo 0
    
     If wb Is Nothing Then
-        Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Hankkeet makroilla2.xls")
+        Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Copy of Liitteiden esitäyttöBAW.xlsm")
         Do Until wb.ReadOnly = False
             DoEvents
         Loop
+    Else
+        resetLiitteet = MsgBox("Liitteiden esitäyttö on jo auki, haluatko resetoida sen? Jos haluat vain avata paina Cancel", vbYesNoCancel, "Reset liitteiden esitäyttö")
+        If resetLiitteet = vbYes Then
+            wb.Close SaveChanges:=False
+            Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Copy of Liitteiden esitäyttöBAW.xlsm")
+            Do Until wb.ReadOnly = False
+                DoEvents
+            Loop
+        ElseIf resetLiitteet = vbNo Then
+            wb.Close SaveChanges:=True
+            Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Copy of Liitteiden esitäyttöBAW.xlsm")
+            Do Until wb.ReadOnly = False
+                DoEvents
+            Loop
+            wb.Activate
+        Else
+            wb.Close SaveChanges:=True
+            Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Copy of Liitteiden esitäyttöBAW.xlsm")
+            Do Until wb.ReadOnly = False
+                DoEvents
+            Loop
+            wb.Activate
+            Exit Sub
+        End If
     End If
    
     On Error Resume Next
@@ -24,41 +48,36 @@ Sub liitteidenEsitayttoFill()
         Exit Sub
     End If
    
+    ' Check if "Ratkaisuehdotus" sheet exists
+    Dim ratkaisuehdotusSheet As Worksheet
+    On Error Resume Next
+    Set ratkaisuehdotusSheet = wb.Sheets("Ratkaisuehdotus")
+    On Error GoTo 0
+   
+    If ratkaisuehdotusSheet Is Nothing Then
+        MsgBox "Ratkaisuehdotus välilehti ei ole olemassa."
+        Exit Sub
+    End If
+    
+    ' Search for "Tyty" and "Henki" substrings in the Ratkaisuehdotus sheet
+    Dim searchString As Variant
+    searchString = ratkaisuehdotusSheet.Range("A1:Z100").Value ' Modify the range as per your data
+    Dim tytyFound As Boolean
+    Dim henkiFound As Boolean
+    tytyFound = InStr(1, searchString, "Tyty", vbTextCompare) > 0
+    henkiFound = InStr(1, searchString, "Henki", vbTextCompare) > 0
+   
     Set wsLiitteet = wb.Sheets("LUO LIITTEET")
    
     If resetLiitteet Then
         wb.Application.Run "'Copy of Liitteiden esitäyttöBAW.xlsm'!tyhjennä"
     End If
-    
-    ' Call the new function to fill the cells based on the conditions
-    identifioiTakaisinmaksuturva wsLiitteet, wsMain
-   
+       
     wsLiitteet.Range("D7").Value = wsMain.Range("B40").Value
     wsLiitteet.Range("B11:B13").Value = "X"
     wsLiitteet.Range("B15").Value = "X"
-End Sub
-
-Sub identifioiTakaisinmaksuturva(wsLiitteet As Worksheet, wsMain As Worksheet)
-    Dim ratkaisuehdotusSheet As Worksheet
-    Dim tytyFound As Boolean
-    Dim henkiFound As Boolean
-    Dim searchString As String
     
-    On Error Resume Next
-    Set ratkaisuehdotusSheet = wsMain.Parent.Sheets("Ratkaisuehdotus")
-    On Error GoTo 0
-    
-    If ratkaisuehdotusSheet Is Nothing Then
-        MsgBox "Worksheet 'Ratkaisuehdotus' not found."
-        Exit Sub
-    End If
-    
-    ' Search for "Tyty" and "Henki" substrings in the Ratkaisuehdotus sheet
-    searchString = ratkaisuehdotusSheet.Range("A1:Z100").Value ' Modify the range as per your data
-    tytyFound = InStr(1, searchString, "Tyty", vbTextCompare) > 0
-    henkiFound = InStr(1, searchString, "Henki", vbTextCompare) > 0
-    
-    ' Check the conditions and fill the cells accordingly
+    ' Check the conditions for filling the cells G16, G18, G20, G22 in "Liitteiden esitäyttö"
     If tytyFound And henkiFound Then
         wsLiitteet.Range("G16").Value = "X"
         wsLiitteet.Range("G22").Value = "X"
