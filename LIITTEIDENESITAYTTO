@@ -13,30 +13,6 @@ Sub liitteidenEsitayttoFill()
         Do Until wb.ReadOnly = False
             DoEvents
         Loop
-    Else
-        resetLiitteet = MsgBox("Liitteiden esitäyttö on jo auki, haluatko resetoida sen? Jos haluat vain avata paina Cancel", vbYesNoCancel, "Reset liitteiden esitäyttö")
-        If resetLiitteet = vbYes Then
-            wb.Close SaveChanges:=False
-            Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Hankkeet makroilla2.xls")
-            Do Until wb.ReadOnly = False
-                DoEvents
-            Loop
-        ElseIf resetLiitteet = vbNo Then
-            wb.Close SaveChanges:=True
-            Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Hankkeet makroilla2.xls")
-            Do Until wb.ReadOnly = False
-                DoEvents
-            Loop
-            wb.Activate
-        Else
-            wb.Close SaveChanges:=True
-            Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Hankkeet makroilla2.xls")
-            Do Until wb.ReadOnly = False
-                DoEvents
-            Loop
-            wb.Activate
-            Exit Sub
-        End If
     End If
    
     On Error Resume Next
