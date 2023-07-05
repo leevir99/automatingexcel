@@ -5,11 +5,11 @@ Sub liitteidenEsitayttoFill()
     Dim resetLiitteet As Variant
    
     On Error Resume Next
-    Set wb = Workbooks("Copy of Liitteiden esitäyttöBAW.xlsm")
+    Set wb = Workbooks("Hankkeet makroilla2.xls")
     On Error GoTo 0
    
     If wb Is Nothing Then
-        Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Copy of Liitteiden esitäyttöBAW.xlsm")
+        Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Hankkeet makroilla2.xls")
         Do Until wb.ReadOnly = False
             DoEvents
         Loop
@@ -17,20 +17,20 @@ Sub liitteidenEsitayttoFill()
         resetLiitteet = MsgBox("Liitteiden esitäyttö on jo auki, haluatko resetoida sen? Jos haluat vain avata paina Cancel", vbYesNoCancel, "Reset liitteiden esitäyttö")
         If resetLiitteet = vbYes Then
             wb.Close SaveChanges:=False
-            Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Copy of Liitteiden esitäyttöBAW.xlsm")
+            Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Hankkeet makroilla2.xls")
             Do Until wb.ReadOnly = False
                 DoEvents
             Loop
         ElseIf resetLiitteet = vbNo Then
             wb.Close SaveChanges:=True
-            Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Copy of Liitteiden esitäyttöBAW.xlsm")
+            Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Hankkeet makroilla2.xls")
             Do Until wb.ReadOnly = False
                 DoEvents
             Loop
             wb.Activate
         Else
             wb.Close SaveChanges:=True
-            Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Copy of Liitteiden esitäyttöBAW.xlsm")
+            Set wb = Workbooks.Open("C:\Users\B730706\OneDrive - OP\Työpöytä\Luojan työkalut\Hankkeet makroilla2.xls")
             Do Until wb.ReadOnly = False
                 DoEvents
             Loop
@@ -40,7 +40,7 @@ Sub liitteidenEsitayttoFill()
     End If
    
     On Error Resume Next
-    Set wsMain = ThisWorkbook.Sheets("Main")
+    Set wsMain = wb.Sheets("Main")
     On Error GoTo 0
    
     If wsMain Is Nothing Then
@@ -68,7 +68,14 @@ Sub identifioiTakaisinmaksuturva(wsLiitteet As Worksheet, wsMain As Worksheet)
     Dim henkiFound As Boolean
     Dim searchString As String
     
-    Set ratkaisuehdotusSheet = wsLiitteet.Parent.Worksheets("Ratkaisuehdotus")
+    On Error Resume Next
+    Set ratkaisuehdotusSheet = wsMain.Parent.Sheets("Ratkaisuehdotus")
+    On Error GoTo 0
+    
+    If ratkaisuehdotusSheet Is Nothing Then
+        MsgBox "Worksheet 'Ratkaisuehdotus' not found."
+        Exit Sub
+    End If
     
     ' Search for "Tyty" and "Henki" substrings in the Ratkaisuehdotus sheet
     searchString = ratkaisuehdotusSheet.Range("A1:Z100").Value ' Modify the range as per your data
