@@ -44,9 +44,11 @@ Sub liitteidenEsitayttoFill()
     On Error GoTo 0
    
     If wsMain Is Nothing Then
-        MsgBox "Main välilehti ei ole aktiivinen"
+        MsgBox "Main välilehti ei ole olemassa."
         Exit Sub
     End If
+   
+    wsMain.Activate
    
     ' Check if "Ratkaisuehdotus" sheet exists
     Dim ratkaisuehdotusSheet As Worksheet
