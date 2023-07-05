@@ -1,0 +1,49 @@
+Sub tuoTiedotRahoituspaatos()
+    Dim luontiSheet As Worksheet
+    Dim hakijatSheet As Worksheet
+    Dim ratkaisuehdotusSheet As Worksheet
+    Dim pdfTeksti As String
+    Dim lines As Variant
+    Dim startCell As Range
+    Dim i As Long
+    
+    ' Määritä taulukkomuuttujat
+    Set luontiSheet = ThisWorkbook.Sheets("LUO LIITTEET")
+    Set hakijatSheet = ThisWorkbook.Sheets("Hakijat")
+    Set ratkaisuehdotusSheet = ThisWorkbook.Sheets("Ratkaisuehdotus")
+    
+    ' Pyydä käyttäjää kopioimaan hakijoiden tiedot PDF-tiedostosta
+    MsgBox "Kopioi hakijoiden tiedot PDF-tiedostosta ja napsauta OK."
+    
+    ' Hae kopioitu teksti leikepöydältä
+    pdfTeksti = HaeLeikepöydänTeksti
+    
+    ' Tyhjennä "Hakijat" taulukko ja liitä kopioitu teksti
+    hakijatSheet.Cells.Clear
+    lines = Split(pdfTeksti, vbCrLf)
+    Set startCell = hakijatSheet.Range("A1")
+    For i = LBound(lines) To UBound(lines)
+        startCell.Offset(i).Value = lines(i)
+    Next i
+    
+    ' Pyydä käyttäjää kopioimaan ratkaisuehdotuksen PDF-tiedostosta
+    MsgBox "Kopioi ratkaisuehdotus PDF-tiedostosta ja napsauta OK."
+    
+    ' Hae kopioitu teksti leikepöydältä
+    pdfTeksti = HaeLeikepöydänTeksti
+    
+    ' Tyhjennä "Ratkaisuehdotus" taulukko ja liitä kopioitu teksti
+    ratkaisuehdotusSheet.Cells.Clear
+    lines = Split(pdfTeksti, vbCrLf)
+    Set startCell = ratkaisuehdotusSheet.Range("A1")
+    For i = LBound(lines) To UBound(lines)
+        startCell.Offset(i).Value = lines(i)
+    Next i
+End Sub
+
+Function HaeLeikepöydänTeksti() As String
+    Dim leikepöytä As Object
+    Set leikepöytä = CreateObject("New:{1C3B4210-F441-11CE-B9EA-00AA006B1A69}")
+    leikepöytä.GetFromClipboard
+    HaeLeikepöydänTeksti = leikepöytä.GetText
+End Function
