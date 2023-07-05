@@ -6,6 +6,8 @@ Sub identifioiTakaisinmaksuturva()
     Dim etsiSanaTyty As String
     Dim etsiSanaHenki As String
     Dim i As Long
+    Dim löytyiTyty As Boolean
+    Dim löytyiHenki As Boolean
     
     ' Aseta tiedostopolut ja taulukoiden nimet
     Set lähdeTyökirja = ThisWorkbook
@@ -20,20 +22,25 @@ Sub identifioiTakaisinmaksuturva()
     ' Tyhjennä mahdolliset aiemmat X-merkit
     kohdeTaulukko.Range("G16:G22").Value = ""
     
-    ' Tarkista, löytyvätkö etsittävät sanat
+    ' Etsi sanat ensimmäisistä 200 rivistä
     For i = 1 To 200
         If InStr(1, lähdeTaulukko.Range("A" & i).Value, etsiSanaTyty) > 0 Then
-            kohdeTaulukko.Range("G16").Value = "X"
-            If InStr(1, lähdeTaulukko.Range("A" & i).Value, etsiSanaHenki) > 0 Then
-                kohdeTaulukko.Range("G22").Value = "X"
-            Else
-                kohdeTaulukko.Range("G18").Value = "X"
-            End If
-            Exit For
+            löytyiTyty = True
         ElseIf InStr(1, lähdeTaulukko.Range("A" & i).Value, etsiSanaHenki) > 0 Then
-            kohdeTaulukko.Range("G16").Value = "X"
-            kohdeTaulukko.Range("G20").Value = "X"
-            Exit For
+            löytyiHenki = True
         End If
     Next i
+    
+    ' Tarkista löydetyt sanat
+    If löytyiTyty Then
+        kohdeTaulukko.Range("G16").Value = "X"
+        If löytyiHenki Then
+            kohdeTaulukko.Range("G22").Value = "X"
+        Else
+            kohdeTaulukko.Range("G18").Value = "X"
+        End If
+    ElseIf löytyiHenki Then
+        kohdeTaulukko.Range("G16").Value = "X"
+        kohdeTaulukko.Range("G20").Value = "X"
+    End If
 End Sub
