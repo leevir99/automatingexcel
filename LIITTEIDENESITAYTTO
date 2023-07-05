@@ -1,56 +1,33 @@
-Sub liitteidenEsitayttoFill()
-    Dim wb As Workbook
-    Dim wsMain As Worksheet
-    Dim wsLiitteet As Worksheet
-    Dim resetLiitteet As Variant
-
-    ' Set references to sheets in the current workbook
-    Set wb = ThisWorkbook
-    Set wsMain = wb.Sheets("Main")
-    Set wsLiitteet = wb.Sheets("LUO LIITTEET")
-
-    ' Check if "Ratkaisuehdotus" sheet exists
-    Dim ratkaisuehdotusSheet As Worksheet
-    On Error Resume Next
-    Set ratkaisuehdotusSheet = wb.Sheets("Ratkaisuehdotus")
-    On Error GoTo 0
-
-    If ratkaisuehdotusSheet Is Nothing Then
-        MsgBox "Ratkaisuehdotus välilehti ei ole olemassa."
-        Exit Sub
-    End If
-
-    ' Search for "Tyty" and "Henki" substrings in the Ratkaisuehdotus sheet
-    Dim searchString As Variant
-    searchString = ratkaisuehdotusSheet.Range("A1:Z100").Value ' Modify the range as per your data
-    Dim tytyFound As Boolean
-    Dim henkiFound As Boolean
-    tytyFound = InStr(1, searchString, "Tyty", vbTextCompare) > 0
-    henkiFound = InStr(1, searchString, "Henki", vbTextCompare) > 0
-
-    ' Clear previous "X" marks in the target range
-    wsLiitteet.Range("D7").Value = ""
-    wsLiitteet.Range("B11:B13").Value = ""
-    wsLiitteet.Range("B15").Value = ""
-    wsLiitteet.Range("G16").Value = ""
-    wsLiitteet.Range("G18").Value = ""
-    wsLiitteet.Range("G20").Value = ""
-    wsLiitteet.Range("G22").Value = ""
-
-    ' Set values based on the conditions
-    wsLiitteet.Range("D7").Value = wsMain.Range("B40").Value
-    wsLiitteet.Range("B11:B13").Value = "X"
-    wsLiitteet.Range("B15").Value = "X"
-
-    ' Check the conditions for filling the cells G16, G18, G20, G22 in "Liitteiden esitäyttö"
-    If tytyFound And henkiFound Then
-        wsLiitteet.Range("G16").Value = "X"
-        wsLiitteet.Range("G22").Value = "X"
-    ElseIf tytyFound Then
-        wsLiitteet.Range("G16").Value = "X"
-        wsLiitteet.Range("G18").Value = "X"
-    ElseIf henkiFound Then
-        wsLiitteet.Range("G16").Value = "X"
-        wsLiitteet.Range("G20").Value = "X"
+Sub identifioiTakaisinmaksuturva()
+    Dim lähdeTyökirja As Workbook
+    Dim kohdeTyökirja As Workbook
+    Dim lähdeTaulukko As Worksheet
+    Dim kohdeTaulukko As Worksheet
+    Dim etsiSanaTyty As String
+    Dim etsiSanaHenki As String
+    
+    ' Aseta tiedostopolut ja taulukoiden nimet
+    Set lähdeTyökirja = ThisWorkbook
+    Set kohdeTyökirja = Workbooks("Copy of Liitteiden esitäyttöBAW.xlsm")
+    Set lähdeTaulukko = lähdeTyökirja.Sheets("Ratkaisuehdotus")
+    Set kohdeTaulukko = kohdeTyökirja.Sheets("Main")
+    
+    ' Aseta etsittävät sanat
+    etsiSanaTyty = "Tyty"
+    etsiSanaHenki = "Henki"
+    
+    ' Tarkista, löytyvätkö molemmat etsittävät sanat
+    If InStr(1, lähdeTaulukko.Cells(1, 1).Value, etsiSanaTyty) > 0 And InStr(1, lähdeTaulukko.Cells(1, 1).Value, etsiSanaHenki) > 0 Then
+        kohdeTaulukko.Range("G16").Value = "X"
+        kohdeTaulukko.Range("G22").Value = "X"
+    ElseIf InStr(1, lähdeTaulukko.Cells(1, 1).Value, etsiSanaTyty) > 0 Then
+        kohdeTaulukko.Range("G16").Value = "X"
+        kohdeTaulukko.Range("G18").Value = "X"
+    ElseIf InStr(1, lähdeTaulukko.Cells(1, 1).Value, etsiSanaHenki) > 0 Then
+        kohdeTaulukko.Range("G16").Value = "X"
+        kohdeTaulukko.Range("G20").Value = "X"
+    Else
+        ' Tyhjennä mahdolliset aiemmat X-merkit
+        kohdeTaulukko.Range("G16:G22").Value = ""
     End If
 End Sub
