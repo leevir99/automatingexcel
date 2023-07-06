@@ -1,0 +1,28 @@
+Sub ibanMuunnin()
+    Dim BBAN As String
+    Dim IBAN As String
+    
+    ' Hae BBAN-arvo solusta B53
+    BBAN = Range("B53").Value
+    
+    ' Tarkista, ettei BBAN-arvo ole tyhjä
+    If BBAN <> "" Then
+        ' Poista välilyönnit ja erikoismerkit BBAN:sta
+        BBAN = Replace(Replace(BBAN, " ", ""), "-", "")
+        
+        ' Tarkista, että BBAN:n pituus on kelvollinen
+        If Len(BBAN) = 14 Then
+            ' Lisää maakoodi (FI) ja tarkistussumma BBAN:iin muodostaen IBAN:n
+            IBAN = "FI" & Format(98 - (CLng(BBAN & "1518") Mod 97), "00") & BBAN
+            
+            ' Aseta IBAN-arvo soluun B53
+            Range("B53").Value = IBAN
+        Else
+            ' BBAN:n pituus on virheellinen, näytä virheilmoitus
+            MsgBox "Virheellinen BBAN:n pituus. BBAN:n tulee olla 14 merkkiä pitkä.", vbExclamation
+        End If
+    Else
+        ' BBAN on tyhjä, näytä virheilmoitus
+        MsgBox "BBAN on tyhjä. Syötä kelvollinen BBAN-arvo soluun B53.", vbExclamation
+    End If
+End Sub
