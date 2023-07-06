@@ -12,31 +12,8 @@ Sub ibanMuunnin()
         
         ' Tarkista, että BBAN:n pituus on kelvollinen
         If Len(BBAN) = 14 Then
-            ' Lisää maakoodi (FI) ja luo tarkistussumma IBAN:lle
-            Dim tempIBAN As String
-            tempIBAN = BBAN & "FI00"
-            
-            ' Muunna kirjaimet numeroiksi (A=10, B=11, ..., Z=35)
-            Dim i As Integer
-            For i = 1 To Len(tempIBAN)
-                If Asc(Mid(tempIBAN, i, 1)) >= 65 And Asc(Mid(tempIBAN, i, 1)) <= 90 Then
-                    Mid(tempIBAN, i, 1) = Asc(Mid(tempIBAN, i, 1)) - 55
-                End If
-            Next i
-            
-            ' Laske tarkistussumma
-            Dim sum As Long
-            sum = 0
-            
-            For i = 1 To Len(tempIBAN)
-                sum = (sum * 10 + CLng(Mid(tempIBAN, i, 1))) Mod 97
-            Next i
-            
-            Dim checksum As String
-            checksum = Format(98 - sum, "00")
-            
-            ' Muodosta IBAN
-            IBAN = "FI" & checksum & BBAN
+            ' Lisää maakoodi (FI) ja tarkistussumma BBAN:iin muodostaen IBAN:n
+            IBAN = "FI" & CalculateIBANChecksum(BBAN) & BBAN
             
             ' Aseta IBAN-arvo soluun B53
             Range("B53").Value = IBAN
@@ -49,3 +26,26 @@ Sub ibanMuunnin()
         MsgBox "BBAN on tyhjä. Syötä kelvollinen BBAN-arvo soluun B53.", vbExclamation
     End If
 End Sub
+
+Function CalculateIBANChecksum(ByVal BBAN As String) As String
+    ' Lisää OKOYFIHH-maakoodi
+    BBAN = "FI00" & BBAN
+    
+    ' Muunna kirjaimet numeroiksi (A=10, B=11, ..., Z=35)
+    Dim i As Integer
+    For i = 1 To Len(BBAN)
+        If Asc(Mid(BBAN, i, 1)) >= 65 And Asc(Mid(BBAN, i, 1)) <= 90 Then
+            Mid(BBAN, i, 1) = Asc(Mid(BBAN, i, 1)) - 55
+        End If
+    Next i
+    
+    ' Laske tarkistussumma
+    Dim sum As Long
+    sum = 0
+    
+    For i = 1 To Len(BBAN)
+        sum = (sum * 10 + CLng(Mid(BBAN, i, 1))) Mod 97
+    Next i
+    
+    CalculateIBANChecksum = Format(98 - sum, "00")
+End Function
